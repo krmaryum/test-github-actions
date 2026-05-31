@@ -27,7 +27,7 @@ jobs:
 
   # 3rd job
   test:
-    needs: build
+    needs: [code, build]
     runs-on: ubuntu-latest
 
     steps:
