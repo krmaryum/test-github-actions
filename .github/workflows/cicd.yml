@@ -1,0 +1,44 @@
+# This is the workflow name it will be displayed in the Action Tab
+name: CICD
+
+# Manually triggered workflow (delivery)  whenever user needed
+on:
+  workflow_dispatch:
+
+# Jobs started
+jobs:
+
+  # 1st job
+  code:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        run: echo "Code cloned from GitHub"
+
+  # 2nd job
+  build:
+    needs: code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Build Docker Container
+        run: echo "Docker Container Build"
+
+  # 3rd job
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Test the Container
+        run: echo "Testing the Container"
+
+  # 4th job
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy the app
+        run: echo "Docker compose deployed the app"
