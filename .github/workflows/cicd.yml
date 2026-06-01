@@ -4,6 +4,16 @@ name: CICD
 # Manually triggered workflow (delivery)  whenever user needed
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'This is the environment where this workflow runs'
+        required: true
+        type: choice
+        default: development
+        options:
+          - development
+          - staging
+          - production
 
 # Jobs started
 jobs:
