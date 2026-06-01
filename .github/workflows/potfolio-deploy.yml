@@ -1,0 +1,40 @@
+name: Portfolio
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:  # allows manual triggering of the workflow from the GitHub UI   
+
+
+permissions:
+    pages: write      # to deploy to Pages
+    id-token: write   # to verify the deployment originates from an appropriate source
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        environment:
+            name: github-pages
+            url: ${{ steps.deploy-pages.outputs.page_url }}
+
+        steps:
+            # Checkout the repository (get access to your Portfolio code via prebuilt actions)
+            - name: Checkout code
+              uses: actions/checkout@v4  # [actions/checkout@v4](../md/github-actions-checkout-v4-notes.md)
+          
+            # Setting up GitHub Pages (using the new configure-pages action to set up the deployment branch and folder)
+            - name: Setup GitHub Pages 
+              uses: actions/configure-pages@v4  # [actions/configure-pages@v3](../md/actions-configure-pages-v4-notes.md)
+
+            # Static Code artifact upload (uploading the built portfolio files to be used in the deployment step)
+            - name: Upload static code artifact
+              uses: actions/upload-pages-artifact@v4  # [actions/upload-artifact@v3](../md/actions-upload-artifact-v3-notes.md)
+              with:
+                path: .
+            # Make page Live (deploying the uploaded artifact to GitHub Pages)  
+            - name: Deploy to GitHub Pages
+              uses: actions/deploy-pages@v4  # [actions/deploy-pages@v3](../md/actions-deploy-pages-v4-notes.md)    
+              id: deploy-pages

@@ -46,6 +46,7 @@ jobs:
 
   # 4th job
   deploy:
+    if: inputs.environment == 'production'
     needs: test
     runs-on: ubuntu-latest
 
