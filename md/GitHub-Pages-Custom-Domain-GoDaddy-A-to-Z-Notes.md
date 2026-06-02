@@ -3,6 +3,30 @@
 ## Overview
 This guide explains how to connect a custom GoDaddy domain to a GitHub Pages website deployed with GitHub Actions.
 
+DevOps Interview One-Liner
+
+Domain: Human-readable website name (e.g., google.com).
+
+DNS: Service that translates a domain name into an IP address so systems can communicate over the network.
+
+## Easy Analogy
+
+Domain = Aadmi ka Naam
+```text
+Khalid Khan
+```
+IP Address = Ghar ka Address
+```text
+House #10, Street #5
+```
+### DNS = Phone Directory
+```text
+Khalid Khan -> House #10, Street #5
+```
+Jab aap "Khalid Khan" search karte hain, directory uska address batati hai.
+
+Internet par DNS bhi bilkul yehi kaam karta hai.
+
 ---
 
 # Architecture
