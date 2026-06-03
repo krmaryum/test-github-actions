@@ -1,9 +1,9 @@
 name: Portfolio
 
-on:
+"on":
   workflow_dispatch:
 
- permissions:
+permissions:
   contents: read
   pages: write
   id-token: write
