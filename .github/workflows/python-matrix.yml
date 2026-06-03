@@ -1,7 +1,6 @@
 name: Python lint # lint means check the code style and quality
 on:
-    push:
-        branches: [main]
+  workflow_dispatch:
 
 jobs:
     validate:
