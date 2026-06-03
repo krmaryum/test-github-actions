@@ -1,6 +1,6 @@
 name: Portfolio
 
-"on":
+on:
   workflow_dispatch:
 
 permissions:
