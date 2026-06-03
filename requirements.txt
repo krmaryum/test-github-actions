@@ -1,2 +1,2 @@
-flaske8
+flake8
 flask
