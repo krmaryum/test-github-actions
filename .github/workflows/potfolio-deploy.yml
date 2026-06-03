@@ -5,36 +5,33 @@ on:
     branches:
       - main
 
-  workflow_dispatch:  # allows manual triggering of the workflow from the GitHub UI   
-
+  workflow_dispatch:
 
 permissions:
-    pages: write      # to deploy to Pages
-    id-token: write   # to verify the deployment originates from an appropriate source
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-    deploy:
-        runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-latest
 
-        environment:
-            name: github-pages
-            url: ${{ steps.deploy-pages.outputs.page_url }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy-pages.outputs.page_url }}
 
-        steps:
-            # Checkout the repository (get access to your Portfolio code via prebuilt actions)
-            - name: Checkout code
-              uses: actions/checkout@v4  # [actions/checkout@v4](../md/github-actions-checkout-v4-notes.md)
-          
-            # Setting up GitHub Pages (using the new configure-pages action to set up the deployment branch and folder)
-            - name: Setup GitHub Pages 
-              uses: actions/configure-pages@v4  # [actions/configure-pages@v3](../md/actions-configure-pages-v4-notes.md)
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-            # Static Code artifact upload (uploading the built portfolio files to be used in the deployment step)
-            - name: Upload static code artifact
-              uses: actions/upload-pages-artifact@v4  # [actions/upload-artifact@v3](../md/actions-upload-artifact-v3-notes.md)
-              with:
-                path: .
-            # Make page Live (deploying the uploaded artifact to GitHub Pages)  
-            - name: Deploy to GitHub Pages
-              uses: actions/deploy-pages@v4  # [actions/deploy-pages@v3](../md/actions-deploy-pages-v4-notes.md)    
-              id: deploy-pages
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload static code artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+
+      - id: deploy-pages
+        name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
