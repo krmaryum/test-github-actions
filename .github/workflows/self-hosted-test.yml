@@ -15,6 +15,6 @@ jobs:
         run: |
           echo "Runner is working"
           hostname
-          whoani
+          whoami
           uname -a
           pwd
