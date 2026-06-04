@@ -21,4 +21,8 @@ jobs:
         run: docker ps
         
       - name: Clean Up
-        run: docker stop $(docker ps -q)
+        run: |
+          if [ "$(docker ps -q)" ]; then
+            docker stop $(docker ps -q)
+          fi
+
