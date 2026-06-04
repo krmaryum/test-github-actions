@@ -1,0 +1,20 @@
+name: self Hosted Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Runner Information
+        run: |
+          echo "Runner is working"
+          hostname
+          whoani
+          uname -a
+          pwd
