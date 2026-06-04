@@ -11,7 +11,7 @@
 
     - name: Show operating system
       debug:
-        msg: "{{ ansible_distribution }} {{ ansible_distributin_version }}"
+        msg: "{{ ansible_distribution }} {{ ansible_distribution_version }}"
 
     - name: Create test file
       file:
