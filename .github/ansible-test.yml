@@ -1,0 +1,24 @@
+name: Ansible Self Hosted Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ansible-test:
+
+    runs-on: [self-hosted, Linux, ARM64]
+
+    steps:
+
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify Ansible
+        run: ansible --version
+
+      - name: Run Playbook
+        run: |
+          ansible-playbook \
+          -i ansible/inventory.ini \
+          ansible/test.yml
+    
