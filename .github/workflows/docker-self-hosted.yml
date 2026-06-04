@@ -20,9 +20,12 @@ jobs:
       - name: Show running containers
         run: docker ps
         
-      - name: Clean Up
-        run: |
-          if [ "$(docker ps -q)" ]; then
-            docker stop $(docker ps -q)
-          fi
+      - name: Show all containers
+        run: docker ps -a
+      
+#      - name: Clean Up
+#       run: |
+#          if [ "$(docker ps -q)" ]; then
+#            docker stop $(docker ps -q)
+#          fi
 
