@@ -1,6 +1,6 @@
 services:
 
   web:
-    image: ${DOCKERHUB_USER}/github-actions-app:latest
+    image: krmaryum/github-actions-app:latestS
     ports:
       - "80:80"
