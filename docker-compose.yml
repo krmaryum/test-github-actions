@@ -1,6 +1,6 @@
 services:
 
   web:
-    image: krmaryum/github-actions-app:latestS
+    image: krmaryum/github-actions-app:latest
     ports:
       - "80:80"
