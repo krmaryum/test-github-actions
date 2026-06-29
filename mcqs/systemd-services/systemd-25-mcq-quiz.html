@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>systemd MCQ Quiz - 25 Questions</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #f4f7fb, #e8eef7);
+      color: #1f2937;
+      line-height: 1.6;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 28px 18px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+
+    header p {
+      margin: 0;
+      color: #d1d5db;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 22px;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .dash-card {
+      background: white;
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      text-align: center;
+      border: 1px solid #e5e7eb;
+    }
+
+    .dash-label {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+
+    .dash-value {
+      font-size: 1.45rem;
+      font-weight: bold;
+      color: #111827;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 18px 0 24px;
+      justify-content: center;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.92;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    .question-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+    }
+
+    .question-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .question-number {
+      font-weight: bold;
+      color: #2563eb;
+    }
+
+    .status-pill {
+      font-size: 0.8rem;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #374151;
+      white-space: nowrap;
+    }
+
+    .status-pill.correct {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-pill.wrong {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    h3 {
+      margin: 8px 0 14px;
+      font-size: 1.12rem;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .option {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      cursor: pointer;
+      background: #f9fafb;
+      transition: 0.2s ease;
+    }
+
+    .option:hover {
+      background: #eef2ff;
+      border-color: #93c5fd;
+    }
+
+    .option.correct-answer {
+      background: #dcfce7;
+      border-color: #22c55e;
+    }
+
+    .option.wrong-answer {
+      background: #fee2e2;
+      border-color: #ef4444;
+    }
+
+    input[type="radio"] {
+      margin-top: 5px;
+    }
+
+    .explanation {
+      display: none;
+      margin-top: 14px;
+      padding: 12px;
+      background: #f8fafc;
+      border-left: 5px solid #2563eb;
+      border-radius: 10px;
+      color: #374151;
+    }
+
+    .result-box {
+      display: none;
+      background: white;
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 22px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      border: 1px solid #e5e7eb;
+    }
+
+    .result-box h2 {
+      margin-top: 0;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: #6b7280;
+      font-size: 0.95rem;
+      margin: 26px 0;
+    }
+
+    @media (max-width: 760px) {
+      .dashboard {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+      }
+
+      .container {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>systemd MCQ Quiz</h1>
+    <p>25 questions with answer checking, score, timer, and short explanations</p>
+  </header>
+
+  <main class="container">
+    <section class="dashboard">
+      <div class="dash-card">
+        <div class="dash-label">Total Questions</div>
+        <div class="dash-value">25</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">Answered</div>
+        <div class="dash-value" id="answeredCount">0</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">Score</div>
+        <div class="dash-value" id="scoreDisplay">0</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">Timer</div>
+        <div class="dash-value" id="timer">20:00</div>
+      </div>
+    </section>
+
+    <div class="controls">
+      <button class="btn-primary" onclick="checkAnswers()">Check Answers</button>
+      <button class="btn-secondary" onclick="showExplanations()">Show Explanations</button>
+      <button class="btn-danger" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <section class="result-box" id="resultBox">
+      <h2 id="resultTitle">Result</h2>
+      <p id="resultMessage"></p>
+    </section>
+
+    <section id="quiz">
+      
+      <div class="question-card" id="card0">
+        <div class="question-top">
+          <span class="question-number">Question 1</span>
+          <span class="status-pill" id="pill0">Not answered</span>
+        </div>
+        <h3>What is systemd in Linux?</h3>
+        <div class="options">
+          
+          <label class="option" for="q0_0">
+            <input type="radio" name="q0" id="q0_0" value="0">
+            <span>A text editor used to edit configuration files</span>
+          </label>
+        
+          <label class="option" for="q0_1">
+            <input type="radio" name="q0" id="q0_1" value="1">
+            <span>The main init system and service manager in many modern Linux distributions</span>
+          </label>
+        
+          <label class="option" for="q0_2">
+            <input type="radio" name="q0" id="q0_2" value="2">
+            <span>A package manager for installing software</span>
+          </label>
+        
+          <label class="option" for="q0_3">
+            <input type="radio" name="q0" id="q0_3" value="3">
+            <span>A firewall management tool</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain0">
+          <strong>Explanation:</strong> systemd is commonly used as PID 1 and manages services, boot targets, logs, timers, and many system processes.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card1">
+        <div class="question-top">
+          <span class="question-number">Question 2</span>
+          <span class="status-pill" id="pill1">Not answered</span>
+        </div>
+        <h3>Which command can show what process is running as PID 1?</h3>
+        <div class="options">
+          
+          <label class="option" for="q1_0">
+            <input type="radio" name="q1" id="q1_0" value="0">
+            <span>ps -p 1</span>
+          </label>
+        
+          <label class="option" for="q1_1">
+            <input type="radio" name="q1" id="q1_1" value="1">
+            <span>systemctl reload 1</span>
+          </label>
+        
+          <label class="option" for="q1_2">
+            <input type="radio" name="q1" id="q1_2" value="2">
+            <span>journalctl -p 1</span>
+          </label>
+        
+          <label class="option" for="q1_3">
+            <input type="radio" name="q1" id="q1_3" value="3">
+            <span>pidof kernel</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain1">
+          <strong>Explanation:</strong> The command ps -p 1 displays the process with PID 1. On many modern Linux systems, this is systemd.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card2">
+        <div class="question-top">
+          <span class="question-number">Question 3</span>
+          <span class="status-pill" id="pill2">Not answered</span>
+        </div>
+        <h3>What is the main purpose of systemctl?</h3>
+        <div class="options">
+          
+          <label class="option" for="q2_0">
+            <input type="radio" name="q2" id="q2_0" value="0">
+            <span>To edit files inside /etc</span>
+          </label>
+        
+          <label class="option" for="q2_1">
+            <input type="radio" name="q2" id="q2_1" value="1">
+            <span>To manage systemd units and services</span>
+          </label>
+        
+          <label class="option" for="q2_2">
+            <input type="radio" name="q2" id="q2_2" value="2">
+            <span>To create Linux users</span>
+          </label>
+        
+          <label class="option" for="q2_3">
+            <input type="radio" name="q2" id="q2_3" value="3">
+            <span>To scan open ports only</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain2">
+          <strong>Explanation:</strong> systemctl is the main command-line tool used to control systemd services and other unit types.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card3">
+        <div class="question-top">
+          <span class="question-number">Question 4</span>
+          <span class="status-pill" id="pill3">Not answered</span>
+        </div>
+        <h3>Which command starts nginx immediately?</h3>
+        <div class="options">
+          
+          <label class="option" for="q3_0">
+            <input type="radio" name="q3" id="q3_0" value="0">
+            <span>sudo systemctl enable nginx</span>
+          </label>
+        
+          <label class="option" for="q3_1">
+            <input type="radio" name="q3" id="q3_1" value="1">
+            <span>sudo systemctl start nginx</span>
+          </label>
+        
+          <label class="option" for="q3_2">
+            <input type="radio" name="q3" id="q3_2" value="2">
+            <span>sudo systemctl reload-daemon nginx</span>
+          </label>
+        
+          <label class="option" for="q3_3">
+            <input type="radio" name="q3" id="q3_3" value="3">
+            <span>sudo journalctl start nginx</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain3">
+          <strong>Explanation:</strong> start runs the service right now. enable only configures the service to start automatically at boot.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card4">
+        <div class="question-top">
+          <span class="question-number">Question 5</span>
+          <span class="status-pill" id="pill4">Not answered</span>
+        </div>
+        <h3>Which command makes nginx start automatically at boot?</h3>
+        <div class="options">
+          
+          <label class="option" for="q4_0">
+            <input type="radio" name="q4" id="q4_0" value="0">
+            <span>sudo systemctl start nginx</span>
+          </label>
+        
+          <label class="option" for="q4_1">
+            <input type="radio" name="q4" id="q4_1" value="1">
+            <span>sudo systemctl enable nginx</span>
+          </label>
+        
+          <label class="option" for="q4_2">
+            <input type="radio" name="q4" id="q4_2" value="2">
+            <span>sudo systemctl status nginx</span>
+          </label>
+        
+          <label class="option" for="q4_3">
+            <input type="radio" name="q4" id="q4_3" value="3">
+            <span>sudo systemctl reload nginx</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain4">
+          <strong>Explanation:</strong> enable creates the needed links so the service starts during boot.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card5">
+        <div class="question-top">
+          <span class="question-number">Question 6</span>
+          <span class="status-pill" id="pill5">Not answered</span>
+        </div>
+        <h3>What is the difference between start and enable?</h3>
+        <div class="options">
+          
+          <label class="option" for="q5_0">
+            <input type="radio" name="q5" id="q5_0" value="0">
+            <span>start runs now; enable starts at boot</span>
+          </label>
+        
+          <label class="option" for="q5_1">
+            <input type="radio" name="q5" id="q5_1" value="1">
+            <span>start starts at boot; enable runs now</span>
+          </label>
+        
+          <label class="option" for="q5_2">
+            <input type="radio" name="q5" id="q5_2" value="2">
+            <span>Both commands do exactly the same thing</span>
+          </label>
+        
+          <label class="option" for="q5_3">
+            <input type="radio" name="q5" id="q5_3" value="3">
+            <span>enable only checks logs</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain5">
+          <strong>Explanation:</strong> start affects the current session. enable affects future boot behavior.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card6">
+        <div class="question-top">
+          <span class="question-number">Question 7</span>
+          <span class="status-pill" id="pill6">Not answered</span>
+        </div>
+        <h3>Which command starts a service now and enables it at boot in one command?</h3>
+        <div class="options">
+          
+          <label class="option" for="q6_0">
+            <input type="radio" name="q6" id="q6_0" value="0">
+            <span>sudo systemctl enable --now nginx</span>
+          </label>
+        
+          <label class="option" for="q6_1">
+            <input type="radio" name="q6" id="q6_1" value="1">
+            <span>sudo systemctl start --boot nginx</span>
+          </label>
+        
+          <label class="option" for="q6_2">
+            <input type="radio" name="q6" id="q6_2" value="2">
+            <span>sudo systemctl daemon-reload nginx</span>
+          </label>
+        
+          <label class="option" for="q6_3">
+            <input type="radio" name="q6" id="q6_3" value="3">
+            <span>sudo journalctl --now nginx</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain6">
+          <strong>Explanation:</strong> enable --now enables the service for boot and starts it immediately.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card7">
+        <div class="question-top">
+          <span class="question-number">Question 8</span>
+          <span class="status-pill" id="pill7">Not answered</span>
+        </div>
+        <h3>Which command is used after creating or editing a systemd unit file?</h3>
+        <div class="options">
+          
+          <label class="option" for="q7_0">
+            <input type="radio" name="q7" id="q7_0" value="0">
+            <span>sudo systemctl daemon-reload</span>
+          </label>
+        
+          <label class="option" for="q7_1">
+            <input type="radio" name="q7" id="q7_1" value="1">
+            <span>sudo systemctl clear-cache</span>
+          </label>
+        
+          <label class="option" for="q7_2">
+            <input type="radio" name="q7" id="q7_2" value="2">
+            <span>sudo systemctl rebuild-kernel</span>
+          </label>
+        
+          <label class="option" for="q7_3">
+            <input type="radio" name="q7" id="q7_3" value="3">
+            <span>sudo journalctl refresh</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain7">
+          <strong>Explanation:</strong> daemon-reload tells systemd to reload unit file definitions.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card8">
+        <div class="question-top">
+          <span class="question-number">Question 9</span>
+          <span class="status-pill" id="pill8">Not answered</span>
+        </div>
+        <h3>Which command shows logs for the nginx service?</h3>
+        <div class="options">
+          
+          <label class="option" for="q8_0">
+            <input type="radio" name="q8" id="q8_0" value="0">
+            <span>sudo journalctl -u nginx</span>
+          </label>
+        
+          <label class="option" for="q8_1">
+            <input type="radio" name="q8" id="q8_1" value="1">
+            <span>sudo systemctl logs nginx</span>
+          </label>
+        
+          <label class="option" for="q8_2">
+            <input type="radio" name="q8" id="q8_2" value="2">
+            <span>sudo pslog nginx</span>
+          </label>
+        
+          <label class="option" for="q8_3">
+            <input type="radio" name="q8" id="q8_3" value="3">
+            <span>sudo nginx --journal</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain8">
+          <strong>Explanation:</strong> journalctl -u SERVICE shows logs for a specific systemd unit.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card9">
+        <div class="question-top">
+          <span class="question-number">Question 10</span>
+          <span class="status-pill" id="pill9">Not answered</span>
+        </div>
+        <h3>Which command follows service logs live?</h3>
+        <div class="options">
+          
+          <label class="option" for="q9_0">
+            <input type="radio" name="q9" id="q9_0" value="0">
+            <span>sudo journalctl -u nginx -f</span>
+          </label>
+        
+          <label class="option" for="q9_1">
+            <input type="radio" name="q9" id="q9_1" value="1">
+            <span>sudo systemctl status nginx -live</span>
+          </label>
+        
+          <label class="option" for="q9_2">
+            <input type="radio" name="q9" id="q9_2" value="2">
+            <span>sudo systemctl follow nginx</span>
+          </label>
+        
+          <label class="option" for="q9_3">
+            <input type="radio" name="q9" id="q9_3" value="3">
+            <span>sudo tailctl nginx</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain9">
+          <strong>Explanation:</strong> The -f option follows journal logs in real time.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card10">
+        <div class="question-top">
+          <span class="question-number">Question 11</span>
+          <span class="status-pill" id="pill10">Not answered</span>
+        </div>
+        <h3>Which systemd unit type is used to manage a background service?</h3>
+        <div class="options">
+          
+          <label class="option" for="q10_0">
+            <input type="radio" name="q10" id="q10_0" value="0">
+            <span>.service</span>
+          </label>
+        
+          <label class="option" for="q10_1">
+            <input type="radio" name="q10" id="q10_1" value="1">
+            <span>.target</span>
+          </label>
+        
+          <label class="option" for="q10_2">
+            <input type="radio" name="q10" id="q10_2" value="2">
+            <span>.timer</span>
+          </label>
+        
+          <label class="option" for="q10_3">
+            <input type="radio" name="q10" id="q10_3" value="3">
+            <span>.mount</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain10">
+          <strong>Explanation:</strong> .service units define how services start, stop, reload, and restart.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card11">
+        <div class="question-top">
+          <span class="question-number">Question 12</span>
+          <span class="status-pill" id="pill11">Not answered</span>
+        </div>
+        <h3>Which systemd unit type is used for scheduled jobs?</h3>
+        <div class="options">
+          
+          <label class="option" for="q11_0">
+            <input type="radio" name="q11" id="q11_0" value="0">
+            <span>.socket</span>
+          </label>
+        
+          <label class="option" for="q11_1">
+            <input type="radio" name="q11" id="q11_1" value="1">
+            <span>.timer</span>
+          </label>
+        
+          <label class="option" for="q11_2">
+            <input type="radio" name="q11" id="q11_2" value="2">
+            <span>.path</span>
+          </label>
+        
+          <label class="option" for="q11_3">
+            <input type="radio" name="q11" id="q11_3" value="3">
+            <span>.target</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain11">
+          <strong>Explanation:</strong> .timer units are used to schedule service execution, similar to cron in some cases.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card12">
+        <div class="question-top">
+          <span class="question-number">Question 13</span>
+          <span class="status-pill" id="pill12">Not answered</span>
+        </div>
+        <h3>Which systemd unit type represents a system state or group of units?</h3>
+        <div class="options">
+          
+          <label class="option" for="q12_0">
+            <input type="radio" name="q12" id="q12_0" value="0">
+            <span>.target</span>
+          </label>
+        
+          <label class="option" for="q12_1">
+            <input type="radio" name="q12" id="q12_1" value="1">
+            <span>.service</span>
+          </label>
+        
+          <label class="option" for="q12_2">
+            <input type="radio" name="q12" id="q12_2" value="2">
+            <span>.swap</span>
+          </label>
+        
+          <label class="option" for="q12_3">
+            <input type="radio" name="q12" id="q12_3" value="3">
+            <span>.slice</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain12">
+          <strong>Explanation:</strong> A target groups units together and represents states like multi-user mode or graphical mode.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card13">
+        <div class="question-top">
+          <span class="question-number">Question 14</span>
+          <span class="status-pill" id="pill13">Not answered</span>
+        </div>
+        <h3>Which section of a service file usually contains ExecStart?</h3>
+        <div class="options">
+          
+          <label class="option" for="q13_0">
+            <input type="radio" name="q13" id="q13_0" value="0">
+            <span>[Unit]</span>
+          </label>
+        
+          <label class="option" for="q13_1">
+            <input type="radio" name="q13" id="q13_1" value="1">
+            <span>[Service]</span>
+          </label>
+        
+          <label class="option" for="q13_2">
+            <input type="radio" name="q13" id="q13_2" value="2">
+            <span>[Install]</span>
+          </label>
+        
+          <label class="option" for="q13_3">
+            <input type="radio" name="q13" id="q13_3" value="3">
+            <span>[Timer]</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain13">
+          <strong>Explanation:</strong> The [Service] section tells systemd how to start, stop, and manage the service process.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card14">
+        <div class="question-top">
+          <span class="question-number">Question 15</span>
+          <span class="status-pill" id="pill14">Not answered</span>
+        </div>
+        <h3>What does ExecStart define?</h3>
+        <div class="options">
+          
+          <label class="option" for="q14_0">
+            <input type="radio" name="q14" id="q14_0" value="0">
+            <span>The command used to start the service</span>
+          </label>
+        
+          <label class="option" for="q14_1">
+            <input type="radio" name="q14" id="q14_1" value="1">
+            <span>The boot target only</span>
+          </label>
+        
+          <label class="option" for="q14_2">
+            <input type="radio" name="q14" id="q14_2" value="2">
+            <span>The service log location only</span>
+          </label>
+        
+          <label class="option" for="q14_3">
+            <input type="radio" name="q14" id="q14_3" value="3">
+            <span>The user password</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain14">
+          <strong>Explanation:</strong> ExecStart specifies the exact command or program systemd runs to start the service.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card15">
+        <div class="question-top">
+          <span class="question-number">Question 16</span>
+          <span class="status-pill" id="pill15">Not answered</span>
+        </div>
+        <h3>What does WantedBy=multi-user.target usually mean in the [Install] section?</h3>
+        <div class="options">
+          
+          <label class="option" for="q15_0">
+            <input type="radio" name="q15" id="q15_0" value="0">
+            <span>Start this service when the system reaches multi-user mode, if enabled</span>
+          </label>
+        
+          <label class="option" for="q15_1">
+            <input type="radio" name="q15" id="q15_1" value="1">
+            <span>Only root can run this command manually</span>
+          </label>
+        
+          <label class="option" for="q15_2">
+            <input type="radio" name="q15" id="q15_2" value="2">
+            <span>The service must never start at boot</span>
+          </label>
+        
+          <label class="option" for="q15_3">
+            <input type="radio" name="q15" id="q15_3" value="3">
+            <span>The service is a graphical desktop application only</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain15">
+          <strong>Explanation:</strong> WantedBy controls where the service is linked when enabled. multi-user.target is common for server services.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card16">
+        <div class="question-top">
+          <span class="question-number">Question 17</span>
+          <span class="status-pill" id="pill16">Not answered</span>
+        </div>
+        <h3>Where should an administrator usually place a custom systemd unit file?</h3>
+        <div class="options">
+          
+          <label class="option" for="q16_0">
+            <input type="radio" name="q16" id="q16_0" value="0">
+            <span>/etc/systemd/system/</span>
+          </label>
+        
+          <label class="option" for="q16_1">
+            <input type="radio" name="q16" id="q16_1" value="1">
+            <span>/tmp/systemd/</span>
+          </label>
+        
+          <label class="option" for="q16_2">
+            <input type="radio" name="q16" id="q16_2" value="2">
+            <span>/home/systemd/</span>
+          </label>
+        
+          <label class="option" for="q16_3">
+            <input type="radio" name="q16" id="q16_3" value="3">
+            <span>/var/log/systemd/</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain16">
+          <strong>Explanation:</strong> /etc/systemd/system/ is commonly used for admin-created or customized unit files.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card17">
+        <div class="question-top">
+          <span class="question-number">Question 18</span>
+          <span class="status-pill" id="pill17">Not answered</span>
+        </div>
+        <h3>Which command shows the current default target?</h3>
+        <div class="options">
+          
+          <label class="option" for="q17_0">
+            <input type="radio" name="q17" id="q17_0" value="0">
+            <span>systemctl get-default</span>
+          </label>
+        
+          <label class="option" for="q17_1">
+            <input type="radio" name="q17" id="q17_1" value="1">
+            <span>systemctl target-current</span>
+          </label>
+        
+          <label class="option" for="q17_2">
+            <input type="radio" name="q17" id="q17_2" value="2">
+            <span>journalctl get-target</span>
+          </label>
+        
+          <label class="option" for="q17_3">
+            <input type="radio" name="q17" id="q17_3" value="3">
+            <span>targetctl show</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain17">
+          <strong>Explanation:</strong> systemctl get-default shows whether the system normally boots into multi-user.target, graphical.target, etc.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card18">
+        <div class="question-top">
+          <span class="question-number">Question 19</span>
+          <span class="status-pill" id="pill18">Not answered</span>
+        </div>
+        <h3>Which target is commonly used for command-line multi-user server mode?</h3>
+        <div class="options">
+          
+          <label class="option" for="q18_0">
+            <input type="radio" name="q18" id="q18_0" value="0">
+            <span>multi-user.target</span>
+          </label>
+        
+          <label class="option" for="q18_1">
+            <input type="radio" name="q18" id="q18_1" value="1">
+            <span>graphical.target</span>
+          </label>
+        
+          <label class="option" for="q18_2">
+            <input type="radio" name="q18" id="q18_2" value="2">
+            <span>poweroff.target</span>
+          </label>
+        
+          <label class="option" for="q18_3">
+            <input type="radio" name="q18" id="q18_3" value="3">
+            <span>reboot.target</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain18">
+          <strong>Explanation:</strong> multi-user.target is used for multi-user CLI mode and is common on servers.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card19">
+        <div class="question-top">
+          <span class="question-number">Question 20</span>
+          <span class="status-pill" id="pill19">Not answered</span>
+        </div>
+        <h3>Which target is commonly used for GUI mode?</h3>
+        <div class="options">
+          
+          <label class="option" for="q19_0">
+            <input type="radio" name="q19" id="q19_0" value="0">
+            <span>graphical.target</span>
+          </label>
+        
+          <label class="option" for="q19_1">
+            <input type="radio" name="q19" id="q19_1" value="1">
+            <span>rescue.target</span>
+          </label>
+        
+          <label class="option" for="q19_2">
+            <input type="radio" name="q19" id="q19_2" value="2">
+            <span>basic.target</span>
+          </label>
+        
+          <label class="option" for="q19_3">
+            <input type="radio" name="q19" id="q19_3" value="3">
+            <span>timers.target</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain19">
+          <strong>Explanation:</strong> graphical.target includes multi-user services plus graphical display/login components.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card20">
+        <div class="question-top">
+          <span class="question-number">Question 21</span>
+          <span class="status-pill" id="pill20">Not answered</span>
+        </div>
+        <h3>What does Active: active (running) mean in systemctl status?</h3>
+        <div class="options">
+          
+          <label class="option" for="q20_0">
+            <input type="radio" name="q20" id="q20_0" value="0">
+            <span>The service is currently running</span>
+          </label>
+        
+          <label class="option" for="q20_1">
+            <input type="radio" name="q20" id="q20_1" value="1">
+            <span>The service is disabled at boot</span>
+          </label>
+        
+          <label class="option" for="q20_2">
+            <input type="radio" name="q20" id="q20_2" value="2">
+            <span>The service configuration is missing</span>
+          </label>
+        
+          <label class="option" for="q20_3">
+            <input type="radio" name="q20" id="q20_3" value="3">
+            <span>The service is masked</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain20">
+          <strong>Explanation:</strong> active (running) means the service process is currently running successfully.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card21">
+        <div class="question-top">
+          <span class="question-number">Question 22</span>
+          <span class="status-pill" id="pill21">Not answered</span>
+        </div>
+        <h3>What does a masked service mean?</h3>
+        <div class="options">
+          
+          <label class="option" for="q21_0">
+            <input type="radio" name="q21" id="q21_0" value="0">
+            <span>The service is completely blocked from starting</span>
+          </label>
+        
+          <label class="option" for="q21_1">
+            <input type="radio" name="q21" id="q21_1" value="1">
+            <span>The service is running in background only</span>
+          </label>
+        
+          <label class="option" for="q21_2">
+            <input type="radio" name="q21" id="q21_2" value="2">
+            <span>The service starts every minute</span>
+          </label>
+        
+          <label class="option" for="q21_3">
+            <input type="radio" name="q21" id="q21_3" value="3">
+            <span>The service logs are hidden</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain21">
+          <strong>Explanation:</strong> Masking links the unit to /dev/null and prevents it from being started until it is unmasked.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card22">
+        <div class="question-top">
+          <span class="question-number">Question 23</span>
+          <span class="status-pill" id="pill22">Not answered</span>
+        </div>
+        <h3>Which command checks whether a service is enabled at boot?</h3>
+        <div class="options">
+          
+          <label class="option" for="q22_0">
+            <input type="radio" name="q22" id="q22_0" value="0">
+            <span>systemctl is-enabled nginx</span>
+          </label>
+        
+          <label class="option" for="q22_1">
+            <input type="radio" name="q22" id="q22_1" value="1">
+            <span>systemctl is-active nginx</span>
+          </label>
+        
+          <label class="option" for="q22_2">
+            <input type="radio" name="q22" id="q22_2" value="2">
+            <span>journalctl is-enabled nginx</span>
+          </label>
+        
+          <label class="option" for="q22_3">
+            <input type="radio" name="q22" id="q22_3" value="3">
+            <span>ps -p nginx</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain22">
+          <strong>Explanation:</strong> is-enabled checks boot enablement. is-active checks current running state.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card23">
+        <div class="question-top">
+          <span class="question-number">Question 24</span>
+          <span class="status-pill" id="pill23">Not answered</span>
+        </div>
+        <h3>Which command checks whether a service is currently active?</h3>
+        <div class="options">
+          
+          <label class="option" for="q23_0">
+            <input type="radio" name="q23" id="q23_0" value="0">
+            <span>systemctl is-active nginx</span>
+          </label>
+        
+          <label class="option" for="q23_1">
+            <input type="radio" name="q23" id="q23_1" value="1">
+            <span>systemctl is-enabled nginx</span>
+          </label>
+        
+          <label class="option" for="q23_2">
+            <input type="radio" name="q23" id="q23_2" value="2">
+            <span>systemctl get-active-target nginx</span>
+          </label>
+        
+          <label class="option" for="q23_3">
+            <input type="radio" name="q23" id="q23_3" value="3">
+            <span>journalctl active nginx</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain23">
+          <strong>Explanation:</strong> is-active tells whether a unit is currently active/running.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card24">
+        <div class="question-top">
+          <span class="question-number">Question 25</span>
+          <span class="status-pill" id="pill24">Not answered</span>
+        </div>
+        <h3>What is a good first troubleshooting step when a service fails?</h3>
+        <div class="options">
+          
+          <label class="option" for="q24_0">
+            <input type="radio" name="q24" id="q24_0" value="0">
+            <span>Check systemctl status and journalctl logs</span>
+          </label>
+        
+          <label class="option" for="q24_1">
+            <input type="radio" name="q24" id="q24_1" value="1">
+            <span>Delete the service file immediately</span>
+          </label>
+        
+          <label class="option" for="q24_2">
+            <input type="radio" name="q24" id="q24_2" value="2">
+            <span>Reinstall the entire operating system</span>
+          </label>
+        
+          <label class="option" for="q24_3">
+            <input type="radio" name="q24" id="q24_3" value="3">
+            <span>Disable all services</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain24">
+          <strong>Explanation:</strong> A good troubleshooting flow starts with systemctl status and journalctl logs to understand the failure reason.
+        </div>
+      </div>
+    
+    </section>
+
+    <div class="controls">
+      <button class="btn-primary" onclick="checkAnswers()">Check Answers</button>
+      <button class="btn-secondary" onclick="showExplanations()">Show Explanations</button>
+      <button class="btn-danger" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <p class="footer-note">
+      Study Tip: First try without checking answers, then review explanations and practice commands in your Linux lab.
+    </p>
+  </main>
+
+  <script>
+    const answers = [1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    const totalQuestions = answers.length;
+    let totalSeconds = 20 * 60;
+    let timerInterval;
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        if (totalSeconds <= 0) {
+          clearInterval(timerInterval);
+          checkAnswers();
+          return;
+        }
+        totalSeconds--;
+        updateTimer();
+      }, 1000);
+    }
+
+    function updateTimer() {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      document.getElementById("timer").textContent =
+        String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+    }
+
+    function updateAnsweredCount() {
+      let answered = 0;
+      for (let i = 0; i < totalQuestions; i++) {
+        if (document.querySelector(`input[name="q${i}"]:checked`)) {
+          answered++;
+        }
+      }
+      document.getElementById("answeredCount").textContent = answered;
+    }
+
+    document.addEventListener("change", updateAnsweredCount);
+
+    function checkAnswers() {
+      let score = 0;
+
+      for (let i = 0; i < totalQuestions; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const options = document.querySelectorAll(`input[name="q${i}"]`);
+        const pill = document.getElementById(`pill${i}`);
+        const explanation = document.getElementById(`explain${i}`);
+
+        options.forEach((input) => {
+          input.parentElement.classList.remove("correct-answer", "wrong-answer");
+        });
+
+        options[answers[i]].parentElement.classList.add("correct-answer");
+
+        if (selected) {
+          if (parseInt(selected.value) === answers[i]) {
+            score++;
+            pill.textContent = "Correct";
+            pill.className = "status-pill correct";
+          } else {
+            selected.parentElement.classList.add("wrong-answer");
+            pill.textContent = "Wrong";
+            pill.className = "status-pill wrong";
+          }
+        } else {
+          pill.textContent = "Not answered";
+          pill.className = "status-pill wrong";
+        }
+
+        explanation.style.display = "block";
+      }
+
+      document.getElementById("scoreDisplay").textContent = score + "/" + totalQuestions;
+      const percentage = Math.round((score / totalQuestions) * 100);
+      const resultBox = document.getElementById("resultBox");
+      const resultTitle = document.getElementById("resultTitle");
+      const resultMessage = document.getElementById("resultMessage");
+
+      resultBox.style.display = "block";
+      resultTitle.textContent = `Your Score: ${score}/${totalQuestions} (${percentage}%)`;
+
+      if (percentage >= 90) {
+        resultMessage.textContent = "Excellent work. You have strong understanding of systemd.";
+      } else if (percentage >= 75) {
+        resultMessage.textContent = "Good job. Review the explanations for the missed questions.";
+      } else if (percentage >= 50) {
+        resultMessage.textContent = "Nice effort. Practice systemctl and journalctl commands again.";
+      } else {
+        resultMessage.textContent = "Keep practicing. Focus on start vs enable, unit files, logs, and targets.";
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showExplanations() {
+      for (let i = 0; i < totalQuestions; i++) {
+        document.getElementById(`explain${i}`).style.display = "block";
+      }
+    }
+
+    function resetQuiz() {
+      const allInputs = document.querySelectorAll("input[type='radio']");
+      allInputs.forEach(input => {
+        input.checked = false;
+        input.parentElement.classList.remove("correct-answer", "wrong-answer");
+      });
+
+      for (let i = 0; i < totalQuestions; i++) {
+        const pill = document.getElementById(`pill${i}`);
+        pill.textContent = "Not answered";
+        pill.className = "status-pill";
+        document.getElementById(`explain${i}`).style.display = "none";
+      }
+
+      document.getElementById("answeredCount").textContent = "0";
+      document.getElementById("scoreDisplay").textContent = "0";
+      document.getElementById("resultBox").style.display = "none";
+
+      totalSeconds = 20 * 60;
+      updateTimer();
+      clearInterval(timerInterval);
+      startTimer();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    updateTimer();
+    startTimer();
+  </script>
+</body>
+</html>

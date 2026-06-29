@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cron Email with msmtp MCQ Quiz - 25 Questions</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #f8fafc, #eef2ff);
+      color: #1f2937;
+      line-height: 1.6;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 30px 18px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+
+    header p {
+      margin: 0;
+      color: #d1d5db;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 22px;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .dash-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .dash-label {
+      color: #6b7280;
+      font-size: 0.88rem;
+      margin-bottom: 6px;
+    }
+
+    .dash-value {
+      font-size: 1.45rem;
+      font-weight: bold;
+      color: #111827;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin: 18px 0 24px;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.92;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    .result-box {
+      display: none;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 22px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .question-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+    }
+
+    .question-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .question-number {
+      font-weight: bold;
+      color: #2563eb;
+    }
+
+    .status-pill {
+      font-size: 0.8rem;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #374151;
+      white-space: nowrap;
+    }
+
+    .status-pill.correct {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-pill.wrong {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    h3 {
+      margin: 8px 0 14px;
+      font-size: 1.12rem;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .option {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      cursor: pointer;
+      background: #f9fafb;
+      transition: 0.2s ease;
+    }
+
+    .option:hover {
+      background: #eef2ff;
+      border-color: #93c5fd;
+    }
+
+    .option.correct-answer {
+      background: #dcfce7;
+      border-color: #22c55e;
+    }
+
+    .option.wrong-answer {
+      background: #fee2e2;
+      border-color: #ef4444;
+    }
+
+    input[type="radio"] {
+      margin-top: 5px;
+    }
+
+    .explanation {
+      display: none;
+      margin-top: 14px;
+      padding: 12px;
+      background: #f8fafc;
+      border-left: 5px solid #2563eb;
+      border-radius: 10px;
+      color: #374151;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: #6b7280;
+      font-size: 0.95rem;
+      margin: 26px 0;
+    }
+
+    code {
+      background: #f3f4f6;
+      padding: 2px 5px;
+      border-radius: 5px;
+    }
+
+    @media (max-width: 760px) {
+      .dashboard {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      header h1 {
+        font-size: 1.45rem;
+      }
+
+      .container {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Cron Email with msmtp MCQ Quiz</h1>
+    <p>25 questions with shuffled answers, score, timer, and short explanations</p>
+  </header>
+
+  <main class="container">
+    <section class="dashboard">
+      <div class="dash-card">
+        <div class="dash-label">Total Questions</div>
+        <div class="dash-value">25</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">Answered</div>
+        <div class="dash-value" id="answeredCount">0</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">Score</div>
+        <div class="dash-value" id="scoreDisplay">0</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">Timer</div>
+        <div class="dash-value" id="timer">20:00</div>
+      </div>
+    </section>
+
+    <div class="controls">
+      <button class="btn-primary" onclick="checkAnswers()">Check Answers</button>
+      <button class="btn-secondary" onclick="showExplanations()">Show Explanations</button>
+      <button class="btn-danger" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <section class="result-box" id="resultBox">
+      <h2 id="resultTitle">Result</h2>
+      <p id="resultMessage"></p>
+    </section>
+
+    <section id="quiz">
+      
+      <div class="question-card" id="card0">
+        <div class="question-top">
+          <span class="question-number">Question 1</span>
+          <span class="status-pill" id="pill0">Not answered</span>
+        </div>
+        <h3>What is the main purpose of configuring msmtp with cron?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q0" value="0">
+            <span>To make cron jobs run faster</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q0" value="1">
+            <span>To allow cron jobs to send email notifications through an SMTP server</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q0" value="2">
+            <span>To replace the Linux kernel scheduler</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q0" value="3">
+            <span>To create new Gmail accounts automatically</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain0">
+          <strong>Explanation:</strong> msmtp acts as an SMTP client so cron/mail output can be delivered to an external inbox such as Gmail.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card1">
+        <div class="question-top">
+          <span class="question-number">Question 2</span>
+          <span class="status-pill" id="pill1">Not answered</span>
+        </div>
+        <h3>What does MAILTO do inside a crontab?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q1" value="0">
+            <span>It changes the system hostname</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q1" value="1">
+            <span>It installs the mail command</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q1" value="2">
+            <span>It disables cron jobs permanently</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q1" value="3">
+            <span>It sets the email address where cron sends job output</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain1">
+          <strong>Explanation:</strong> MAILTO tells cron where to send output generated by cron jobs.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card2">
+        <div class="question-top">
+          <span class="question-number">Question 3</span>
+          <span class="status-pill" id="pill2">Not answered</span>
+        </div>
+        <h3>Which password should be used for Gmail SMTP with msmtp?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q2" value="0">
+            <span>Google App Password</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q2" value="1">
+            <span>Normal Gmail login password</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q2" value="2">
+            <span>Linux root password</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q2" value="3">
+            <span>SSH private key password</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain2">
+          <strong>Explanation:</strong> For Gmail SMTP, use a Google App Password, not your normal Gmail password.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card3">
+        <div class="question-top">
+          <span class="question-number">Question 4</span>
+          <span class="status-pill" id="pill3">Not answered</span>
+        </div>
+        <h3>What must usually be enabled before creating a Google App Password?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q3" value="0">
+            <span>Guest mode</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q3" value="1">
+            <span>Browser sync</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q3" value="2">
+            <span>2-Step Verification</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q3" value="3">
+            <span>Google Drive offline mode</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain3">
+          <strong>Explanation:</strong> Google App Passwords require 2-Step Verification to be enabled on the Google Account.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card4">
+        <div class="question-top">
+          <span class="question-number">Question 5</span>
+          <span class="status-pill" id="pill4">Not answered</span>
+        </div>
+        <h3>Which file is commonly used for system-wide msmtp configuration?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q4" value="0">
+            <span>/etc/crontab.conf</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q4" value="1">
+            <span>/etc/msmtprc</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q4" value="2">
+            <span>/var/log/msmtp.conf</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q4" value="3">
+            <span>/home/msmtp/config</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain4">
+          <strong>Explanation:</strong> The system-wide msmtp configuration file is commonly `/etc/msmtprc`.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card5">
+        <div class="question-top">
+          <span class="question-number">Question 6</span>
+          <span class="status-pill" id="pill5">Not answered</span>
+        </div>
+        <h3>Which file can be used for user-specific msmtp configuration?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q5" value="0">
+            <span>~/.msmtprc</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q5" value="1">
+            <span>~/.crontabrc</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q5" value="2">
+            <span>~/mail.conf</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q5" value="3">
+            <span>~/smtp.log</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain5">
+          <strong>Explanation:</strong> A user-specific msmtp configuration can be stored in `~/.msmtprc`.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card6">
+        <div class="question-top">
+          <span class="question-number">Question 7</span>
+          <span class="status-pill" id="pill6">Not answered</span>
+        </div>
+        <h3>Which command secures `/etc/msmtprc` so only the owner can read and write it?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q6" value="0">
+            <span>sudo chmod 777 /etc/msmtprc</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q6" value="1">
+            <span>sudo chmod 000 /etc/msmtprc</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q6" value="2">
+            <span>sudo chmod +x /etc/msmtprc</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q6" value="3">
+            <span>sudo chmod 600 /etc/msmtprc</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain6">
+          <strong>Explanation:</strong> `chmod 600` allows only the file owner to read and write the file.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card7">
+        <div class="question-top">
+          <span class="question-number">Question 8</span>
+          <span class="status-pill" id="pill7">Not answered</span>
+        </div>
+        <h3>Why should `/etc/msmtprc` be protected?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q7" value="0">
+            <span>It contains kernel modules</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q7" value="1">
+            <span>It stores user home directories</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q7" value="2">
+            <span>It contains the Gmail App Password</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q7" value="3">
+            <span>It stores Docker images</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain7">
+          <strong>Explanation:</strong> The msmtp config contains sensitive SMTP credentials, so permissions should be strict.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card8">
+        <div class="question-top">
+          <span class="question-number">Question 9</span>
+          <span class="status-pill" id="pill8">Not answered</span>
+        </div>
+        <h3>Which command creates the msmtp log file if it does not exist?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q8" value="0">
+            <span>sudo mkdir /var/log/msmtp.log</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q8" value="1">
+            <span>sudo touch /var/log/msmtp.log</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q8" value="2">
+            <span>sudo chmod /var/log/msmtp.log</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q8" value="3">
+            <span>sudo cron /var/log/msmtp.log</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain8">
+          <strong>Explanation:</strong> `touch` creates the file if it does not exist.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card9">
+        <div class="question-top">
+          <span class="question-number">Question 10</span>
+          <span class="status-pill" id="pill9">Not answered</span>
+        </div>
+        <h3>Which command tests msmtp directly with a subject line?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q9" value="0">
+            <span>mail status msmtp</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q9" value="1">
+            <span>cron --test-email user@gmail.com</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q9" value="2">
+            <span>systemctl test msmtp user@gmail.com</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q9" value="3">
+            <span>printf &quot;Subject: msmtp direct test\n\nTest email\n&quot; | msmtp user@gmail.com</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain9">
+          <strong>Explanation:</strong> Using `printf` with a Subject header and piping to msmtp is a direct SMTP test.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card10">
+        <div class="question-top">
+          <span class="question-number">Question 11</span>
+          <span class="status-pill" id="pill10">Not answered</span>
+        </div>
+        <h3>What does this error mean: `mail: cannot send message: Process exited with a non-zero status`?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q10" value="0">
+            <span>The mail command attempted to send, but the mail sending process failed</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q10" value="1">
+            <span>The email was definitely delivered successfully</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q10" value="2">
+            <span>Cron is disabled permanently</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q10" value="3">
+            <span>The system has no users</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain10">
+          <strong>Explanation:</strong> This means the mail-sending backend failed. You should check msmtp logs and sendmail linkage.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card11">
+        <div class="question-top">
+          <span class="question-number">Question 12</span>
+          <span class="status-pill" id="pill11">Not answered</span>
+        </div>
+        <h3>Which command helps check msmtp errors?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q11" value="0">
+            <span>cat /etc/passwd</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q11" value="1">
+            <span>df -h</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q11" value="2">
+            <span>cat /var/log/msmtp.log</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q11" value="3">
+            <span>lsblk</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain11">
+          <strong>Explanation:</strong> `/var/log/msmtp.log` stores msmtp log messages if configured.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card12">
+        <div class="question-top">
+          <span class="question-number">Question 13</span>
+          <span class="status-pill" id="pill12">Not answered</span>
+        </div>
+        <h3>Which command checks whether `/usr/sbin/sendmail` points to msmtp?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q12" value="0">
+            <span>hostnamectl</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q12" value="1">
+            <span>readlink -f /usr/sbin/sendmail</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q12" value="2">
+            <span>crontab -e</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q12" value="3">
+            <span>lsblk -f</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain12">
+          <strong>Explanation:</strong> `readlink -f /usr/sbin/sendmail` shows the real target of the sendmail compatibility path.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card13">
+        <div class="question-top">
+          <span class="question-number">Question 14</span>
+          <span class="status-pill" id="pill13">Not answered</span>
+        </div>
+        <h3>What does `account default : gmail` mean in `/etc/msmtprc`?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q13" value="0">
+            <span>Create a new Gmail account</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q13" value="1">
+            <span>Delete the Gmail account</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q13" value="2">
+            <span>Disable SMTP authentication</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q13" value="3">
+            <span>Use the gmail account block as the default msmtp account</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain13">
+          <strong>Explanation:</strong> It tells msmtp to use the configured `gmail` account by default.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card14">
+        <div class="question-top">
+          <span class="question-number">Question 15</span>
+          <span class="status-pill" id="pill14">Not answered</span>
+        </div>
+        <h3>Which SMTP host is used for Gmail in this lab?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q14" value="0">
+            <span>smtp.gmail.com</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q14" value="1">
+            <span>mail.localhost</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q14" value="2">
+            <span>imap.gmail.com</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q14" value="3">
+            <span>github.com</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain14">
+          <strong>Explanation:</strong> Gmail SMTP uses `smtp.gmail.com`.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card15">
+        <div class="question-top">
+          <span class="question-number">Question 16</span>
+          <span class="status-pill" id="pill15">Not answered</span>
+        </div>
+        <h3>Which SMTP port was used for Gmail TLS submission in this lab?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q15" value="0">
+            <span>22</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q15" value="1">
+            <span>80</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q15" value="2">
+            <span>587</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q15" value="3">
+            <span>443</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain15">
+          <strong>Explanation:</strong> Port 587 is commonly used for SMTP submission with STARTTLS.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card16">
+        <div class="question-top">
+          <span class="question-number">Question 17</span>
+          <span class="status-pill" id="pill16">Not answered</span>
+        </div>
+        <h3>What happens if cron output is redirected using `&gt;&gt; logfile 2&gt;&amp;1`?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q16" value="0">
+            <span>Cron sends two emails every minute</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q16" value="1">
+            <span>Output and errors go to the log file instead of being emailed by cron</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q16" value="2">
+            <span>The script is deleted</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q16" value="3">
+            <span>The system timezone changes</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain16">
+          <strong>Explanation:</strong> Redirection sends stdout and stderr to the log file, so cron may have no output left to email.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card17">
+        <div class="question-top">
+          <span class="question-number">Question 18</span>
+          <span class="status-pill" id="pill17">Not answered</span>
+        </div>
+        <h3>What does `MAILTO=&quot;&quot;` mean?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q17" value="0">
+            <span>Send email to root only</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q17" value="1">
+            <span>Use Gmail automatically</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q17" value="2">
+            <span>Restart cron</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q17" value="3">
+            <span>Disable cron email output</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain17">
+          <strong>Explanation:</strong> An empty MAILTO disables cron email for that crontab.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card18">
+        <div class="question-top">
+          <span class="question-number">Question 19</span>
+          <span class="status-pill" id="pill18">Not answered</span>
+        </div>
+        <h3>Which cron entry sends email every minute if the command produces output?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q18" value="0">
+            <span>* * * * * echo &quot;Hello from cron at $(date)&quot;</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q18" value="1">
+            <span>0 2 * * * /opt/scripts/backup.sh &gt;&gt; /var/log/backup.log 2&gt;&amp;1</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q18" value="2">
+            <span># * * * * * echo &quot;Hello&quot;</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q18" value="3">
+            <span>MAILTO=&quot;&quot;</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain18">
+          <strong>Explanation:</strong> This command runs every minute and prints output, so cron can email that output if MAILTO is set.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card19">
+        <div class="question-top">
+          <span class="question-number">Question 20</span>
+          <span class="status-pill" id="pill19">Not answered</span>
+        </div>
+        <h3>Why should you remove or comment the every-minute test cron job after testing?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q19" value="0">
+            <span>It will uninstall msmtp</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q19" value="1">
+            <span>It will disable Gmail</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q19" value="2">
+            <span>It will keep sending email every minute</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q19" value="3">
+            <span>It will delete /etc/msmtprc</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain19">
+          <strong>Explanation:</strong> The test job runs every minute, so leaving it active will flood your inbox.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card20">
+        <div class="question-top">
+          <span class="question-number">Question 21</span>
+          <span class="status-pill" id="pill20">Not answered</span>
+        </div>
+        <h3>Which cron style is best when you want logs only and no email?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q20" value="0">
+            <span>MAILTO=&quot;email&quot; with no command</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q20" value="1">
+            <span>MAILTO=&quot;&quot; and redirect output with `&gt;&gt; logfile 2&gt;&amp;1`</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q20" value="2">
+            <span>Delete cron service</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q20" value="3">
+            <span>Use normal Gmail password</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain20">
+          <strong>Explanation:</strong> Set `MAILTO=&quot;&quot;` to disable email and redirect output/errors to a log file.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card21">
+        <div class="question-top">
+          <span class="question-number">Question 22</span>
+          <span class="status-pill" id="pill21">Not answered</span>
+        </div>
+        <h3>Which method can send output to both a log file and cron email?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q21" value="0">
+            <span>Use `chmod 777`</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q21" value="1">
+            <span>Use `rm -rf`</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q21" value="2">
+            <span>Use `lsblk`</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q21" value="3">
+            <span>Use `tee -a`</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain21">
+          <strong>Explanation:</strong> `tee -a` writes output to a file and also passes it along, allowing cron to email it.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card22">
+        <div class="question-top">
+          <span class="question-number">Question 23</span>
+          <span class="status-pill" id="pill22">Not answered</span>
+        </div>
+        <h3>Which command tests the `mail` command after msmtp direct testing works?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q22" value="0">
+            <span>mail --install gmail</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q22" value="1">
+            <span>crontab -r</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q22" value="2">
+            <span>echo &quot;Hello from mail command&quot; | mail -s &quot;Mail Test&quot; user@gmail.com</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q22" value="3">
+            <span>systemctl restart gmail</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain22">
+          <strong>Explanation:</strong> This sends a test email using the `mail` command with a subject.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card23">
+        <div class="question-top">
+          <span class="question-number">Question 24</span>
+          <span class="status-pill" id="pill23">Not answered</span>
+        </div>
+        <h3>Which command edits the user&#x27;s crontab to set MAILTO?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q23" value="0">
+            <span>crontab -e</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q23" value="1">
+            <span>sudo vim /etc/msmtprc</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q23" value="2">
+            <span>cat /var/log/msmtp.log</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q23" value="3">
+            <span>which msmtp</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain23">
+          <strong>Explanation:</strong> `crontab -e` edits the current user&#x27;s crontab where MAILTO can be set.
+        </div>
+      </div>
+    
+      <div class="question-card" id="card24">
+        <div class="question-top">
+          <span class="question-number">Question 25</span>
+          <span class="status-pill" id="pill24">Not answered</span>
+        </div>
+        <h3>What proved the lab was successful?</h3>
+        <div class="options">
+          
+          <label class="option">
+            <input type="radio" name="q24" value="0">
+            <span>The system rebooted</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q24" value="1">
+            <span>Emails arrived from msmtp direct test, mail command test, and cron MAILTO test</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q24" value="2">
+            <span>The App Password was pasted into chat</span>
+          </label>
+        
+          <label class="option">
+            <input type="radio" name="q24" value="3">
+            <span>The backup script was deleted</span>
+          </label>
+        
+        </div>
+        <div class="explanation" id="explain24">
+          <strong>Explanation:</strong> Receiving all three emails proves Gmail SMTP, msmtp, mail, and cron MAILTO are working.
+        </div>
+      </div>
+    
+    </section>
+
+    <div class="controls">
+      <button class="btn-primary" onclick="checkAnswers()">Check Answers</button>
+      <button class="btn-secondary" onclick="showExplanations()">Show Explanations</button>
+      <button class="btn-danger" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <p class="footer-note">
+      Study Tip: Never share your Gmail App Password. Use email for alerts and logs for production history.
+    </p>
+  </main>
+
+  <script>
+    const answers = [1, 3, 0, 2, 1, 0, 3, 2, 1, 3, 0, 2, 1, 3, 0, 2, 1, 3, 0, 2, 1, 3, 2, 0, 1];
+    const totalQuestions = answers.length;
+    let totalSeconds = 20 * 60;
+    let timerInterval;
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        if (totalSeconds <= 0) {
+          clearInterval(timerInterval);
+          checkAnswers();
+          return;
+        }
+        totalSeconds--;
+        updateTimer();
+      }, 1000);
+    }
+
+    function updateTimer() {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      document.getElementById("timer").textContent =
+        String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+    }
+
+    function updateAnsweredCount() {
+      let answered = 0;
+      for (let i = 0; i < totalQuestions; i++) {
+        if (document.querySelector(`input[name="q${i}"]:checked`)) {
+          answered++;
+        }
+      }
+      document.getElementById("answeredCount").textContent = answered;
+    }
+
+    document.addEventListener("change", updateAnsweredCount);
+
+    function checkAnswers() {
+      let score = 0;
+
+      for (let i = 0; i < totalQuestions; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const options = document.querySelectorAll(`input[name="q${i}"]`);
+        const pill = document.getElementById(`pill${i}`);
+        const explanation = document.getElementById(`explain${i}`);
+
+        options.forEach((input) => {
+          input.parentElement.classList.remove("correct-answer", "wrong-answer");
+        });
+
+        options[answers[i]].parentElement.classList.add("correct-answer");
+
+        if (selected) {
+          if (parseInt(selected.value) === answers[i]) {
+            score++;
+            pill.textContent = "Correct";
+            pill.className = "status-pill correct";
+          } else {
+            selected.parentElement.classList.add("wrong-answer");
+            pill.textContent = "Wrong";
+            pill.className = "status-pill wrong";
+          }
+        } else {
+          pill.textContent = "Not answered";
+          pill.className = "status-pill wrong";
+        }
+
+        explanation.style.display = "block";
+      }
+
+      document.getElementById("scoreDisplay").textContent = score + "/" + totalQuestions;
+
+      const percentage = Math.round((score / totalQuestions) * 100);
+      const resultBox = document.getElementById("resultBox");
+      const resultTitle = document.getElementById("resultTitle");
+      const resultMessage = document.getElementById("resultMessage");
+
+      resultBox.style.display = "block";
+      resultTitle.textContent = `Your Score: ${score}/${totalQuestions} (${percentage}%)`;
+
+      if (percentage >= 90) {
+        resultMessage.textContent = "Excellent work. You understand cron email and msmtp very well.";
+      } else if (percentage >= 75) {
+        resultMessage.textContent = "Good job. Review the missed explanations and practice the commands.";
+      } else if (percentage >= 50) {
+        resultMessage.textContent = "Nice effort. Focus more on MAILTO, msmtp config, testing, and troubleshooting.";
+      } else {
+        resultMessage.textContent = "Keep practicing. Review the setup flow, common errors, and fixes again.";
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showExplanations() {
+      for (let i = 0; i < totalQuestions; i++) {
+        document.getElementById(`explain${i}`).style.display = "block";
+      }
+    }
+
+    function resetQuiz() {
+      const allInputs = document.querySelectorAll("input[type='radio']");
+      allInputs.forEach(input => {
+        input.checked = false;
+        input.parentElement.classList.remove("correct-answer", "wrong-answer");
+      });
+
+      for (let i = 0; i < totalQuestions; i++) {
+        const pill = document.getElementById(`pill${i}`);
+        pill.textContent = "Not answered";
+        pill.className = "status-pill";
+        document.getElementById(`explain${i}`).style.display = "none";
+      }
+
+      document.getElementById("answeredCount").textContent = "0";
+      document.getElementById("scoreDisplay").textContent = "0";
+      document.getElementById("resultBox").style.display = "none";
+
+      totalSeconds = 20 * 60;
+      updateTimer();
+      clearInterval(timerInterval);
+      startTimer();
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    updateTimer();
+    startTimer();
+  </script>
+</body>
+</html>
