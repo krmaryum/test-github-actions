@@ -24,7 +24,7 @@ import re
 
 ROOT = Path(__file__).resolve().parent
 
-NOTE_ROOTS = ["notes", "md", "pdfs"]
+NOTE_ROOTS = ["notes", "pdfs"]
 MCQ_ROOT = "mcqs"
 
 NOTE_EXTS = {".md", ".html", ".pdf", ".docx", ".xlsx", ".xls", ".pptx", ".txt"}
