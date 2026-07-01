@@ -2,63 +2,41 @@
 """
 Auto-generate Study Notes and MCQ index cards.
 
+Important fix:
+- Markdown (.md) files open through notes/viewer.html so they look styled.
+- They will NOT open as raw plain text.
+
 Use from repo root:
     python generate_file_cards.py
-
-What it does:
-    - Scans notes/, md/, and pdfs/ for study files.
-    - Scans mcqs/ for quiz HTML files.
-    - Rebuilds notes/index.html and mcqs/index.html with cards automatically.
-
-Supported study file extensions:
-    .md, .html, .pdf, .docx, .xlsx, .xls, .pptx, .txt
-
-Supported MCQ file extensions:
-    .html
 """
 
 from pathlib import Path
 from datetime import datetime
 import html
+import os
 import re
 
 ROOT = Path(__file__).resolve().parent
 
+# Use only these folders for your portfolio library
 NOTE_ROOTS = ["notes", "pdfs"]
 MCQ_ROOT = "mcqs"
 
 NOTE_EXTS = {".md", ".html", ".pdf", ".docx", ".xlsx", ".xls", ".pptx", ".txt"}
 MCQ_EXTS = {".html"}
 
-IGNORE_FILE_NAMES = {
-    "index.html",
-    "viewer.html",
-}
-
-IGNORE_DIRS = {
-    ".git",
-    ".github",
-    "assets",
-    "images",
-    "templates",
-    "backup",
-    "old",
-    "__pycache__",
-}
+IGNORE_FILE_NAMES = {"index.html", "viewer.html"}
+IGNORE_DIRS = {".git", ".github", "assets", "images", "templates", "backup", "old", "__pycache__"}
 
 
 def clean_title(path: Path) -> str:
-    """Convert file name into a readable title."""
     name = path.stem
     name = re.sub(r"[-_]+", " ", name)
     name = re.sub(r"\s+", " ", name).strip()
-    if not name:
-        return path.name
-    return name.title()
+    return name.title() if name else path.name
 
 
 def category_from_path(path: Path, root_name: str) -> str:
-    """Use the first folder below the root as category."""
     try:
         rel = path.relative_to(ROOT / root_name)
     except ValueError:
@@ -71,22 +49,17 @@ def category_from_path(path: Path, root_name: str) -> str:
 
 
 def file_type_label(path: Path) -> str:
-    suffix = path.suffix.lower().replace(".", "")
-    if suffix == "md":
-        return "Markdown"
-    if suffix == "html":
-        return "HTML"
-    if suffix == "pdf":
-        return "PDF"
-    if suffix == "docx":
-        return "DOCX"
-    if suffix in {"xlsx", "xls"}:
-        return "Spreadsheet"
-    if suffix == "pptx":
-        return "Slides"
-    if suffix == "txt":
-        return "Text"
-    return suffix.upper()
+    labels = {
+        ".md": "Markdown",
+        ".html": "HTML",
+        ".pdf": "PDF",
+        ".docx": "DOCX",
+        ".xlsx": "Spreadsheet",
+        ".xls": "Spreadsheet",
+        ".pptx": "Slides",
+        ".txt": "Text",
+    }
+    return labels.get(path.suffix.lower(), path.suffix.replace(".", "").upper())
 
 
 def should_skip(path: Path) -> bool:
@@ -98,20 +71,25 @@ def should_skip(path: Path) -> bool:
 
 
 def rel_link(from_dir: Path, target: Path) -> str:
-    """Return a browser-safe relative link from one folder to a target file.
-
-    This works even when the target is outside from_dir, for example:
-        from notes/index.html -> ../md/file.md
-        from notes/index.html -> ../pdfs/file.pdf
-        from mcqs/index.html  -> nfs/quiz.html
-    """
-    import os
     return Path(os.path.relpath(target, start=from_dir)).as_posix()
+
+
+def notes_href(path: Path, root_name: str) -> str:
+    notes_dir = ROOT / "notes"
+
+    # Important: Markdown inside notes/ should open with styled viewer.
+    # Example:
+    # notes/nfs/file.md -> viewer.html?file=nfs/file.md
+    if path.suffix.lower() == ".md" and root_name == "notes":
+        file_for_viewer = path.relative_to(notes_dir).as_posix()
+        return "viewer.html?file=" + file_for_viewer
+
+    # PDFs and other files open directly.
+    return rel_link(notes_dir, path)
 
 
 def scan_study_files():
     items = []
-
     for root_name in NOTE_ROOTS:
         root = ROOT / root_name
         if not root.exists():
@@ -125,22 +103,20 @@ def scan_study_files():
             if path.suffix.lower() not in NOTE_EXTS:
                 continue
 
-            href = rel_link(ROOT / "notes", path)
             items.append({
                 "title": clean_title(path),
-                "href": href,
+                "href": notes_href(path, root_name),
                 "category": category_from_path(path, root_name),
                 "type": file_type_label(path),
                 "source_root": root_name,
+                "extension": path.suffix.lower(),
             })
-
     return items
 
 
 def scan_mcq_files():
     items = []
     root = ROOT / MCQ_ROOT
-
     if not root.exists():
         return items
 
@@ -152,14 +128,12 @@ def scan_mcq_files():
         if path.suffix.lower() not in MCQ_EXTS:
             continue
 
-        href = rel_link(ROOT / "mcqs", path)
         items.append({
             "title": clean_title(path),
-            "href": href,
+            "href": rel_link(ROOT / "mcqs", path),
             "category": category_from_path(path, MCQ_ROOT),
             "type": "Quiz",
         })
-
     return items
 
 
@@ -172,158 +146,50 @@ def group_items(items):
 
 BASE_CSS = """
     * { margin:0; padding:0; box-sizing:border-box; scroll-behavior:smooth; }
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background:#06111f;
-      color:#fff;
-      overflow-x:hidden;
-      line-height:1.7;
-    }
-    body::before {
-      content:"";
-      position:fixed;
-      inset:0;
-      background:
-        radial-gradient(circle at 10% 10%, rgba(34,211,238,.25), transparent 28%),
-        radial-gradient(circle at 90% 25%, rgba(139,92,246,.22), transparent 32%),
-        radial-gradient(circle at 50% 95%, rgba(16,185,129,.16), transparent 30%);
-      z-index:-2;
-    }
-    body::after {
-      content:"";
-      position:fixed;
-      inset:0;
-      background-image:
-        linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
-      background-size:45px 45px;
-      z-index:-1;
-      mask-image:linear-gradient(to bottom,black,transparent 90%);
-    }
+    body { font-family: Arial, Helvetica, sans-serif; background:#06111f; color:#fff; overflow-x:hidden; line-height:1.7; }
+    body::before { content:""; position:fixed; inset:0; background: radial-gradient(circle at 10% 10%, rgba(34,211,238,.25), transparent 28%), radial-gradient(circle at 90% 25%, rgba(139,92,246,.22), transparent 32%), radial-gradient(circle at 50% 95%, rgba(16,185,129,.16), transparent 30%); z-index:-2; }
+    body::after { content:""; position:fixed; inset:0; background-image: linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px), linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px); background-size:45px 45px; z-index:-1; mask-image:linear-gradient(to bottom,black,transparent 90%); }
     a { color:inherit; text-decoration:none; }
     .container { width:min(1180px,92%); margin:auto; }
-    header {
-      padding:24px 0;
-      position:sticky;
-      top:0;
-      z-index:10;
-      background:rgba(6,17,31,.65);
-      backdrop-filter:blur(18px);
-      border-bottom:1px solid rgba(255,255,255,.08);
-    }
+    header { padding:24px 0; position:sticky; top:0; z-index:10; background:rgba(6,17,31,.65); backdrop-filter:blur(18px); border-bottom:1px solid rgba(255,255,255,.08); }
     .nav { display:flex; justify-content:space-between; align-items:center; gap:18px; }
     .brand { display:flex; align-items:center; gap:12px; }
-    .logo {
-      width:46px; height:46px; display:grid; place-items:center;
-      border-radius:16px; background:rgba(255,255,255,.12);
-      border:1px solid rgba(255,255,255,.15);
-      color:#67e8f9; font-weight:900;
-    }
+    .logo { width:46px; height:46px; display:grid; place-items:center; border-radius:16px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.15); color:#67e8f9; font-weight:900; }
     .brand h3 { font-size:18px; letter-spacing:.4px; }
     .brand p { color:#cbd5e1; font-size:12px; margin-top:3px; }
     nav ul { display:flex; list-style:none; gap:24px; color:#cbd5e1; font-size:14px; }
     nav a:hover { color:#67e8f9; }
     .hero { padding:74px 0 44px; }
-    .badge {
-      display:inline-block; padding:10px 18px; border-radius:999px;
-      background:rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.14);
-      color:#a5f3fc; font-size:14px; margin-bottom:22px;
-    }
-    h1 {
-      font-size:clamp(42px,7vw,72px);
-      line-height:1.05;
-      letter-spacing:-2px;
-      margin-bottom:20px;
-    }
-    .gradient-text {
-      background:linear-gradient(90deg,#67e8f9,#38bdf8,#a78bfa);
-      -webkit-background-clip:text;
-      background-clip:text;
-      color:transparent;
-    }
+    .badge { display:inline-block; padding:10px 18px; border-radius:999px; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.14); color:#a5f3fc; font-size:14px; margin-bottom:22px; }
+    h1 { font-size:clamp(42px,7vw,72px); line-height:1.05; letter-spacing:-2px; margin-bottom:20px; }
+    .gradient-text { background:linear-gradient(90deg,#67e8f9,#38bdf8,#a78bfa); -webkit-background-clip:text; background-clip:text; color:transparent; }
     .hero p { color:#cbd5e1; font-size:18px; line-height:1.8; max-width:760px; }
     .section { padding:35px 0 75px; }
-    .section-label {
-      color:#67e8f9; text-transform:uppercase; letter-spacing:4px;
-      font-size:13px; margin-bottom:14px; font-weight:700;
-    }
+    .section-label { color:#67e8f9; text-transform:uppercase; letter-spacing:4px; font-size:13px; margin-bottom:14px; font-weight:700; }
     .category { margin-top:34px; }
     .category h2 { font-size:clamp(26px,4vw,42px); margin-bottom:18px; }
     .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
-    .card {
-      min-height:210px;
-      padding:28px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      background:rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.16);
-      backdrop-filter:blur(20px);
-      -webkit-backdrop-filter:blur(20px);
-      border-radius:28px;
-      box-shadow:0 25px 70px rgba(0,0,0,.28);
-      transition:.35s ease;
-    }
-    .card:hover {
-      transform:translateY(-8px);
-      border-color:rgba(103,232,249,.55);
-      background:rgba(255,255,255,.15);
-      box-shadow:0 30px 85px rgba(34,211,238,.14);
-    }
-    .tag {
-      display:inline-block;
-      padding:8px 12px;
-      border-radius:999px;
-      background:rgba(103,232,249,.13);
-      color:#a5f3fc;
-      font-size:12px;
-      font-weight:800;
-      margin-bottom:16px;
-    }
+    .card { min-height:210px; padding:28px; display:flex; flex-direction:column; justify-content:space-between; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.16); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-radius:28px; box-shadow:0 25px 70px rgba(0,0,0,.28); transition:.35s ease; }
+    .card:hover { transform:translateY(-8px); border-color:rgba(103,232,249,.55); background:rgba(255,255,255,.15); box-shadow:0 30px 85px rgba(34,211,238,.14); }
+    .tag { display:inline-block; padding:8px 12px; border-radius:999px; background:rgba(103,232,249,.13); color:#a5f3fc; font-size:12px; font-weight:800; margin-bottom:16px; }
     .card h3 { font-size:22px; margin-bottom:12px; }
     .card p { color:#cbd5e1; line-height:1.7; }
     .buttons { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; }
-    .btn {
-      padding:13px 18px;
-      border-radius:16px;
-      font-weight:700;
-      transition:.3s;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      cursor:pointer;
-      background:#67e8f9;
-      color:#06111f;
-    }
+    .btn { padding:13px 18px; border-radius:16px; font-weight:700; transition:.3s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; background:#67e8f9; color:#06111f; }
     .btn:hover { transform:translateY(-4px); box-shadow:0 18px 38px rgba(103,232,249,.18); }
-    .empty {
-      padding:26px;
-      border-radius:22px;
-      background:rgba(255,255,255,.08);
-      color:#cbd5e1;
-      border:1px solid rgba(255,255,255,.14);
-    }
-    footer {
-      text-align:center;
-      padding:28px;
-      color:#94a3b8;
-      border-top:1px solid rgba(255,255,255,.08);
-    }
-    @media (max-width:900px) {
-      nav ul { display:none; }
-      .grid { grid-template-columns:1fr; }
-    }
+    .empty { padding:26px; border-radius:22px; background:rgba(255,255,255,.08); color:#cbd5e1; border:1px solid rgba(255,255,255,.14); }
+    footer { text-align:center; padding:28px; color:#94a3b8; border-top:1px solid rgba(255,255,255,.08); }
+    @media (max-width:900px) { nav ul { display:none; } .grid { grid-template-columns:1fr; } }
 """
 
 
 def build_notes_html(items):
     grouped = group_items(items)
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
-
     sections = []
+
     if not grouped:
-        sections.append('<div class="empty">No study notes found yet. Add files under notes/, md/, or pdfs/ and run the generator again.</div>')
+        sections.append('<div class="empty">No study notes found yet. Add files under notes/ or pdfs/ and run the generator again.</div>')
     else:
         for category, category_items in grouped.items():
             cards = []
@@ -332,6 +198,8 @@ def build_notes_html(items):
                 href = html.escape(item["href"])
                 file_type = html.escape(item["type"])
                 root = html.escape(item["source_root"])
+                open_label = "Open Notes →" if item["extension"] == ".md" else "Open →"
+
                 cards.append(f"""
           <article class="card">
             <div>
@@ -340,9 +208,10 @@ def build_notes_html(items):
               <p>Source folder: {root}/</p>
             </div>
             <div class="buttons">
-              <a class="btn" href="{href}" target="_blank" rel="noopener">Open →</a>
+              <a class="btn" href="{href}">{open_label}</a>
             </div>
           </article>""")
+
             sections.append(f"""
         <div class="category">
           <h2>{html.escape(category)}</h2>
@@ -383,7 +252,7 @@ def build_notes_html(items):
     <section class="hero">
       <span class="badge">Auto-generated</span>
       <h1>Study <span class="gradient-text">Notes</span></h1>
-      <p>These cards are generated automatically from files inside notes/, md/, and pdfs/. Last generated: {html.escape(now)}</p>
+      <p>Markdown files open through the styled notes viewer. Last generated: {html.escape(now)}</p>
     </section>
 
     <section class="section">
@@ -401,8 +270,8 @@ def build_notes_html(items):
 def build_mcqs_html(items):
     grouped = group_items(items)
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
-
     sections = []
+
     if not grouped:
         sections.append('<div class="empty">No MCQ quizzes found yet. Add HTML quiz files under mcqs/ and run the generator again.</div>')
     else:
@@ -422,6 +291,7 @@ def build_mcqs_html(items):
               <a class="btn" href="{href}">Start Quiz →</a>
             </div>
           </article>""")
+
             sections.append(f"""
         <div class="category">
           <h2>{html.escape(category)}</h2>
@@ -480,6 +350,7 @@ def build_mcqs_html(items):
 def main():
     (ROOT / "notes").mkdir(exist_ok=True)
     (ROOT / "mcqs").mkdir(exist_ok=True)
+    (ROOT / "pdfs").mkdir(exist_ok=True)
 
     study_items = scan_study_files()
     mcq_items = scan_mcq_files()
@@ -489,6 +360,7 @@ def main():
 
     print(f"Generated notes/index.html with {len(study_items)} study files.")
     print(f"Generated mcqs/index.html with {len(mcq_items)} quiz files.")
+    print("Markdown links now use notes/viewer.html, not raw .md pages.")
 
 
 if __name__ == "__main__":
