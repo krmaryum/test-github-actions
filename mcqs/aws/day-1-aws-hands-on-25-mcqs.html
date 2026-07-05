@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Day 1 AWS Hands-on Practice MCQs</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #1f2937;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, #111827, #374151);
+      color: white;
+      text-align: center;
+      padding: 30px 16px;
+    }
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+    header p {
+      margin: 0;
+      opacity: 0.95;
+    }
+    .container {
+      max-width: 1080px;
+      margin: 22px auto;
+      padding: 0 16px 48px;
+    }
+    .panel {
+      background: white;
+      padding: 18px;
+      border-radius: 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      margin-bottom: 18px;
+    }
+    .panel h2 {
+      margin-top: 0;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .meta-card {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .meta-card strong {
+      display: block;
+      color: #111827;
+      margin-bottom: 3px;
+    }
+    .sticky-bar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 14px;
+      padding: 13px 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+    }
+    .sticky-bar span {
+      font-weight: bold;
+      color: #9a3412;
+    }
+    .question-card {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 16px;
+      border-left: 6px solid #2563eb;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+    .question-card h3 {
+      margin-top: 0;
+      margin-bottom: 4px;
+      font-size: 18px;
+      color: #111827;
+    }
+    .topic-tag {
+      display: inline-block;
+      font-size: 12px;
+      background: #e0e7ff;
+      color: #3730a3;
+      padding: 3px 8px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .option {
+      display: block;
+      background: #f9fafb;
+      border: 1px solid #d1d5db;
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin: 8px 0;
+      cursor: pointer;
+      transition: 0.18s;
+    }
+    .option:hover {
+      background: #eef2ff;
+      border-color: #6366f1;
+    }
+    .option input {
+      margin-right: 9px;
+    }
+    .correct {
+      background: #dcfce7 !important;
+      border-color: #16a34a !important;
+    }
+    .wrong {
+      background: #fee2e2 !important;
+      border-color: #dc2626 !important;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+    }
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 24px 0;
+    }
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .submit-btn { background: #2563eb; color: white; }
+    .show-btn { background: #f97316; color: white; }
+    .reset-btn { background: #111827; color: white; }
+    .top-btn { background: #059669; color: white; }
+    .result {
+      display: none;
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      border-top: 6px solid #16a34a;
+      margin-top: 20px;
+    }
+    .result h2 {
+      margin-top: 0;
+    }
+    .breakdown {
+      margin-top: 14px;
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .breakdown th, .breakdown td {
+      border: 1px solid #e5e7eb;
+      padding: 9px;
+      text-align: left;
+    }
+    .breakdown th {
+      background: #f3f4f6;
+    }
+    .small-note {
+      color: #4b5563;
+      font-size: 14px;
+    }
+    footer {
+      text-align: center;
+      color: #6b7280;
+      padding: 20px;
+      font-size: 14px;
+    }
+    @media (max-width: 750px) {
+      .meta-grid { grid-template-columns: 1fr; }
+      .sticky-bar { position: static; }
+      header h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Day 1 AWS Hands-on Practice MCQs</h1>
+  <p>AWS CLI Configure, EC2 Creation, IAM + S3 Mini Project, and S3 CLI Upload Practice</p>
+</header>
+
+<div class="container">
+  <div class="panel">
+    <h2>Quiz Instructions</h2>
+    <p>This quiz has 25 scenario-based MCQs based on your Day 1 AWS hands-on notes.</p>
+    <div class="meta-grid">
+      <div class="meta-card"><strong>Total Questions</strong>25</div>
+      <div class="meta-card"><strong>Timer</strong>25 minutes</div>
+      <div class="meta-card"><strong>Passing Goal</strong>80% or above</div>
+      <div class="meta-card"><strong>Re-attempt</strong>Answers shuffle every time</div>
+    </div>
+    <p class="small-note">Choose one answer for each question. After submission, the correct answer, your wrong answer, score, and short explanation will appear.</p>
+  </div>
+
+  <div class="sticky-bar">
+    <div>Time Left: <span id="timer">25:00</span></div>
+    <div>Answered: <span id="answeredCount">0</span>/25</div>
+    <div>Score: <span id="liveScore">Not submitted</span></div>
+  </div>
+
+  <form id="quizForm"></form>
+
+  <div class="buttons">
+    <button class="submit-btn" type="button" onclick="submitQuiz()">Submit Quiz</button>
+    <button class="show-btn" type="button" onclick="showAnswers()">Show Answers</button>
+    <button class="reset-btn" type="button" onclick="resetQuiz()">Re-attempt Quiz</button>
+    <button class="top-btn" type="button" onclick="window.scrollTo({top:0, behavior:'smooth'})">Back to Top</button>
+  </div>
+
+  <div class="result" id="resultBox"></div>
+</div>
+
+<footer>
+  Day 1 AWS practice quiz for revision and self-assessment.
+</footer>
+
+<script>
+const originalQuestions = [
+  {
+    topic: "AWS CLI Configure",
+    q: "What does AWS CLI allow you to do?",
+    correct: "Manage AWS services from the terminal",
+    options: [
+      "Manage AWS services from the terminal",
+      "Only create local Linux users",
+      "Replace all IAM permissions automatically",
+      "Run Windows updates only"
+    ],
+    explanation: "AWS CLI is a command-line tool used to interact with AWS services such as S3, EC2, IAM, VPC, and more."
+  },
+  {
+    topic: "AWS CLI Configure",
+    q: "Which command is used to configure AWS CLI credentials, default region, and output format?",
+    correct: "aws configure",
+    options: [
+      "aws configure",
+      "aws login root",
+      "aws s3 configure-bucket",
+      "aws iam password"
+    ],
+    explanation: "`aws configure` asks for Access Key ID, Secret Access Key, default region, and output format."
+  },
+  {
+    topic: "AWS CLI Configure",
+    q: "Which two values are stored in the AWS CLI credentials file?",
+    correct: "Access Key ID and Secret Access Key",
+    options: [
+      "Access Key ID and Secret Access Key",
+      "Region and output format only",
+      "Public IP and private IP",
+      "Bucket name and EC2 name"
+    ],
+    explanation: "`~/.aws/credentials` stores the Access Key ID and Secret Access Key for CLI authentication."
+  },
+  {
+    topic: "AWS CLI Configure",
+    q: "Which file usually stores the default AWS region and output format?",
+    correct: "~/.aws/config",
+    options: [
+      "~/.aws/config",
+      "/etc/passwd",
+      "~/.ssh/known_hosts",
+      "/var/log/aws.log"
+    ],
+    explanation: "`~/.aws/config` stores settings such as region and output format."
+  },
+  {
+    topic: "AWS CLI Configure",
+    q: "Which command verifies which IAM user or role your AWS CLI is using?",
+    correct: "aws sts get-caller-identity",
+    options: [
+      "aws sts get-caller-identity",
+      "aws s3 whoami",
+      "aws iam current-user-password",
+      "aws ec2 login-status"
+    ],
+    explanation: "`aws sts get-caller-identity` confirms the AWS account, UserId, and ARN being used by the CLI."
+  },
+  {
+    topic: "AWS CLI Configure",
+    q: "What does the error `Unable to locate credentials` usually mean?",
+    correct: "AWS CLI is not configured with credentials",
+    options: [
+      "AWS CLI is not configured with credentials",
+      "The S3 bucket is public",
+      "The EC2 instance is terminated",
+      "The region is always wrong"
+    ],
+    explanation: "This error usually appears when AWS CLI cannot find credentials. Running `aws configure` can fix it."
+  },
+  {
+    topic: "AWS CLI Configure",
+    q: "Which default output format is commonly recommended for learning and automation?",
+    correct: "json",
+    options: [
+      "json",
+      "docx",
+      "png",
+      "zip"
+    ],
+    explanation: "`json` is structured and commonly used for learning, scripting, and automation."
+  },
+  {
+    topic: "EC2 Creation",
+    q: "What does Amazon EC2 provide?",
+    correct: "Virtual servers in AWS",
+    options: [
+      "Virtual servers in AWS",
+      "Only email service",
+      "Only object storage",
+      "Only DNS records"
+    ],
+    explanation: "Amazon EC2 provides virtual servers, also called instances, in AWS."
+  },
+  {
+    topic: "EC2 Creation",
+    q: "EC2 is an example of which cloud service model?",
+    correct: "IaaS",
+    options: [
+      "IaaS",
+      "SaaS",
+      "DaaS only",
+      "No service model"
+    ],
+    explanation: "EC2 is IaaS because AWS provides virtual infrastructure while the user manages OS, packages, and applications."
+  },
+  {
+    topic: "EC2 Creation",
+    q: "What does AMI stand for in EC2?",
+    correct: "Amazon Machine Image",
+    options: [
+      "Amazon Machine Image",
+      "Automatic Memory Installer",
+      "AWS Managed Internet",
+      "Application Monitoring Instance"
+    ],
+    explanation: "An AMI is a template/image used to create an EC2 instance."
+  },
+  {
+    topic: "EC2 Creation",
+    q: "What does an EC2 instance type define?",
+    correct: "CPU, memory, and network capacity",
+    options: [
+      "CPU, memory, and network capacity",
+      "Only the bucket name",
+      "Only the IAM username",
+      "Only the AWS account password"
+    ],
+    explanation: "Instance type controls compute size, such as CPU, memory, and networking capacity."
+  },
+  {
+    topic: "EC2 Creation",
+    q: "What is a key pair mainly used for?",
+    correct: "Secure SSH login to an EC2 instance",
+    options: [
+      "Secure SSH login to an EC2 instance",
+      "Creating S3 bucket folders",
+      "Changing AWS billing currency",
+      "Deleting IAM users automatically"
+    ],
+    explanation: "A key pair is used for secure SSH access. AWS stores the public key and the user keeps the private key."
+  },
+  {
+    topic: "EC2 Creation",
+    q: "Which command fixes common Linux private key permission issues before SSH?",
+    correct: "chmod 400 key-name.pem",
+    options: [
+      "chmod 400 key-name.pem",
+      "chmod 777 key-name.pem",
+      "rm -rf key-name.pem",
+      "aws s3 chmod key-name.pem"
+    ],
+    explanation: "`chmod 400` restricts the private key so SSH accepts it."
+  },
+  {
+    topic: "EC2 Creation",
+    q: "Which security group rule is required to SSH into a Linux EC2 instance?",
+    correct: "Allow TCP port 22",
+    options: [
+      "Allow TCP port 22",
+      "Allow UDP port 53 only",
+      "Allow TCP port 443 only",
+      "Allow TCP port 3306 only"
+    ],
+    explanation: "SSH uses TCP port 22. For better security, allow it from My IP instead of everywhere."
+  },
+  {
+    topic: "IAM + S3 Mini Project",
+    q: "In the Day 1 mini project, what was the purpose of creating IAM user `ali`?",
+    correct: "To give a separate AWS identity permission to access S3 from CLI",
+    options: [
+      "To give a separate AWS identity permission to access S3 from CLI",
+      "To create a Linux user inside EC2 only",
+      "To make all buckets public",
+      "To delete the AWS root account"
+    ],
+    explanation: "The IAM user `ali` is a separate AWS identity that can be given permissions and access keys for CLI use."
+  },
+  {
+    topic: "IAM + S3 Mini Project",
+    q: "Which policy was used in the beginner lab to allow S3 practice?",
+    correct: "AmazonS3FullAccess",
+    options: [
+      "AmazonS3FullAccess",
+      "AmazonEC2ReadOnlyAccess only",
+      "IAMUserChangePassword only",
+      "CloudWatchLogsReadOnlyAccess only"
+    ],
+    explanation: "For beginner S3 lab practice, `AmazonS3FullAccess` allows listing, uploading, downloading, and managing S3 resources."
+  },
+  {
+    topic: "IAM + S3 Mini Project",
+    q: "In real company work, which permission principle should be followed instead of giving broad access?",
+    correct: "Least privilege",
+    options: [
+      "Least privilege",
+      "Maximum privilege always",
+      "Public access for all users",
+      "No IAM policy required"
+    ],
+    explanation: "Least privilege means users should receive only the permissions required for their task."
+  },
+  {
+    topic: "IAM + S3 Mini Project",
+    q: "Which command lists all S3 buckets that the configured user can view?",
+    correct: "aws s3 ls",
+    options: [
+      "aws s3 ls",
+      "aws ec2 ls-buckets",
+      "aws iam list-s3",
+      "s3 cd /"
+    ],
+    explanation: "`aws s3 ls` lists S3 buckets available to the configured AWS CLI identity."
+  },
+  {
+    topic: "IAM + S3 Mini Project",
+    q: "Which items should never be shared publicly?",
+    correct: "Access Key ID and Secret Access Key",
+    options: [
+      "Access Key ID and Secret Access Key",
+      "S3 object file names only",
+      "The word EC2",
+      "The AWS service name S3"
+    ],
+    explanation: "Access keys are credentials. If exposed, they should be deleted/rotated immediately."
+  },
+  {
+    topic: "S3 CLI Practice",
+    q: "What does `PRE` mean in AWS S3 CLI output?",
+    correct: "Prefix that appears like a folder",
+    options: [
+      "Prefix that appears like a folder",
+      "Private root encryption",
+      "Public read enabled",
+      "Permanent region endpoint"
+    ],
+    explanation: "`PRE` means prefix. S3 uses prefixes/object keys, not real folders like Linux."
+  },
+  {
+    topic: "S3 CLI Practice",
+    q: "Why should this S3 path be inside quotes: `s3://ali-s3-t1/Prophet-Muhammad PBUH/`?",
+    correct: "Because the path contains spaces",
+    options: [
+      "Because the path contains spaces",
+      "Because S3 buckets always require quotes",
+      "Because AWS CLI cannot access S3 without quotes",
+      "Because quotes make the bucket public"
+    ],
+    explanation: "Spaces split command arguments in the shell. Quoting the full S3 path keeps it as one argument."
+  },
+  {
+    topic: "S3 CLI Practice",
+    q: "Which command lists all objects inside a bucket and its prefixes?",
+    correct: "aws s3 ls s3://ali-s3-t1 --recursive",
+    options: [
+      "aws s3 ls s3://ali-s3-t1 --recursive",
+      "aws s3 ls s3://ali-s3-t1 --folder-only",
+      "aws s3 recursive-login ali-s3-t1",
+      "aws s3 cd s3://ali-s3-t1"
+    ],
+    explanation: "`--recursive` lists objects inside the bucket and all folder-like prefixes."
+  },
+  {
+    topic: "S3 CLI Practice",
+    q: "Which command creates a local file named `test.txt` with the text `Test from EC2 CLI`?",
+    correct: "echo \"Test from EC2 CLI\" > test.txt",
+    options: [
+      "echo \"Test from EC2 CLI\" > test.txt",
+      "aws s3 ls test.txt",
+      "mkdir \"Test from EC2 CLI\" > test.txt",
+      "cat s3://test.txt"
+    ],
+    explanation: "The `echo` command writes text into a local file when used with `>` redirection."
+  },
+  {
+    topic: "S3 CLI Practice",
+    q: "Which command uploads `test.txt` to the S3 prefix `Prophet-Muhammad PBUH/`?",
+    correct: "aws s3 cp test.txt \"s3://ali-s3-t1/Prophet-Muhammad PBUH/\"",
+    options: [
+      "aws s3 cp test.txt \"s3://ali-s3-t1/Prophet-Muhammad PBUH/\"",
+      "aws s3 ls test.txt \"s3://ali-s3-t1/Prophet-Muhammad PBUH/\"",
+      "aws ec2 cp test.txt \"s3://ali-s3-t1/Prophet-Muhammad PBUH/\"",
+      "cd \"s3://ali-s3-t1/Prophet-Muhammad PBUH/\" test.txt"
+    ],
+    explanation: "`aws s3 cp` copies files between local storage and S3. Quotes are needed because the S3 prefix has spaces."
+  },
+  {
+    topic: "S3 CLI Practice",
+    q: "After uploading `test.txt`, what command verifies the file is inside the S3 prefix?",
+    correct: "aws s3 ls \"s3://ali-s3-t1/Prophet-Muhammad PBUH/\"",
+    options: [
+      "aws s3 ls \"s3://ali-s3-t1/Prophet-Muhammad PBUH/\"",
+      "aws iam ls \"s3://ali-s3-t1/Prophet-Muhammad PBUH/\"",
+      "aws configure list-files",
+      "ssh s3://ali-s3-t1/test.txt"
+    ],
+    explanation: "Listing the quoted prefix shows files inside it, including the newly uploaded `test.txt`."
+  }
+];
+
+let questions = [];
+let timeLeft = 25 * 60;
+let timerInterval = null;
+let submitted = false;
+
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function prepareQuestions() {
+  questions = originalQuestions.map((item, index) => {
+    return {
+      ...item,
+      id: index,
+      shuffledOptions: shuffleArray(item.options)
+    };
+  });
+}
+
+function renderQuiz() {
+  const form = document.getElementById("quizForm");
+  form.innerHTML = "";
+  questions.forEach((item, index) => {
+    const card = document.createElement("div");
+    card.className = "question-card";
+    card.id = `question-${index}`;
+
+    const tag = document.createElement("div");
+    tag.className = "topic-tag";
+    tag.textContent = item.topic;
+    card.appendChild(tag);
+
+    const title = document.createElement("h3");
+    title.textContent = `${index + 1}. ${item.q}`;
+    card.appendChild(title);
+
+    item.shuffledOptions.forEach((optionText, optIndex) => {
+      const label = document.createElement("label");
+      label.className = "option";
+      label.setAttribute("data-question", index);
+      label.setAttribute("data-option-text", optionText);
+
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = `q${index}`;
+      input.value = optionText;
+      input.addEventListener("change", updateAnsweredCount);
+
+      label.appendChild(input);
+      label.appendChild(document.createTextNode(optionText));
+      card.appendChild(label);
+    });
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `explanation-${index}`;
+    exp.innerHTML = `<strong>Explanation:</strong> ${item.explanation}`;
+    card.appendChild(exp);
+
+    form.appendChild(card);
+  });
+}
+
+function updateAnsweredCount() {
+  let answered = 0;
+  questions.forEach((_, index) => {
+    if (document.querySelector(`input[name="q${index}"]:checked`)) answered++;
+  });
+  document.getElementById("answeredCount").textContent = answered;
+}
+
+function clearStyles() {
+  document.querySelectorAll(".option").forEach(label => {
+    label.classList.remove("correct", "wrong");
+  });
+  document.querySelectorAll(".explanation").forEach(exp => {
+    exp.style.display = "none";
+  });
+}
+
+function getPerformanceMessage(percentage) {
+  if (percentage >= 90) return "Excellent work. You have a strong understanding of Day 1 hands-on AWS practice.";
+  if (percentage >= 80) return "Very good. You are ready to move forward after a quick revision.";
+  if (percentage >= 60) return "Good effort. Review weak topics and re-attempt the quiz.";
+  return "Keep practicing. Review the notes carefully and try again.";
+}
+
+function submitQuiz() {
+  if (submitted) return;
+  submitted = true;
+  clearInterval(timerInterval);
+  clearStyles();
+
+  let score = 0;
+  let unanswered = 0;
+  const topicStats = {};
+
+  questions.forEach((item, index) => {
+    if (!topicStats[item.topic]) topicStats[item.topic] = { correct: 0, total: 0 };
+    topicStats[item.topic].total++;
+
+    const selected = document.querySelector(`input[name="q${index}"]:checked`);
+    const labels = document.querySelectorAll(`label[data-question="${index}"]`);
+
+    labels.forEach(label => {
+      const optionText = label.getAttribute("data-option-text");
+      if (optionText === item.correct) label.classList.add("correct");
+    });
+
+    if (!selected) {
+      unanswered++;
+    } else {
+      const selectedText = selected.value;
+      if (selectedText === item.correct) {
+        score++;
+        topicStats[item.topic].correct++;
+      } else {
+        const wrongLabel = document.querySelector(`label[data-question="${index}"][data-option-text="${CSS.escape(selectedText)}"]`);
+        if (wrongLabel) wrongLabel.classList.add("wrong");
+      }
+    }
+
+    document.getElementById(`explanation-${index}`).style.display = "block";
+  });
+
+  const percentage = Math.round((score / questions.length) * 100);
+  document.getElementById("liveScore").textContent = `${score}/25 (${percentage}%)`;
+
+  const breakdownRows = Object.entries(topicStats).map(([topic, stat]) => {
+    const pct = Math.round((stat.correct / stat.total) * 100);
+    return `<tr><td>${topic}</td><td>${stat.correct}/${stat.total}</td><td>${pct}%</td></tr>`;
+  }).join("");
+
+  const weakTopics = Object.entries(topicStats)
+    .filter(([_, stat]) => (stat.correct / stat.total) < 0.8)
+    .map(([topic]) => topic);
+
+  const weakText = weakTopics.length
+    ? `<p><strong>Suggested revision:</strong> ${weakTopics.join(", ")}</p>`
+    : `<p><strong>Suggested revision:</strong> Great job. Quick review only.</p>`;
+
+  const resultBox = document.getElementById("resultBox");
+  resultBox.style.display = "block";
+  resultBox.innerHTML = `
+    <h2>Quiz Result</h2>
+    <p><strong>Score:</strong> ${score} out of ${questions.length}</p>
+    <p><strong>Percentage:</strong> ${percentage}%</p>
+    <p><strong>Unanswered Questions:</strong> ${unanswered}</p>
+    <p>${getPerformanceMessage(percentage)}</p>
+    ${weakText}
+    <table class="breakdown">
+      <thead>
+        <tr><th>Topic</th><th>Score</th><th>Percentage</th></tr>
+      </thead>
+      <tbody>${breakdownRows}</tbody>
+    </table>
+  `;
+  resultBox.scrollIntoView({ behavior: "smooth" });
+}
+
+function showAnswers() {
+  clearStyles();
+  questions.forEach((item, index) => {
+    const labels = document.querySelectorAll(`label[data-question="${index}"]`);
+    labels.forEach(label => {
+      const optionText = label.getAttribute("data-option-text");
+      if (optionText === item.correct) label.classList.add("correct");
+    });
+    document.getElementById(`explanation-${index}`).style.display = "block";
+  });
+}
+
+function resetQuiz() {
+  submitted = false;
+  clearInterval(timerInterval);
+  prepareQuestions();
+  renderQuiz();
+  document.getElementById("answeredCount").textContent = "0";
+  document.getElementById("liveScore").textContent = "Not submitted";
+  document.getElementById("resultBox").style.display = "none";
+  timeLeft = 25 * 60;
+  updateTimerDisplay();
+  startTimer();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function updateTimerDisplay() {
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+  document.getElementById("timer").textContent =
+    `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      if (!submitted) {
+        alert("Time is up. Your quiz will be submitted now.");
+        submitQuiz();
+      }
+      return;
+    }
+    timeLeft--;
+    updateTimerDisplay();
+  }, 1000);
+}
+
+prepareQuestions();
+renderQuiz();
+updateTimerDisplay();
+startTimer();
+</script>
+</body>
+</html>

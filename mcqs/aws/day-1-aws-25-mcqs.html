@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Day 1 – Introduction to Cloud & AWS Basics MCQs – 7 Days of AWS Challenge</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      background: #f4f7fb;
+      color: #1f2937;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1f2937, #374151);
+      color: white;
+      padding: 28px 18px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 16px;
+      opacity: 0.95;
+    }
+
+    .container {
+      max-width: 1050px;
+      margin: 22px auto;
+      padding: 0 16px 40px;
+    }
+
+    .info-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      margin-bottom: 18px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .timer-score {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .timer-score strong {
+      color: #9a3412;
+    }
+
+    .question-card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      border-left: 5px solid #2563eb;
+    }
+
+    .question-card h3 {
+      margin-top: 0;
+      color: #111827;
+      font-size: 18px;
+    }
+
+    .option {
+      display: block;
+      padding: 10px 12px;
+      margin: 8px 0;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #f9fafb;
+      transition: 0.2s;
+    }
+
+    .option:hover {
+      background: #eef2ff;
+      border-color: #6366f1;
+    }
+
+    .option input {
+      margin-right: 8px;
+    }
+
+    .correct {
+      background: #dcfce7 !important;
+      border-color: #16a34a !important;
+    }
+
+    .wrong {
+      background: #fee2e2 !important;
+      border-color: #dc2626 !important;
+    }
+
+    .explanation {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      display: none;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 22px 0;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 15px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .submit-btn {
+      background: #2563eb;
+      color: white;
+    }
+
+    .reset-btn {
+      background: #111827;
+      color: white;
+    }
+
+    .show-btn {
+      background: #f97316;
+      color: white;
+    }
+
+    .result {
+      display: none;
+      background: white;
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      border-top: 6px solid #16a34a;
+      margin-top: 18px;
+    }
+
+    .result h2 {
+      margin-top: 0;
+    }
+
+    .small-note {
+      font-size: 14px;
+      color: #4b5563;
+    }
+
+    footer {
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+      padding: 20px;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 23px;
+      }
+
+      .timer-score {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Day 1 AWS MCQs</h1>
+    <p>7 Days of AWS Challenge – Introduction to Cloud & AWS Basics</p>
+  </header>
+
+  <div class="container">
+    <div class="info-panel">
+      <h2>Practice Instructions</h2>
+      <p>This quiz covers Day 1 topics: AWS pricing models, cloud models, service models, and AWS history/key milestones.</p>
+      <p><strong>Total Questions:</strong> 25 | <strong>Timer:</strong> 25 minutes | <strong>Goal:</strong> 80% or above</p>
+      <p class="small-note">Select one answer for each question, then click <strong>Submit Quiz</strong>. Explanations will appear after submission.</p>
+    </div>
+
+    <div class="timer-score">
+      <div><strong>Time Left:</strong> <span id="timer">25:00</span></div>
+      <div><strong>Answered:</strong> <span id="answeredCount">0</span>/25</div>
+      <div><strong>Score:</strong> <span id="liveScore">Not submitted</span></div>
+    </div>
+
+    <form id="quizForm"></form>
+
+    <div class="buttons">
+      <button class="submit-btn" type="button" onclick="submitQuiz()">Submit Quiz</button>
+      <button class="show-btn" type="button" onclick="showAnswers()">Show Answers</button>
+      <button class="reset-btn" type="button" onclick="resetQuiz()">Retake Quiz</button>
+    </div>
+
+    <div class="result" id="resultBox"></div>
+  </div>
+
+  <footer>
+    Created for AWS Day 1 revision notes and practice.
+  </footer>
+
+  <script>
+    const questions = [
+      {
+        q: "What is the main idea of cloud computing?",
+        options: [
+          "Buying physical servers for every application",
+          "Using IT resources on demand over the internet",
+          "Only storing files on a USB drive",
+          "Installing all software manually on local computers"
+        ],
+        answer: 1,
+        explanation: "Cloud computing means using resources like servers, storage, databases, and networking on demand over the internet."
+      },
+      {
+        q: "Which AWS pricing model is best for beginners and learners?",
+        options: [
+          "Reserved Instances only",
+          "Free Tier + Pay-as-you-go",
+          "Dedicated Hosts only",
+          "Long-term enterprise contract only"
+        ],
+        answer: 1,
+        explanation: "For learners, Free Tier and Pay-as-you-go are usually best because they allow practice without long-term commitment."
+      },
+      {
+        q: "What does Pay-as-you-go mean in AWS?",
+        options: [
+          "Pay a fixed amount forever",
+          "Pay only for the resources you use",
+          "Pay only after one year",
+          "Pay before creating an account"
+        ],
+        answer: 1,
+        explanation: "Pay-as-you-go means you pay based on actual usage, such as running an EC2 instance for a specific amount of time."
+      },
+      {
+        q: "Reserved Instances are most useful when:",
+        options: [
+          "You need a server for predictable long-term usage",
+          "You want AWS to take back the server anytime",
+          "You only need a server for five minutes",
+          "You do not know your workload at all"
+        ],
+        answer: 0,
+        explanation: "Reserved Instances are useful when the workload is predictable and long-term, usually for one or three years."
+      },
+      {
+        q: "What is the main advantage of Spot Instances?",
+        options: [
+          "They are always free",
+          "They are cheaper because they use unused AWS capacity",
+          "They are best for critical production systems without planning",
+          "They never stop"
+        ],
+        answer: 1,
+        explanation: "Spot Instances are cheaper because they use spare AWS capacity, but they can be interrupted."
+      },
+      {
+        q: "Why should beginners monitor AWS billing?",
+        options: [
+          "Because all AWS services are always free",
+          "Because wrong configurations or unused resources can create charges",
+          "Because billing dashboard disables EC2",
+          "Because AWS does not show usage"
+        ],
+        answer: 1,
+        explanation: "Beginners should monitor billing because unused instances, volumes, Elastic IPs, and paid services can create unexpected costs."
+      },
+      {
+        q: "What does on-premises infrastructure mean?",
+        options: [
+          "The company owns and manages its own physical infrastructure",
+          "Everything runs only in AWS",
+          "Only email is managed by a provider",
+          "The company has no servers"
+        ],
+        answer: 0,
+        explanation: "On-premises means the company owns and manages servers, storage, networking, power, cooling, and maintenance."
+      },
+      {
+        q: "Which model is usually best for startups at the beginning?",
+        options: [
+          "Cloud",
+          "Only on-premises",
+          "No infrastructure",
+          "Only paper records"
+        ],
+        answer: 0,
+        explanation: "Cloud is usually best for startups because it has low upfront cost, fast setup, and flexible scaling."
+      },
+      {
+        q: "What is a hybrid cloud model?",
+        options: [
+          "Only using physical servers",
+          "Only using SaaS applications",
+          "Using both on-premises and cloud infrastructure together",
+          "Using no internet"
+        ],
+        answer: 2,
+        explanation: "Hybrid cloud combines on-premises infrastructure with cloud services like AWS."
+      },
+      {
+        q: "Which model gives the company the most physical control?",
+        options: [
+          "SaaS",
+          "On-premises",
+          "Public cloud only",
+          "Serverless only"
+        ],
+        answer: 1,
+        explanation: "On-premises gives the company the most physical control because the company owns and manages the hardware."
+      },
+      {
+        q: "Government projects may choose on-premises or hybrid mainly because of:",
+        options: [
+          "Gaming performance",
+          "Strict security, data location, and compliance needs",
+          "No need for data",
+          "Only social media usage"
+        ],
+        answer: 1,
+        explanation: "Government projects often have strict compliance, security, and data residency requirements."
+      },
+      {
+        q: "What does compliance mean in cloud decision-making?",
+        options: [
+          "Ignoring company rules",
+          "Following required laws, policies, standards, and security rules",
+          "Making servers slow",
+          "Deleting all data"
+        ],
+        answer: 1,
+        explanation: "Compliance means following legal, industry, security, and company rules."
+      },
+      {
+        q: "What does IaaS stand for?",
+        options: [
+          "Internet as a Service",
+          "Infrastructure as a Service",
+          "Instance as a Storage",
+          "Information as a Server"
+        ],
+        answer: 1,
+        explanation: "IaaS stands for Infrastructure as a Service."
+      },
+      {
+        q: "Which AWS service is a common IaaS example?",
+        options: [
+          "Amazon EC2",
+          "Amazon WorkMail",
+          "Amazon Chime",
+          "Google Docs"
+        ],
+        answer: 0,
+        explanation: "Amazon EC2 is IaaS because AWS provides a virtual server, while the user manages the OS and application."
+      },
+      {
+        q: "In IaaS, what does the user usually manage?",
+        options: [
+          "Physical data center cooling",
+          "Physical server hardware",
+          "Operating system, application, and configuration",
+          "AWS global infrastructure"
+        ],
+        answer: 2,
+        explanation: "In IaaS, AWS manages physical hardware, but the user usually manages the OS, applications, updates, and configuration."
+      },
+      {
+        q: "What does PaaS stand for?",
+        options: [
+          "Platform as a Service",
+          "Private as a Server",
+          "Package as a System",
+          "Payment as a Software"
+        ],
+        answer: 0,
+        explanation: "PaaS stands for Platform as a Service."
+      },
+      {
+        q: "Which AWS service is commonly explained as PaaS/serverless in beginner notes?",
+        options: [
+          "AWS Lambda",
+          "Amazon WorkMail",
+          "Amazon S3 Glacier Deep Archive only",
+          "A physical router"
+        ],
+        answer: 0,
+        explanation: "AWS Lambda is often used as a PaaS/serverless example because users run code without managing servers."
+      },
+      {
+        q: "In PaaS, the user mostly focuses on:",
+        options: [
+          "Buying physical servers",
+          "Power and cooling",
+          "Code and application logic",
+          "Replacing AWS data center hardware"
+        ],
+        answer: 2,
+        explanation: "In PaaS, AWS manages more of the platform, and the user focuses more on code and application logic."
+      },
+      {
+        q: "What does SaaS stand for?",
+        options: [
+          "Security as a Storage",
+          "Software as a Service",
+          "Server as a Software",
+          "Storage as a Site"
+        ],
+        answer: 1,
+        explanation: "SaaS stands for Software as a Service."
+      },
+      {
+        q: "Which AWS service is an example of SaaS?",
+        options: [
+          "Amazon EC2",
+          "Amazon VPC",
+          "Amazon WorkMail",
+          "Amazon EBS"
+        ],
+        answer: 2,
+        explanation: "Amazon WorkMail is SaaS because users use a ready-made email and calendar service without managing mail servers."
+      },
+      {
+        q: "Which simple statement is correct?",
+        options: [
+          "IaaS = ready-made software only",
+          "PaaS = physical data center ownership",
+          "SaaS = ready-to-use software",
+          "Cloud = no cost ever"
+        ],
+        answer: 2,
+        explanation: "SaaS means ready-to-use software delivered over the internet."
+      },
+      {
+        q: "When did AWS officially start its cloud journey?",
+        options: [
+          "1990",
+          "2006",
+          "2018",
+          "2024"
+        ],
+        answer: 1,
+        explanation: "AWS is commonly described as launching its cloud services in 2006."
+      },
+      {
+        q: "What is Amazon S3 mainly used for?",
+        options: [
+          "Object storage in the cloud",
+          "Running virtual servers only",
+          "Managing local printers",
+          "Creating passwords only"
+        ],
+        answer: 0,
+        explanation: "Amazon S3 is object storage used for files, backups, logs, images, static websites, and application data."
+      },
+      {
+        q: "What is Amazon EC2 mainly used for?",
+        options: [
+          "Virtual servers in AWS",
+          "Business email only",
+          "Video meetings only",
+          "Password recovery only"
+        ],
+        answer: 0,
+        explanation: "Amazon EC2 provides virtual servers that users can launch and manage in AWS."
+      },
+      {
+        q: "Why was AWS Lambda an important milestone?",
+        options: [
+          "It made users buy more physical servers",
+          "It helped popularize serverless computing",
+          "It removed cloud storage",
+          "It stopped developers from writing code"
+        ],
+        answer: 1,
+        explanation: "AWS Lambda helped popularize serverless computing by allowing users to run code without managing servers."
+      }
+    ];
+
+    const form = document.getElementById("quizForm");
+
+    function renderQuiz() {
+      form.innerHTML = "";
+      questions.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = "question-card";
+        card.id = `question-${index}`;
+
+        const title = document.createElement("h3");
+        title.textContent = `${index + 1}. ${item.q}`;
+        card.appendChild(title);
+
+        item.options.forEach((option, optIndex) => {
+          const label = document.createElement("label");
+          label.className = "option";
+          label.setAttribute("data-question", index);
+          label.setAttribute("data-option", optIndex);
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = `q${index}`;
+          input.value = optIndex;
+          input.addEventListener("change", updateAnsweredCount);
+
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(option));
+          card.appendChild(label);
+        });
+
+        const exp = document.createElement("div");
+        exp.className = "explanation";
+        exp.id = `explanation-${index}`;
+        exp.innerHTML = `<strong>Explanation:</strong> ${item.explanation}`;
+        card.appendChild(exp);
+
+        form.appendChild(card);
+      });
+    }
+
+    function updateAnsweredCount() {
+      let answered = 0;
+      questions.forEach((_, index) => {
+        if (document.querySelector(`input[name="q${index}"]:checked`)) {
+          answered++;
+        }
+      });
+      document.getElementById("answeredCount").textContent = answered;
+    }
+
+    function clearStyles() {
+      document.querySelectorAll(".option").forEach(label => {
+        label.classList.remove("correct", "wrong");
+      });
+      document.querySelectorAll(".explanation").forEach(exp => {
+        exp.style.display = "none";
+      });
+    }
+
+    function submitQuiz() {
+      clearStyles();
+      let score = 0;
+      let unanswered = 0;
+
+      questions.forEach((item, index) => {
+        const selected = document.querySelector(`input[name="q${index}"]:checked`);
+        const labels = document.querySelectorAll(`label[data-question="${index}"]`);
+
+        labels.forEach(label => {
+          const optionIndex = parseInt(label.getAttribute("data-option"));
+          if (optionIndex === item.answer) {
+            label.classList.add("correct");
+          }
+        });
+
+        if (!selected) {
+          unanswered++;
+        } else {
+          const selectedValue = parseInt(selected.value);
+          if (selectedValue === item.answer) {
+            score++;
+          } else {
+            const wrongLabel = document.querySelector(`label[data-question="${index}"][data-option="${selectedValue}"]`);
+            wrongLabel.classList.add("wrong");
+          }
+        }
+
+        document.getElementById(`explanation-${index}`).style.display = "block";
+      });
+
+      const percentage = Math.round((score / questions.length) * 100);
+      document.getElementById("liveScore").textContent = `${score}/25 (${percentage}%)`;
+
+      let message = "";
+      if (percentage >= 90) {
+        message = "Excellent work. You have a strong Day 1 understanding.";
+      } else if (percentage >= 80) {
+        message = "Very good. You understand Day 1 well.";
+      } else if (percentage >= 60) {
+        message = "Good effort. Review the weak topics and try again.";
+      } else {
+        message = "Keep practicing. Review the notes and retake the quiz.";
+      }
+
+      const resultBox = document.getElementById("resultBox");
+      resultBox.style.display = "block";
+      resultBox.innerHTML = `
+        <h2>Quiz Result</h2>
+        <p><strong>Score:</strong> ${score} out of ${questions.length}</p>
+        <p><strong>Percentage:</strong> ${percentage}%</p>
+        <p><strong>Unanswered Questions:</strong> ${unanswered}</p>
+        <p>${message}</p>
+      `;
+
+      resultBox.scrollIntoView({ behavior: "smooth" });
+    }
+
+    function showAnswers() {
+      clearStyles();
+      questions.forEach((item, index) => {
+        const correctLabel = document.querySelector(`label[data-question="${index}"][data-option="${item.answer}"]`);
+        correctLabel.classList.add("correct");
+        document.getElementById(`explanation-${index}`).style.display = "block";
+      });
+    }
+
+    function resetQuiz() {
+      document.getElementById("quizForm").reset();
+      clearStyles();
+      document.getElementById("answeredCount").textContent = "0";
+      document.getElementById("liveScore").textContent = "Not submitted";
+      document.getElementById("resultBox").style.display = "none";
+      timeLeft = 25 * 60;
+      updateTimerDisplay();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    let timeLeft = 25 * 60;
+    let timerInterval;
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      document.getElementById("timer").textContent =
+        `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          submitQuiz();
+          alert("Time is up. Your quiz has been submitted.");
+          return;
+        }
+        timeLeft--;
+        updateTimerDisplay();
+      }, 1000);
+    }
+
+    renderQuiz();
+    updateTimerDisplay();
+    startTimer();
+  </script>
+</body>
+</html>
