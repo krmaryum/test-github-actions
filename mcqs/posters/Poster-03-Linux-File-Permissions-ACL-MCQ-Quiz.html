@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Poster #3 MCQ Quiz - Linux File Permissions & ACL</title>
+<style>
+:root{--bg:#081426;--panel:#102541;--panel2:#173353;--text:#eef6ff;--muted:#b9c9dc;--yellow:#ffd43b;--blue:#4ba3ff;--green:#37d67a;--red:#ff5d6c;--purple:#9d6cff;--border:#2b4b70}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Segoe UI,sans-serif;background:linear-gradient(135deg,#07101e,#0c2542);color:var(--text)}
+.wrap{max-width:980px;margin:auto;padding:24px}.hero,.card,.result{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 10px 30px rgba(0,0,0,.22)}
+.hero{background:linear-gradient(135deg,#15345f,#3c246c)}h1{margin:0 0 8px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}.stat b{display:block;font-size:22px;color:var(--yellow)}
+.progressbar{height:12px;background:#06101f;border-radius:999px;overflow:hidden}.progress{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--green));transition:.25s}
+button{padding:12px 16px;border:0;border-radius:10px;font-weight:700;cursor:pointer;margin:10px 6px 10px 0}.primary{background:var(--yellow)}.secondary{background:var(--blue);color:#fff}.danger{background:var(--red);color:#fff}
+.q{font-size:19px;font-weight:700;margin:8px 0 14px}.opt{display:block;background:var(--panel2);border:2px solid transparent;border-radius:10px;padding:11px;margin:8px 0;cursor:pointer;transition:.18s}
+.opt:hover{border-color:var(--blue);transform:translateX(2px)}.correct{border-color:var(--green);background:#183e36}.wrong{border-color:var(--red);background:#462535}
+.exp{display:none;background:#091a30;border-left:4px solid var(--purple);padding:12px;margin-top:10px;border-radius:8px}.result{display:none;text-align:center}.footer{text-align:center;color:var(--muted);padding:24px}
+@media(max-width:650px){.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>Linux File Permissions & ACL Quiz</h1>
+    <p><strong>Poster #03</strong> — chmod, chown, chgrp, umask and ACL</p>
+    <p>25 questions • timer • answer checking • explanations • shuffled reattempts</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="timer">15:00</b>Time Left</div>
+    <div class="stat"><b id="answered">0/25</b>Answered</div>
+    <div class="stat"><b id="scoreLive">0</b>Score</div>
+    <div class="stat"><b id="attempt">1</b>Attempt</div>
+  </div>
+
+  <div class="progressbar"><div class="progress" id="progress"></div></div>
+
+  <button class="primary" onclick="submitQuiz()">Submit Quiz</button>
+  <button class="secondary" onclick="reattemptQuiz()">Reattempt & Shuffle</button>
+  <button class="danger" onclick="clearAnswers()">Clear Answers</button>
+
+  <div id="quiz"></div>
+
+  <div id="result" class="result">
+    <h2 id="finalScore"></h2>
+    <p id="feedback"></p>
+  </div>
+
+  <div class="footer">Linux & DevOps Visual Study Library • Poster #03 • Muhammad Khalid Khan</div>
+</div>
+
+<script>
+const originalQuestions = [{"q": "What are the three standard Linux permission classes?", "options": ["Owner, Group, Others", "Root, User, Guest", "Read, Write, Execute", "Admin, Service, Public"], "answer": 0, "explanation": "Linux permissions are evaluated for the file owner, the assigned group, and everyone else."}, {"q": "Which numeric value represents read permission?", "options": ["1", "2", "4", "7"], "answer": 2, "explanation": "Read permission is represented by 4."}, {"q": "Which numeric value represents write permission?", "options": ["1", "2", "4", "6"], "answer": 1, "explanation": "Write permission is represented by 2."}, {"q": "Which numeric value represents execute permission?", "options": ["1", "2", "4", "5"], "answer": 0, "explanation": "Execute permission is represented by 1."}, {"q": "What does permission 755 mean?", "options": ["Owner rwx, group r-x, others r-x", "Owner rw-, group r--, others r--", "Everyone rwx", "Owner only"], "answer": 0, "explanation": "755 breaks down as 7=rwx, 5=r-x, 5=r-x."}, {"q": "What does permission 644 mean?", "options": ["Owner rw-, group r--, others r--", "Owner rwx, group r-x, others r-x", "Owner only", "Everyone read/write"], "answer": 0, "explanation": "644 is common for normal files: owner can read/write; group and others can read."}, {"q": "Which command adds execute permission for the owner?", "options": ["chmod u+x script.sh", "chmod g+x script.sh", "chmod o+x script.sh", "chmod 7550 script.sh"], "answer": 0, "explanation": "u means owner, + adds a permission, and x means execute."}, {"q": "Which command removes write permission from the group?", "options": ["chmod g-w file.txt", "chmod u-w file.txt", "chmod o-w file.txt", "chmod a+w file.txt"], "answer": 0, "explanation": "g-w removes write permission from the group."}, {"q": "Which command changes the owner of a file?", "options": ["chmod", "chown", "chgrp", "umask"], "answer": 1, "explanation": "chown changes the file owner."}, {"q": "Which command changes only the group ownership?", "options": ["chown", "chmod", "chgrp", "setfacl"], "answer": 2, "explanation": "chgrp changes the assigned group."}, {"q": "What does execute permission mean on a directory?", "options": ["List filenames only", "Enter and access the directory", "Delete every file", "Run the directory as a program"], "answer": 1, "explanation": "Directory execute permission allows traversal and access."}, {"q": "What does write permission mean on a directory?", "options": ["Read file contents", "Create, rename, or delete entries", "Execute every file", "Change file ownership"], "answer": 1, "explanation": "Directory write controls creating, deleting, and renaming entries."}, {"q": "Which command displays detailed permissions and ownership?", "options": ["ls -l", "pwd", "cat", "whoami"], "answer": 0, "explanation": "ls -l shows file type, permissions, owner, group, size, and name."}, {"q": "What does a plus sign at the end of a permission string usually indicate?", "options": ["The file is executable", "ACL entries exist", "The file is encrypted", "The file is empty"], "answer": 1, "explanation": "A trailing + commonly indicates extended ACL entries."}, {"q": "Which command displays ACL entries?", "options": ["getfacl file", "setfacl file", "chmod file", "stat -c file"], "answer": 0, "explanation": "getfacl reads the access control list."}, {"q": "Which command grants user alice read and write ACL permissions?", "options": ["setfacl -m u:alice:rw file", "setfacl -x u:alice file", "chmod alice+rw file", "getfacl -m alice file"], "answer": 0, "explanation": "setfacl -m modifies an ACL entry for a named user."}, {"q": "Which command removes alice's ACL entry?", "options": ["setfacl -x u:alice file", "setfacl -m u:alice:--- file", "chmod -x alice file", "getfacl -x alice file"], "answer": 0, "explanation": "setfacl -x removes a specific ACL entry."}, {"q": "Which command removes all extended ACL entries from a file?", "options": ["setfacl -b file", "setfacl -k file", "chmod -R file", "getfacl -b file"], "answer": 0, "explanation": "setfacl -b removes all extended ACL entries."}, {"q": "What does umask control?", "options": ["Current file ownership", "Default permissions for new files and directories", "Password aging", "ACL inheritance only"], "answer": 1, "explanation": "umask removes permission bits from the default creation mode."}, {"q": "With umask 022, what is the typical permission of a new regular file?", "options": ["777", "755", "666", "644"], "answer": 3, "explanation": "Regular files normally start from 666; applying umask 022 yields 644."}, {"q": "With umask 077, what is the typical permission of a new directory?", "options": ["777", "755", "700", "600"], "answer": 2, "explanation": "Directories normally start from 777; umask 077 yields 700."}, {"q": "Which mode is recommended for an SSH private key?", "options": ["777", "755", "644", "600"], "answer": 3, "explanation": "SSH private keys should normally be readable and writable only by the owner."}, {"q": "Which command is useful for checking permissions on every component of a path?", "options": ["namei -l /path/to/file", "lsblk", "mount", "df -h"], "answer": 0, "explanation": "namei -l shows permissions for every directory and file component in the path."}, {"q": "What is the safest general principle when assigning permissions?", "options": ["Always use 777", "Use least privilege", "Give group write everywhere", "Run everything as root"], "answer": 1, "explanation": "Least privilege means granting only the access that is actually required."}, {"q": "A script exists but returns 'Permission denied'. What should you check first?", "options": ["Whether the execute bit is set", "The disk size", "The hostname", "The kernel version"], "answer": 0, "explanation": "The most common cause is a missing execute permission, though path and mount restrictions may also matter."}];
+let questions=[], seconds=900, timerId, attempt=1, submitted=false;
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function prepare(){
+  questions=shuffle(originalQuestions).map(q=>{
+    const opts=shuffle(q.options.map((text,i)=>({text,correct:i===q.answer})));
+    return {q:q.q, explanation:q.explanation, options:opts, answer:opts.findIndex(o=>o.correct)};
+  });
+}
+
+function render(){
+  const quiz=document.getElementById('quiz');
+  quiz.innerHTML='';
+  questions.forEach((q,i)=>{
+    const card=document.createElement('div');
+    card.className='card';
+    card.innerHTML=`
+      <div style="color:#ffd43b;font-weight:700">Question ${i+1} of 25</div>
+      <div class="q">${q.q}</div>
+      ${q.options.map((o,j)=>`
+        <label class="opt" id="o-${i}-${j}">
+          <input type="radio" name="q${i}" value="${j}" onchange="updateProgress()">
+          ${String.fromCharCode(65+j)}. ${o.text}
+        </label>`).join('')}
+      <div class="exp" id="e-${i}"></div>`;
+    quiz.appendChild(card);
+  });
+  updateProgress();
+}
+
+function updateProgress(){
+  let count=0;
+  questions.forEach((_,i)=>{
+    if(document.querySelector(`input[name="q${i}"]:checked`)) count++;
+  });
+  document.getElementById('answered').textContent=`${count}/25`;
+  document.getElementById('progress').style.width=`${count/25*100}%`;
+}
+
+function submitQuiz(auto=false){
+  if(submitted) return;
+  submitted=true;
+  clearInterval(timerId);
+  let score=0;
+
+  questions.forEach((q,i)=>{
+    const selected=document.querySelector(`input[name="q${i}"]:checked`);
+    document.querySelectorAll(`input[name="q${i}"]`).forEach(x=>x.disabled=true);
+
+    q.options.forEach((_,j)=>{
+      const label=document.getElementById(`o-${i}-${j}`);
+      if(j===q.answer) label.classList.add('correct');
+      if(selected && Number(selected.value)===j && j!==q.answer) label.classList.add('wrong');
+    });
+
+    if(selected && Number(selected.value)===q.answer) score++;
+
+    const exp=document.getElementById(`e-${i}`);
+    exp.style.display='block';
+    exp.innerHTML='<b>Explanation:</b> '+q.explanation;
+  });
+
+  document.getElementById('scoreLive').textContent=score;
+  const pct=Math.round(score/25*100);
+  document.getElementById('finalScore').textContent=`${score}/25 (${pct}%)`;
+
+  let msg;
+  if(pct>=90) msg='Excellent mastery of Linux permissions and ACL.';
+  else if(pct>=75) msg='Very good work. Review the few missed concepts and reattempt.';
+  else if(pct>=60) msg='Good foundation. Revisit directory permissions, umask, and ACL.';
+  else msg='Review the poster and explanations, then try again.';
+
+  document.getElementById('feedback').textContent=(auto?'Time expired. ':'')+msg;
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+}
+
+function startTimer(){
+  clearInterval(timerId);
+  timerId=setInterval(()=>{
+    seconds--;
+    document.getElementById('timer').textContent=
+      String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
+    if(seconds<=0){
+      clearInterval(timerId);
+      submitQuiz(true);
+    }
+  },1000);
+}
+
+function reattemptQuiz(){
+  attempt++;
+  document.getElementById('attempt').textContent=attempt;
+  submitted=false;
+  seconds=900;
+  document.getElementById('timer').textContent='15:00';
+  document.getElementById('result').style.display='none';
+  document.getElementById('scoreLive').textContent='0';
+  prepare();
+  render();
+  startTimer();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function clearAnswers(){
+  if(submitted) return;
+  document.querySelectorAll('input[type=radio]').forEach(x=>x.checked=false);
+  updateProgress();
+}
+
+prepare();
+render();
+startTimer();
+</script>
+</body>
+</html>
