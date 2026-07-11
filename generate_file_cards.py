@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent
 NOTE_ROOTS = ["notes", "pdfs"]
 MCQ_ROOT = "mcqs"
 
-NOTE_EXTS = {".md", ".html", ".pdf", ".docx", ".xlsx", ".xls", ".pptx", ".txt"}
+NOTE_EXTS = {".md", ".html", ".pdf", ".docx", ".xlsx", ".xls", ".pptx", ".txt", ".png", ".jpg", ".jpeg", ".webp"}
 MCQ_EXTS = {".html"}
 
 IGNORE_FILE_NAMES = {"index.html", "viewer.html"}
