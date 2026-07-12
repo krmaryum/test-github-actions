@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Cross-Service Role Assumption MCQ Quiz</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#071426;color:#eef6ff}
+.wrap{max-width:980px;margin:auto;padding:24px}
+.hero,.card,.result{background:#102541;border:1px solid #2b4b70;border-radius:18px;padding:22px;margin-bottom:18px}
+.hero{background:linear-gradient(135deg,#15345f,#0f766e)}
+h1{margin:0 0 8px;font-size:30px}
+p{line-height:1.5}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}
+.stat{background:#102541;border:1px solid #2b4b70;border-radius:12px;padding:12px;text-align:center}
+.stat b{display:block;font-size:22px;color:#ffd43b}
+.progressbar{height:12px;background:#06101f;border-radius:999px;overflow:hidden;border:1px solid #2b4b70}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#4ba3ff,#37d67a)}
+button{padding:12px 16px;border:0;border-radius:10px;font-weight:700;cursor:pointer;margin:10px 6px 10px 0}
+.primary{background:#ffd43b;color:#07111f}
+.secondary{background:#4ba3ff;color:white}
+.danger{background:#ff5d6c;color:white}
+.q{font-size:19px;font-weight:700;margin:8px 0 14px;line-height:1.4}
+.opt{display:block;background:#16304f;border:2px solid transparent;border-radius:10px;padding:11px;margin:8px 0;cursor:pointer;line-height:1.4}
+.opt:hover{border-color:#4ba3ff}
+.correct{border-color:#37d67a;background:#183e36}
+.wrong{border-color:#ff5d6c;background:#462535}
+.exp{display:none;background:#091a30;border-left:4px solid #9d6cff;padding:12px;margin-top:10px;line-height:1.5}
+.result{display:none;text-align:center}
+.footer{text-align:center;color:#b9c9dc;padding:24px;line-height:1.6}
+.badge{display:inline-block;background:#07111f;border:1px solid #38bdf8;color:#dff9ff;border-radius:999px;padding:6px 10px;margin:4px;font-size:13px;font-weight:700}
+@media(max-width:650px){.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>Cross-Service Role Assumption Quiz</h1>
+    <p>Week 2 – Day 3 Task 5: IAM Roles, STS, temporary credentials, trust policy, permission policy, service principals, and AWS service-to-service access.</p>
+    <div>
+      <span class="badge">25 Questions</span>
+      <span class="badge">15-Minute Timer</span>
+      <span class="badge">Answer Checking</span>
+      <span class="badge">Score</span>
+      <span class="badge">Short Explanations</span>
+      <span class="badge">Shuffle Reattempt</span>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="timer">15:00</b>Time Left</div>
+    <div class="stat"><b id="answered">0/25</b>Answered</div>
+    <div class="stat"><b id="scoreLive">0</b>Score</div>
+    <div class="stat"><b id="attempt">1</b>Attempt</div>
+  </div>
+
+  <div class="progressbar"><div class="progress" id="progress"></div></div>
+
+  <button class="primary" onclick="submitQuiz()">Submit Quiz</button>
+  <button class="secondary" onclick="reattemptQuiz()">Reattempt & Shuffle</button>
+  <button class="danger" onclick="clearAnswers()">Clear Answers</button>
+
+  <div id="quiz"></div>
+  <div id="result" class="result"><h2 id="finalScore"></h2><p id="feedback"></p></div>
+
+  <div class="footer">
+    AWS & DevOps Visual Study Library • Muhammad Khalid Khan<br>
+    Trust Policy = WHO • Permission Policy = WHAT • STS = Short-Lived Credentials
+  </div>
+</div>
+
+<script>
+const originalQuestions = [{"q": "What is cross-service role assumption in AWS?", "options": ["One AWS service uses an IAM role to call another AWS service", "A user logs in to the AWS Console with a password", "An S3 bucket becomes public automatically", "A VPC connects to the internet through NAT"], "answer": 0, "explanation": "Cross-service role assumption happens when one AWS service uses an IAM role to securely call another AWS service."}, {"q": "Why is cross-service role assumption needed?", "options": ["AWS services often need to work together securely", "It makes all AWS resources public", "It removes the need for IAM policies", "It disables temporary credentials"], "answer": 0, "explanation": "Many AWS services need to call other AWS services. IAM roles allow this securely without permanent access keys."}, {"q": "What does the trust policy answer?", "options": ["WHO can assume the role", "WHAT the role can do", "WHERE the S3 bucket is located", "HOW much the AWS bill costs"], "answer": 0, "explanation": "The trust policy answers WHO can assume the IAM role."}, {"q": "What does the permission policy answer?", "options": ["WHAT the role can do after it is assumed", "WHO owns the AWS account", "WHEN the EC2 instance was launched", "WHICH region is default"], "answer": 0, "explanation": "The permission policy answers WHAT actions the role can perform on target AWS services."}, {"q": "What does STS supply during role assumption?", "options": ["Short-lived temporary credentials", "Permanent root passwords", "Public S3 bucket URLs", "Billing reports"], "answer": 0, "explanation": "AWS STS supplies short-lived temporary credentials for the assumed role."}, {"q": "What delivers the role to EC2?", "options": ["Instance profile", "Security group", "Route table", "Internet gateway"], "answer": 0, "explanation": "For EC2, the instance profile delivers the IAM role to the instance."}, {"q": "Which service principal is used for EC2?", "options": ["ec2.amazonaws.com", "lambda.amazonaws.com", "states.amazonaws.com", "ecs-tasks.amazonaws.com"], "answer": 0, "explanation": "The EC2 service principal is ec2.amazonaws.com."}, {"q": "Which service principal is used for Lambda?", "options": ["lambda.amazonaws.com", "ec2.amazonaws.com", "s3.amazonaws.com", "cloudwatch.amazonaws.com"], "answer": 0, "explanation": "The Lambda service principal is lambda.amazonaws.com."}, {"q": "Which service principal is used for Step Functions?", "options": ["states.amazonaws.com", "stepfunctions.amazon.com", "lambda.amazonaws.com", "workflow.amazonaws.com"], "answer": 0, "explanation": "Step Functions uses the service principal states.amazonaws.com."}, {"q": "Which service principal is used for ECS tasks?", "options": ["ecs-tasks.amazonaws.com", "ecs.amazonaws.com", "containers.amazonaws.com", "tasks.ec2.amazonaws.com"], "answer": 0, "explanation": "ECS tasks use the service principal ecs-tasks.amazonaws.com."}, {"q": "In the EC2 to S3 example, what permission is needed to read an object from S3?", "options": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:CreateBucket"], "answer": 0, "explanation": "s3:GetObject is required to read or download an object from S3."}, {"q": "In the Lambda to CloudWatch Logs example, which permission allows writing log events?", "options": ["logs:PutLogEvents", "logs:GetObject", "lambda:InvokeFunction", "cloudwatch:AssumeRole"], "answer": 0, "explanation": "logs:PutLogEvents allows Lambda to write log events to CloudWatch Logs."}, {"q": "In the Step Functions to Lambda example, which permission is needed?", "options": ["lambda:InvokeFunction", "lambda:CreateFunction", "states:PutLogEvents", "s3:GetObject"], "answer": 0, "explanation": "Step Functions needs lambda:InvokeFunction to invoke a Lambda function."}, {"q": "In the ECS to Secrets Manager example, which permission is needed?", "options": ["secretsmanager:GetSecretValue", "secretsmanager:DeleteSecret", "ecs:PutObject", "iam:GetPassword"], "answer": 0, "explanation": "ECS tasks need secretsmanager:GetSecretValue to read a secret from Secrets Manager."}, {"q": "Which statement about a trust policy is correct?", "options": ["It decides who can assume the role", "It grants S3 object access directly", "It stores permanent access keys", "It creates CloudWatch dashboards"], "answer": 0, "explanation": "A trust policy decides who is allowed to assume the role. It does not define target service permissions."}, {"q": "Which statement about a permission policy is correct?", "options": ["It decides what the role can do after it is assumed", "It decides only who can assume the role", "It replaces STS completely", "It always gives administrator access"], "answer": 0, "explanation": "A permission policy defines the allowed actions and resources after the role has been assumed."}, {"q": "In a trust policy, what does the Principal usually identify?", "options": ["The trusted AWS service or identity", "The target S3 object only", "The billing account owner", "The EC2 private IP"], "answer": 0, "explanation": "The Principal identifies who or what is trusted to assume the role, such as ec2.amazonaws.com or lambda.amazonaws.com."}, {"q": "What is the common action used in a role trust policy?", "options": ["sts:AssumeRole", "s3:GetObject", "lambda:InvokeFunction", "logs:PutLogEvents"], "answer": 0, "explanation": "Trust policies commonly use sts:AssumeRole to allow a principal to assume the role."}, {"q": "Which example correctly matches an AWS service with a target service action?", "options": ["Step Functions invokes Lambda using lambda:InvokeFunction", "EC2 reads S3 using logs:PutLogEvents", "Lambda writes logs using s3:GetObject", "ECS reads secrets using ec2:StartInstances"], "answer": 0, "explanation": "Step Functions can invoke Lambda when the permission policy allows lambda:InvokeFunction."}, {"q": "What is a common mistake with cross-service role assumption?", "options": ["Thinking the trust policy gives access to the target service", "Using least privilege permissions", "Using STS short-lived credentials", "Using the correct service principal"], "answer": 0, "explanation": "A common mistake is thinking trust policy grants target service access. The permission policy grants target service actions."}, {"q": "What is another common mistake when creating service roles?", "options": ["Using the wrong service principal", "Avoiding permanent keys", "Granting only required permissions", "Using temporary credentials"], "answer": 0, "explanation": "Using the wrong service principal prevents the correct AWS service from assuming the role."}, {"q": "What is the best practice for permissions in cross-service role assumption?", "options": ["Grant only the required actions on the target service", "Always grant AdministratorAccess", "Use wildcard permissions for every service", "Store access keys in source code"], "answer": 0, "explanation": "Use least privilege: grant only the exact actions required on the target service."}, {"q": "Why should permanent access keys not be used for service-to-service access?", "options": ["They can be leaked and reused long-term", "They are required by STS", "They automatically rotate every minute", "They are safer than IAM roles"], "answer": 0, "explanation": "Permanent access keys are risky because if leaked, they may remain usable until manually removed or rotated."}, {"q": "Which pair correctly describes the key line?", "options": ["Trust policy = WHO, Permission policy = WHAT", "Trust policy = WHAT, Permission policy = WHO", "STS = permanent keys, Instance profile = billing", "Permission policy = service principal only"], "answer": 0, "explanation": "The memory rule is: Trust policy answers WHO; permission policy answers WHAT."}, {"q": "What is the best one-line summary of cross-service role assumption?", "options": ["One AWS service securely calls another using an IAM role and short-lived STS credentials", "One user stores permanent keys inside EC2 user data", "One S3 bucket allows anonymous public access", "One Lambda function deletes all IAM roles"], "answer": 0, "explanation": "Cross-service role assumption lets one AWS service securely call another AWS service through IAM roles and STS temporary credentials."}];
+let questions=[],seconds=900,timerId,attempt=1,submitted=false;
+
+function shuffle(a){
+  a=[...a];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+function prepare(){
+  questions=shuffle(originalQuestions).map(q=>{
+    const x=shuffle(q.options.map((t,i)=>({t,ok:i===q.answer})));
+    return{q:q.q,explanation:q.explanation,options:x,answer:x.findIndex(v=>v.ok)};
+  });
+}
+function render(){
+  const box=document.getElementById('quiz');
+  box.innerHTML='';
+  questions.forEach((q,i)=>{
+    const d=document.createElement('div');
+    d.className='card';
+    d.innerHTML=`<div style="color:#ffd43b;font-weight:700">Question ${i+1} of 25</div>
+      <div class="q">${escapeHtml(q.q)}</div>
+      ${q.options.map((o,j)=>`<label class="opt" id="o-${i}-${j}">
+        <input type="radio" name="q${i}" value="${j}" onchange="updateProgress()"> ${String.fromCharCode(65+j)}. ${escapeHtml(o.t)}
+      </label>`).join('')}
+      <div class="exp" id="e-${i}"></div>`;
+    box.appendChild(d);
+  });
+  updateProgress();
+}
+function updateProgress(){
+  let c=0;
+  questions.forEach((_,i)=>{if(document.querySelector(`input[name=q${i}]:checked`))c++;});
+  document.getElementById('answered').textContent=`${c}/25`;
+  document.getElementById('progress').style.width=`${c/25*100}%`;
+}
+function submitQuiz(auto=false){
+  if(submitted)return;
+  submitted=true;
+  clearInterval(timerId);
+  let s=0;
+  questions.forEach((q,i)=>{
+    const sel=document.querySelector(`input[name=q${i}]:checked`);
+    document.querySelectorAll(`input[name=q${i}]`).forEach(x=>x.disabled=true);
+    q.options.forEach((_,j)=>{
+      const label=document.getElementById(`o-${i}-${j}`);
+      if(j===q.answer)label.classList.add('correct');
+      if(sel&&+sel.value===j&&j!==q.answer)label.classList.add('wrong');
+    });
+    if(sel&&+sel.value===q.answer)s++;
+    const e=document.getElementById(`e-${i}`);
+    e.style.display='block';
+    e.innerHTML='<b>Explanation:</b> '+escapeHtml(q.explanation);
+  });
+  document.getElementById('scoreLive').textContent=s;
+  const p=Math.round(s/25*100);
+  document.getElementById('finalScore').textContent=`${s}/25 (${p}%)`;
+  document.getElementById('feedback').textContent=(auto?'Time expired. ':'')+
+    (p>=90?'Excellent mastery! You understand cross-service role assumption very well.':
+    p>=75?'Very good work. Review missed explanations and reattempt.':
+    p>=60?'Good foundation. Review service principals, trust policies, and permissions.':
+    'Review the poster and study notes, then try again.');
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+}
+function tick(){
+  clearInterval(timerId);
+  timerId=setInterval(()=>{
+    seconds--;
+    timer.textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
+    if(seconds<=0){clearInterval(timerId);submitQuiz(true);}
+  },1000);
+}
+function reattemptQuiz(){
+  attempt++;
+  document.getElementById('attempt').textContent=attempt;
+  submitted=false;
+  seconds=900;
+  timer.textContent='15:00';
+  result.style.display='none';
+  scoreLive.textContent='0';
+  prepare();
+  render();
+  tick();
+  scrollTo({top:0,behavior:'smooth'});
+}
+function clearAnswers(){
+  if(submitted)return;
+  document.querySelectorAll('input[type=radio]').forEach(x=>x.checked=false);
+  updateProgress();
+}
+prepare();render();tick();
+</script>
+</body>
+</html>

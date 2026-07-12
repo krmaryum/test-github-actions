@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>EC2 Access S3 Using IAM Role - MCQ Quiz</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#081426;color:#eef6ff}
+.wrap{max-width:980px;margin:auto;padding:24px}
+.hero,.card,.result{background:#102541;border:1px solid #2b4b70;border-radius:18px;padding:22px;margin-bottom:18px}
+.hero{background:linear-gradient(135deg,#15345f,#0f766e)}
+h1{margin:0 0 8px;font-size:30px}
+p{line-height:1.5}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}
+.stat{background:#102541;border:1px solid #2b4b70;border-radius:12px;padding:12px;text-align:center}
+.stat b{display:block;font-size:22px;color:#ffd43b}
+.progressbar{height:12px;background:#06101f;border-radius:999px;overflow:hidden;border:1px solid #2b4b70}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#4ba3ff,#37d67a)}
+button{padding:12px 16px;border:0;border-radius:10px;font-weight:700;cursor:pointer;margin:10px 6px 10px 0}
+.primary{background:#ffd43b;color:#07111f}
+.secondary{background:#4ba3ff;color:white}
+.danger{background:#ff5d6c;color:white}
+.q{font-size:19px;font-weight:700;margin:8px 0 14px;line-height:1.4}
+.opt{display:block;background:#16304f;border:2px solid transparent;border-radius:10px;padding:11px;margin:8px 0;cursor:pointer;line-height:1.4}
+.opt:hover{border-color:#4ba3ff}
+.correct{border-color:#37d67a;background:#183e36}
+.wrong{border-color:#ff5d6c;background:#462535}
+.exp{display:none;background:#091a30;border-left:4px solid #9d6cff;padding:12px;margin-top:10px;line-height:1.5}
+.result{display:none;text-align:center}
+.footer{text-align:center;color:#b9c9dc;padding:24px;line-height:1.6}
+.badge{display:inline-block;background:#07111f;border:1px solid #38bdf8;color:#dff9ff;border-radius:999px;padding:6px 10px;margin:4px;font-size:13px;font-weight:700}
+@media(max-width:650px){.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>EC2 Access S3 Using IAM Role Quiz</h1>
+    <p>Week 2 – Day 3 Project: IAM Role, Instance Profile, STS temporary credentials, S3 read/upload/download, and least privilege.</p>
+    <div>
+      <span class="badge">25 Questions</span>
+      <span class="badge">15-Minute Timer</span>
+      <span class="badge">Answer Checking</span>
+      <span class="badge">Score</span>
+      <span class="badge">Short Explanations</span>
+      <span class="badge">Shuffle Reattempt</span>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="timer">15:00</b>Time Left</div>
+    <div class="stat"><b id="answered">0/25</b>Answered</div>
+    <div class="stat"><b id="scoreLive">0</b>Score</div>
+    <div class="stat"><b id="attempt">1</b>Attempt</div>
+  </div>
+
+  <div class="progressbar"><div class="progress" id="progress"></div></div>
+
+  <button class="primary" onclick="submitQuiz()">Submit Quiz</button>
+  <button class="secondary" onclick="reattemptQuiz()">Reattempt & Shuffle</button>
+  <button class="danger" onclick="clearAnswers()">Clear Answers</button>
+
+  <div id="quiz"></div>
+  <div id="result" class="result"><h2 id="finalScore"></h2><p id="feedback"></p></div>
+
+  <div class="footer">
+    AWS & DevOps Visual Study Library • Muhammad Khalid Khan<br>
+    Keep Learning, Keep Building, Keep Automating
+  </div>
+</div>
+
+<script>
+const originalQuestions = [{"q": "What is the main goal of the EC2 to S3 IAM role project?", "options": ["Allow EC2 to access S3 securely without permanent access keys", "Make an S3 bucket public for everyone", "Store AWS access keys inside user data", "Replace S3 with EC2 storage"], "answer": 0, "explanation": "The project goal is to let EC2 read, upload, and download S3 files securely using an IAM role and temporary credentials."}, {"q": "Which AWS component makes an IAM role available to an EC2 instance?", "options": ["Instance profile", "S3 bucket policy only", "Route table", "Security group"], "answer": 0, "explanation": "An instance profile is the container that makes one IAM role available to an EC2 instance."}, {"q": "What does the IAM role contain?", "options": ["Trust relationship and permissions", "Only an EC2 public IP address", "Only a Linux username", "Only an S3 bucket name"], "answer": 0, "explanation": "An IAM role contains the trust relationship and permission policies."}, {"q": "For an EC2 role, which service is usually trusted in the trust policy?", "options": ["ec2.amazonaws.com", "s3.amazonaws.com", "github.com", "iam.amazonaws.com"], "answer": 0, "explanation": "For EC2 roles, the trust policy usually trusts ec2.amazonaws.com so EC2 can assume the role."}, {"q": "Which S3 permission allows EC2 to list objects inside a bucket?", "options": ["s3:ListBucket", "s3:GetObject", "s3:PutObject", "s3:DeleteObject"], "answer": 0, "explanation": "s3:ListBucket allows listing objects in the bucket."}, {"q": "Which S3 permission allows EC2 to download/read an object?", "options": ["s3:GetObject", "s3:PutObject", "s3:ListBucket", "s3:CreateBucket"], "answer": 0, "explanation": "s3:GetObject allows reading or downloading objects from S3."}, {"q": "Which S3 permission allows EC2 to upload an object?", "options": ["s3:PutObject", "s3:GetObject", "s3:ListBucket", "s3:DeleteBucket"], "answer": 0, "explanation": "s3:PutObject allows uploading objects to an S3 bucket."}, {"q": "Which permission is intentionally NOT included in the lab policy to prove least privilege?", "options": ["s3:DeleteObject", "s3:GetObject", "s3:PutObject", "s3:ListBucket"], "answer": 0, "explanation": "s3:DeleteObject is not included, so delete should fail with AccessDenied."}, {"q": "Which ARN format refers to the bucket itself?", "options": ["arn:aws:s3:::bucket-name", "arn:aws:s3:::bucket-name/*", "arn:aws:ec2:::bucket-name", "arn:aws:iam:::bucket-name"], "answer": 0, "explanation": "The bucket ARN uses arn:aws:s3:::bucket-name and is used for actions like s3:ListBucket."}, {"q": "Which ARN format refers to objects/files inside a bucket?", "options": ["arn:aws:s3:::bucket-name/*", "arn:aws:s3:::bucket-name", "arn:aws:iam:::bucket-name/*", "arn:aws:ec2:::bucket-name/*"], "answer": 0, "explanation": "Object-level permissions use arn:aws:s3:::bucket-name/* for files inside the bucket."}, {"q": "Which command verifies that EC2 is using an assumed IAM role?", "options": ["aws sts get-caller-identity", "aws s3 mb", "aws configure", "sudo apt update"], "answer": 0, "explanation": "aws sts get-caller-identity shows the identity being used. If it shows assumed-role, the EC2 role is working."}, {"q": "What should you look for in the ARN output to confirm the EC2 role is working?", "options": ["assumed-role/EC2-S3-Read-Upload-Download-Role", "root", "public-read", "anonymous"], "answer": 0, "explanation": "The ARN should show assumed-role followed by the role name and instance session."}, {"q": "Which command lists files in the specific S3 bucket?", "options": ["aws s3 ls s3://khalid-week2-day3-ec2-s3-lab", "aws configure list", "ls /s3/khalid-week2-day3-ec2-s3-lab", "sudo systemctl status s3"], "answer": 0, "explanation": "aws s3 ls with the bucket path lists objects in that specific S3 bucket."}, {"q": "Why should the exact bucket path be used instead of just aws s3 ls in this lab?", "options": ["The policy does not include s3:ListAllMyBuckets", "S3 buckets cannot be listed from EC2", "AWS CLI does not support S3", "IAM roles cannot access S3"], "answer": 0, "explanation": "The lab policy grants ListBucket on a specific bucket, not ListAllMyBuckets for all buckets."}, {"q": "Which command uploads a local file to S3?", "options": ["aws s3 cp test-from-ec2.txt s3://khalid-week2-day3-ec2-s3-lab/", "aws s3 rm test-from-ec2.txt", "aws sts upload test-from-ec2.txt", "scp test-from-ec2.txt s3://bucket/"], "answer": 0, "explanation": "aws s3 cp local-file s3://bucket/ uploads the file to the bucket."}, {"q": "Which command downloads a file from S3 to the current EC2 directory?", "options": ["aws s3 cp s3://khalid-week2-day3-ec2-s3-lab/test-from-ec2.txt .", "aws s3 ls s3://khalid-week2-day3-ec2-s3-lab", "aws configure get region", "sudo apt install awscli"], "answer": 0, "explanation": "aws s3 cp s3://bucket/file . downloads the S3 object to the current directory."}, {"q": "What result is expected when trying to delete the test object from EC2 in this lab?", "options": ["AccessDenied", "Delete successful", "Bucket becomes public", "EC2 terminates automatically"], "answer": 0, "explanation": "Delete should be denied because s3:DeleteObject is not allowed in the policy."}, {"q": "Which AWS feature automatically obtains and refreshes credentials for CLI and SDKs on EC2?", "options": ["AWS credential provider chain", "S3 static website hosting", "EC2 key pair", "Security group inbound rule"], "answer": 0, "explanation": "The AWS credential provider chain allows CLI and SDKs to find and refresh EC2 role credentials automatically."}, {"q": "Where can EC2 role credentials be obtained from by AWS CLI/SDKs?", "options": ["EC2 instance metadata service", "The public internet only", "A hardcoded Python variable", "A screenshot of IAM"], "answer": 0, "explanation": "For EC2 role access, AWS CLI and SDKs can retrieve temporary credentials from the EC2 instance metadata service."}, {"q": "Which command should generally NOT be required on EC2 for this IAM role lab?", "options": ["aws configure", "aws sts get-caller-identity", "aws s3 ls s3://bucket-name", "aws --version"], "answer": 0, "explanation": "You should not need aws configure because EC2 should use the attached IAM role credentials automatically."}, {"q": "Which location should NOT contain permanent AWS access keys?", "options": ["User data", "IAM role permission policy", "S3 object metadata only", "AWS documentation"], "answer": 0, "explanation": "Permanent AWS access keys should never be placed in EC2 user data."}, {"q": "Why is storing access keys in AMIs risky?", "options": ["Every EC2 instance launched from that AMI may contain the same keys", "AMIs cannot launch EC2 instances", "S3 refuses all AMIs", "IAM roles stop working permanently"], "answer": 0, "explanation": "If credentials are baked into an AMI, every new instance from that AMI can inherit the leaked keys."}, {"q": "Which command helps check whether AWS environment variables are present?", "options": ["env | grep AWS", "aws s3 ls", "cat /etc/passwd", "sudo reboot"], "answer": 0, "explanation": "env | grep AWS can show whether AWS-related environment variables are set."}, {"q": "If aws sts get-caller-identity does not show assumed-role, what should you check first?", "options": ["Whether the IAM role/instance profile is attached to the EC2 instance", "Whether the S3 bucket has a website endpoint", "Whether the file is named test.txt", "Whether the EC2 instance has Apache installed"], "answer": 0, "explanation": "If assumed-role is missing, check that the IAM role is attached to EC2 through the instance profile."}, {"q": "What is the best one-line takeaway from this project?", "options": ["EC2 can securely access S3 using an IAM role and temporary credentials instead of permanent access keys", "EC2 must always store permanent IAM user keys to access S3", "S3 buckets must be public for EC2 access", "Instance profiles are only used for billing"], "answer": 0, "explanation": "The main lesson is secure EC2 to S3 access using IAM roles, instance profiles, and temporary credentials."}];
+let questions=[],seconds=900,timerId,attempt=1,submitted=false;
+
+function shuffle(a){
+  a=[...a];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+function prepare(){
+  questions=shuffle(originalQuestions).map(q=>{
+    const x=shuffle(q.options.map((t,i)=>({t,ok:i===q.answer})));
+    return{q:q.q,explanation:q.explanation,options:x,answer:x.findIndex(v=>v.ok)};
+  });
+}
+function render(){
+  const box=document.getElementById('quiz');
+  box.innerHTML='';
+  questions.forEach((q,i)=>{
+    const d=document.createElement('div');
+    d.className='card';
+    d.innerHTML=`<div style="color:#ffd43b;font-weight:700">Question ${i+1} of 25</div>
+      <div class="q">${escapeHtml(q.q)}</div>
+      ${q.options.map((o,j)=>`<label class="opt" id="o-${i}-${j}">
+        <input type="radio" name="q${i}" value="${j}" onchange="updateProgress()"> ${String.fromCharCode(65+j)}. ${escapeHtml(o.t)}
+      </label>`).join('')}
+      <div class="exp" id="e-${i}"></div>`;
+    box.appendChild(d);
+  });
+  updateProgress();
+}
+function updateProgress(){
+  let c=0;
+  questions.forEach((_,i)=>{if(document.querySelector(`input[name=q${i}]:checked`))c++;});
+  document.getElementById('answered').textContent=`${c}/25`;
+  document.getElementById('progress').style.width=`${c/25*100}%`;
+}
+function submitQuiz(auto=false){
+  if(submitted)return;
+  submitted=true;
+  clearInterval(timerId);
+  let s=0;
+  questions.forEach((q,i)=>{
+    const sel=document.querySelector(`input[name=q${i}]:checked`);
+    document.querySelectorAll(`input[name=q${i}]`).forEach(x=>x.disabled=true);
+    q.options.forEach((_,j)=>{
+      const label=document.getElementById(`o-${i}-${j}`);
+      if(j===q.answer)label.classList.add('correct');
+      if(sel&&+sel.value===j&&j!==q.answer)label.classList.add('wrong');
+    });
+    if(sel&&+sel.value===q.answer)s++;
+    const e=document.getElementById(`e-${i}`);
+    e.style.display='block';
+    e.innerHTML='<b>Explanation:</b> '+escapeHtml(q.explanation);
+  });
+  document.getElementById('scoreLive').textContent=s;
+  const p=Math.round(s/25*100);
+  document.getElementById('finalScore').textContent=`${s}/25 (${p}%)`;
+  document.getElementById('feedback').textContent=(auto?'Time expired. ':'')+
+    (p>=90?'Excellent mastery! You understand EC2 to S3 IAM role access very well.':
+    p>=75?'Very good work. Review missed explanations and reattempt.':
+    p>=60?'Good foundation. Review instance profile, S3 permissions, and STS verification.':
+    'Review the poster and study notes, then try again.');
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+}
+function tick(){
+  clearInterval(timerId);
+  timerId=setInterval(()=>{
+    seconds--;
+    timer.textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
+    if(seconds<=0){clearInterval(timerId);submitQuiz(true);}
+  },1000);
+}
+function reattemptQuiz(){
+  attempt++;
+  document.getElementById('attempt').textContent=attempt;
+  submitted=false;
+  seconds=900;
+  timer.textContent='15:00';
+  result.style.display='none';
+  scoreLive.textContent='0';
+  prepare();
+  render();
+  tick();
+  scrollTo({top:0,behavior:'smooth'});
+}
+function clearAnswers(){
+  if(submitted)return;
+  document.querySelectorAll('input[type=radio]').forEach(x=>x.checked=false);
+  updateProgress();
+}
+prepare();render();tick();
+</script>
+</body>
+</html>
