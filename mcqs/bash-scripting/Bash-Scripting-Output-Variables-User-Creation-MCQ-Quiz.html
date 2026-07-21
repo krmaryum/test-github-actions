@@ -1,0 +1,1284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive 25-question Bash lesson quiz covering output, errors, shebangs, comments, variables, input, exit status, command logic, and safe Linux user creation.">
+  <title>Bash Scripting — Output to User Creation MCQ Quiz</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #06111e;
+      --surface: #0d1c2e;
+      --surface-2: #132740;
+      --surface-3: #091728;
+      --text: #f3f8ff;
+      --muted: #a8b8cd;
+      --green: #94e22b;
+      --cyan: #1fc8e5;
+      --orange: #ffae28;
+      --success: #35d49a;
+      --danger: #ff6f82;
+      --warning: #ffd166;
+      --border: #29445f;
+      --shadow: 0 20px 55px rgb(0 0 0 / 32%);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+      color: var(--text);
+      background:
+        linear-gradient(rgb(31 200 229 / 4%) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(31 200 229 / 4%) 1px, transparent 1px),
+        radial-gradient(circle at 10% 0%, rgb(148 226 43 / 13%), transparent 28rem),
+        radial-gradient(circle at 90% 5%, rgb(31 200 229 / 15%), transparent 30rem),
+        var(--bg);
+      background-size: 36px 36px, 36px 36px, auto, auto, auto;
+    }
+
+    button, input { font: inherit; }
+    button:focus-visible, input:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+
+    .container {
+      width: min(1040px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 60px;
+    }
+
+    .hero, .toolbar, .question-card, .result-card, .review-card {
+      background: rgb(13 28 46 / 95%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(24px, 5vw, 42px);
+    }
+
+    .hero::after {
+      content: ">_";
+      position: absolute;
+      right: 30px;
+      top: 20px;
+      color: rgb(148 226 43 / 10%);
+      font: 900 clamp(5rem, 18vw, 11rem)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 8px;
+      color: var(--green);
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      font-size: .78rem;
+    }
+
+    h1 {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      max-width: 820px;
+      font-size: clamp(2rem, 6vw, 3.65rem);
+      line-height: 1.08;
+    }
+
+    h1 span { color: var(--cyan); }
+
+    .hero-description {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+      margin: 16px 0 0;
+      color: var(--muted);
+    }
+
+    .topic-chips {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .chip {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface-3);
+      color: #d9e8fa;
+      font-size: .79rem;
+      font-weight: 750;
+    }
+
+    .stats {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+    .stat {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-2);
+    }
+
+    .stat span { display: block; color: var(--muted); font-size: .76rem; }
+    .stat strong { display: block; margin-top: 2px; font-size: 1.08rem; }
+
+    .toolbar {
+      position: sticky;
+      top: 8px;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) auto auto;
+      gap: 18px;
+      align-items: center;
+      margin: 18px 0;
+      padding: 14px 18px;
+      backdrop-filter: blur(14px);
+    }
+
+    .progress-track {
+      height: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #06111e;
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      transition: width .25s ease;
+    }
+
+    .toolbar-label { margin-top: 5px; color: var(--muted); font-size: .8rem; }
+    .timer { font-weight: 950; font-variant-numeric: tabular-nums; }
+    .timer.warning { color: var(--warning); }
+    .status { color: var(--cyan); font-weight: 850; }
+
+    .question-card {
+      scroll-margin-top: 96px;
+      margin-bottom: 16px;
+      padding: 22px;
+      transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .question-card.unanswered {
+      border-color: var(--warning);
+      box-shadow: 0 0 0 2px rgb(255 209 102 / 14%), var(--shadow);
+    }
+
+    .question-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 9px;
+    }
+
+    .question-number { color: var(--green); font-weight: 900; }
+    .category {
+      padding: 4px 9px;
+      border: 1px solid rgb(31 200 229 / 35%);
+      border-radius: 999px;
+      color: var(--cyan);
+      background: rgb(31 200 229 / 7%);
+      font-size: .72rem;
+      font-weight: 800;
+    }
+
+    .question-card h2 { margin: 0 0 16px; font-size: clamp(1rem, 3vw, 1.15rem); }
+    code { color: #c6f68b; font: .94em ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .options { display: grid; gap: 10px; }
+
+    .option {
+      display: grid;
+      grid-template-columns: auto auto 1fr;
+      gap: 11px;
+      align-items: start;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface-3);
+      cursor: pointer;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+
+    .option:hover { transform: translateY(-1px); border-color: var(--cyan); }
+    .option:has(input:checked) { border-color: var(--green); background: rgb(29 65 65 / 78%); }
+    .option.correct { border-color: var(--success); background: rgb(21 101 74 / 42%); }
+    .option.incorrect { border-color: var(--danger); background: rgb(132 31 55 / 40%); }
+    .option input { margin-top: 4px; accent-color: var(--green); }
+    .option-letter { color: var(--muted); font-weight: 900; }
+
+    .explanation {
+      display: none;
+      margin-top: 14px;
+      padding: 13px 15px;
+      border-left: 4px solid var(--cyan);
+      border-radius: 8px;
+      background: #071524;
+      color: var(--muted);
+    }
+
+    .explanation.show { display: block; }
+    .explanation strong { color: var(--text); }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin: 28px 0;
+    }
+
+    .button {
+      min-width: 150px;
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform .12s ease, filter .12s ease;
+    }
+
+    .button:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.07); }
+    .button:disabled { opacity: .48; cursor: not-allowed; }
+    .primary { color: #04121a; background: linear-gradient(135deg, var(--green), var(--cyan)); }
+    .secondary { color: var(--text); border: 1px solid var(--border); background: var(--surface-2); }
+
+    .result-card { display: none; padding: clamp(22px, 5vw, 34px); margin: 20px 0; text-align: center; }
+    .result-card.show { display: block; }
+    .score { color: var(--green); font-size: clamp(3rem, 10vw, 5.5rem); font-weight: 950; line-height: 1; }
+    .result-message { max-width: 720px; margin: 10px auto 0; color: var(--muted); }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 720px;
+      margin: 22px auto 0;
+    }
+
+    .result-stat { padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-3); }
+    .result-stat span { display: block; color: var(--muted); font-size: .73rem; }
+    .result-stat strong { font-size: 1.05rem; }
+
+    .review-card { display: none; padding: 24px; margin: 16px 0; }
+    .review-card.show { display: block; }
+    .review-card h2 { margin-top: 0; }
+    .category-results { display: grid; gap: 10px; }
+
+    .category-row {
+      display: grid;
+      grid-template-columns: minmax(150px, 1fr) 2fr auto;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mini-track { height: 9px; overflow: hidden; border-radius: 999px; background: #06111e; }
+    .mini-bar { height: 100%; background: linear-gradient(90deg, var(--green), var(--cyan)); }
+    .review-note { margin: 16px 0 0; color: var(--muted); font-size: .88rem; }
+
+    footer { padding-top: 26px; text-align: center; color: var(--muted); }
+    footer a { color: var(--cyan); }
+
+    @media (max-width: 760px) {
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stats .stat:last-child { grid-column: 1 / -1; }
+      .toolbar { grid-template-columns: 1fr auto; gap: 10px; }
+      .toolbar > div:first-child { grid-column: 1 / -1; }
+      .result-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .category-row { grid-template-columns: 1fr auto; }
+      .category-row .mini-track { grid-column: 1 / -1; grid-row: 2; }
+    }
+
+    @media print {
+      body { background: #fff; color: #111; }
+      .hero, .question-card, .result-card, .review-card { box-shadow: none; background: #fff; color: #111; }
+      .toolbar, .actions { display: none; }
+      .question-card { break-inside: avoid; }
+      .option { background: #fff; color: #111; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <p class="eyebrow">Bash Scripting · Hands-On Lesson</p>
+      <h1>From Output to <span>User Creation</span></h1>
+      <p class="hero-description">Test standard output and errors, shebangs, comments, variables, user input, exit statuses, command logic, script execution, safe account creation, and verification. Questions and choices shuffle on every attempt.</p>
+
+      <div class="topic-chips" aria-label="Quiz topics">
+        <span class="chip">stdout &amp; stderr</span>
+        <span class="chip">Shebang &amp; Comments</span>
+        <span class="chip">Variables</span>
+        <span class="chip">User Input</span>
+        <span class="chip">Exit Status &amp; Logic</span>
+        <span class="chip">Create &amp; Check Users</span>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span>Questions</span><strong>25</strong></div>
+        <div class="stat"><span>Time limit</span><strong>20 minutes</strong></div>
+        <div class="stat"><span>Passing score</span><strong>80%</strong></div>
+        <div class="stat"><span>Explanations</span><strong>After submit</strong></div>
+        <div class="stat"><span>Best score</span><strong id="bestScore">Not attempted</strong></div>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="Quiz status">
+      <div>
+        <div class="progress-track" role="progressbar" aria-label="Answered questions" aria-valuemin="0" aria-valuemax="25" aria-valuenow="0" id="progressTrack">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="toolbar-label" id="progressLabel">0 of 25 answered</div>
+      </div>
+      <div>Time: <span class="timer" id="timer">20:00</span></div>
+      <div class="status" id="statusLabel">In progress</div>
+    </section>
+
+    <form id="quizForm" novalidate></form>
+
+    <div class="actions">
+      <button class="button primary" id="submitButton" type="button">Submit Quiz</button>
+      <button class="button secondary" id="reattemptButton" type="button">Reattempt &amp; Shuffle</button>
+    </div>
+
+    <section class="result-card" id="resultCard" aria-live="polite">
+      <p class="eyebrow">Your Result</p>
+      <div class="score" id="scoreText">0%</div>
+      <h2 id="scoreDetail"></h2>
+      <p class="result-message" id="resultMessage"></p>
+      <div class="result-grid">
+        <div class="result-stat"><span>Correct</span><strong id="correctResult">0</strong></div>
+        <div class="result-stat"><span>Incorrect</span><strong id="incorrectResult">0</strong></div>
+        <div class="result-stat"><span>Unanswered</span><strong id="unansweredResult">0</strong></div>
+        <div class="result-stat"><span>Time used</span><strong id="timeUsedResult">00:00</strong></div>
+      </div>
+    </section>
+
+    <section class="review-card" id="reviewCard">
+      <h2>Performance by Topic</h2>
+      <div class="category-results" id="categoryResults"></div>
+      <p class="review-note">Review the highlighted answers and short explanations below each question, then choose “Reattempt &amp; Shuffle” to try a new order.</p>
+    </section>
+
+    <footer>
+      <p>Prepared for Muhammad Khalid Khan · <a href="https://github.com/krmaryum">GitHub: krmaryum</a></p>
+    </footer>
+  </main>
+
+  <script>
+    const quizData = [
+      {
+        category: "Shell & Bash",
+        q: "What is a shell in Linux?",
+        options: [
+          "A command interpreter between the user and operating system",
+          "A physical part inside the CPU",
+          "A Linux file-storage format",
+          "A network security appliance"
+        ],
+        answer: "A command interpreter between the user and operating system",
+        explanation: "A shell reads commands, interprets them, and requests services from the operating system."
+      },
+      {
+        category: "Shell & Bash",
+        q: "What does the name Bash mean?",
+        options: [
+          "Bourne Again Shell",
+          "Basic Administrative System Host",
+          "Binary Access Secure Handler",
+          "Bourne Automated Script Hub"
+        ],
+        answer: "Bourne Again Shell",
+        explanation: "Bash stands for Bourne Again Shell and is compatible with many concepts from the earlier Bourne shell."
+      },
+      {
+        category: "Shell & Bash",
+        q: "Which statement correctly distinguishes a terminal from a shell?",
+        options: [
+          "A terminal provides the interface, while a shell interprets commands",
+          "A shell is hardware, while a terminal is the Linux kernel",
+          "A terminal can only run graphical applications",
+          "There is no difference between them"
+        ],
+        answer: "A terminal provides the interface, while a shell interprets commands",
+        explanation: "The terminal is the window or interface; Bash is one possible shell running inside it."
+      },
+      {
+        category: "Shell & Bash",
+        q: "What does a <code>$</code> prompt normally indicate in a Linux shell?",
+        options: [
+          "A regular user session",
+          "A root session only",
+          "A failed command",
+          "A disconnected network"
+        ],
+        answer: "A regular user session",
+        explanation: "A dollar sign commonly represents a regular user prompt, while # commonly represents root."
+      },
+      {
+        category: "Shell & Bash",
+        q: "What is the purpose of <code>#!/usr/bin/env bash</code> at the top of a script?",
+        options: [
+          "Select Bash as the script interpreter",
+          "Give the script root privileges",
+          "Create a new Linux user",
+          "Install Bash automatically"
+        ],
+        answer: "Select Bash as the script interpreter",
+        explanation: "The shebang tells the operating system which interpreter should run an executable script."
+      },
+      {
+        category: "Shell & Bash",
+        q: "Which filename is clearest for a Bash script that displays system information?",
+        options: [
+          "system_info.sh",
+          "system_info.jpg",
+          "system_info.exe",
+          "system_info.pdf"
+        ],
+        answer: "system_info.sh",
+        explanation: "The .sh extension is not technically required, but it clearly identifies a shell-script source file."
+      },
+      {
+        category: "Linux Architecture",
+        q: "Which sequence correctly shows the simplified Linux architecture from the user toward the physical system?",
+        options: [
+          "User → Shell → Kernel → Hardware",
+          "User → Hardware → Shell → Kernel",
+          "Kernel → User → Hardware → Shell",
+          "Shell → User → Kernel → Hardware"
+        ],
+        answer: "User → Shell → Kernel → Hardware",
+        explanation: "The user interacts through a shell, the shell requests kernel services, and the kernel manages hardware."
+      },
+      {
+        category: "Linux Architecture",
+        q: "What is the main responsibility of the Linux kernel?",
+        options: [
+          "Manage hardware and system resources",
+          "Edit text files interactively",
+          "Display only the command prompt",
+          "Store every command in GitHub"
+        ],
+        answer: "Manage hardware and system resources",
+        explanation: "The kernel manages CPU scheduling, memory, devices, processes, filesystems, and other core resources."
+      },
+      {
+        category: "Linux Architecture",
+        q: "Which item belongs to the hardware layer?",
+        options: [
+          "CPU",
+          "Bash function",
+          "Shell prompt",
+          "Vim command mode"
+        ],
+        answer: "CPU",
+        explanation: "The CPU, memory, disks, and network interfaces are physical hardware resources managed by the kernel."
+      },
+      {
+        category: "Environment",
+        q: "Which option allows a Windows user to run a Linux environment directly on Windows?",
+        options: [
+          "WSL",
+          "HTML",
+          "BIOS only",
+          "Microsoft Paint"
+        ],
+        answer: "WSL",
+        explanation: "Windows Subsystem for Linux provides a Linux user environment integrated with Windows."
+      },
+      {
+        category: "Environment",
+        q: "Which is the safest place to practice new cleanup or deletion scripts?",
+        options: [
+          "A disposable lab directory or temporary virtual machine",
+          "A production database server",
+          "The root filesystem without a backup",
+          "A customer's live application server"
+        ],
+        answer: "A disposable lab directory or temporary virtual machine",
+        explanation: "Potentially destructive automation should first be tested in an isolated, recoverable environment."
+      },
+      {
+        category: "Environment",
+        q: "Which command displays the current value of the <code>SHELL</code> environment variable?",
+        options: [
+          "echo \"$SHELL\"",
+          "mkdir SHELL",
+          "cd $SHELL",
+          "rm SHELL"
+        ],
+        answer: "echo \"$SHELL\"",
+        explanation: "echo prints the expanded value; quoting preserves it as one argument."
+      },
+      {
+        category: "Environment",
+        q: "Which command reports the installed Bash version?",
+        options: [
+          "bash --version",
+          "bash --delete",
+          "version --mkdir",
+          "pwd --bash"
+        ],
+        answer: "bash --version",
+        explanation: "The --version option prints Bash version and build information."
+      },
+      {
+        category: "Machine & Commands",
+        q: "Which command displays the username of the current effective user?",
+        options: [
+          "whoami",
+          "hostname",
+          "pwd",
+          "mkdir"
+        ],
+        answer: "whoami",
+        explanation: "whoami prints the username associated with the current effective user ID."
+      },
+      {
+        category: "Machine & Commands",
+        q: "Which command displays the machine's host name?",
+        options: [
+          "hostname",
+          "whoami",
+          "nano",
+          "echo $PWD"
+        ],
+        answer: "hostname",
+        explanation: "hostname displays the system's configured host name."
+      },
+      {
+        category: "Machine & Commands",
+        q: "Which command displays the running kernel release?",
+        options: [
+          "uname -r",
+          "mkdir -r",
+          "echo -r",
+          "nano -r"
+        ],
+        answer: "uname -r",
+        explanation: "uname -r prints the kernel release; uname -a prints a broader system summary."
+      },
+      {
+        category: "Machine & Commands",
+        q: "What does the <code>pwd</code> command display?",
+        options: [
+          "The current working directory",
+          "The current user's password",
+          "All running processes",
+          "The Bash version"
+        ],
+        answer: "The current working directory",
+        explanation: "pwd means print working directory and outputs the current directory's path."
+      },
+      {
+        category: "Machine & Commands",
+        q: "Which command lists directory contents, including hidden entries, in long format?",
+        options: [
+          "ls -la",
+          "cd -la",
+          "pwd -la",
+          "echo -la"
+        ],
+        answer: "ls -la",
+        explanation: "-l requests long format and -a includes entries whose names begin with a dot."
+      },
+      {
+        category: "Machine & Commands",
+        q: "What does <code>cd ..</code> normally do?",
+        options: [
+          "Move to the parent directory",
+          "Create two directories",
+          "Delete the current directory",
+          "Return to the root user's home only"
+        ],
+        answer: "Move to the parent directory",
+        explanation: "The .. directory entry refers to the parent of the current directory."
+      },
+      {
+        category: "Machine & Commands",
+        q: "What is the advantage of <code>mkdir -p project/scripts</code>?",
+        options: [
+          "It creates missing parent directories as needed",
+          "It prints the current directory",
+          "It permanently protects the directory",
+          "It creates a Python script"
+        ],
+        answer: "It creates missing parent directories as needed",
+        explanation: "mkdir -p builds required parent directories and does not fail merely because an existing directory is present."
+      },
+      {
+        category: "Machine & Commands",
+        q: "Which command prints the text <code>Hello Bash</code> to standard output?",
+        options: [
+          "echo \"Hello Bash\"",
+          "cd \"Hello Bash\"",
+          "mkdir \"Hello Bash\"",
+          "pwd \"Hello Bash\""
+        ],
+        answer: "echo \"Hello Bash\"",
+        explanation: "echo writes its arguments to standard output; the quotes keep the two words together as one argument."
+      },
+      {
+        category: "Editors & Execution",
+        q: "In Vim normal mode, which key enters Insert mode before the cursor?",
+        options: [
+          "i",
+          "q",
+          "x",
+          "z"
+        ],
+        answer: "i",
+        explanation: "Press i from normal mode to insert text before the cursor."
+      },
+      {
+        category: "Editors & Execution",
+        q: "Which Vim command saves the file and exits?",
+        options: [
+          ":wq",
+          ":help",
+          ":set number",
+          ":edit"
+        ],
+        answer: ":wq",
+        explanation: ":w writes the file and q quits; combined as :wq, they save and exit."
+      },
+      {
+        category: "Editors & Execution",
+        q: "Which Nano shortcut writes the current file to disk?",
+        options: [
+          "Ctrl+O",
+          "Ctrl+X only",
+          "Ctrl+C",
+          "Alt+F4"
+        ],
+        answer: "Ctrl+O",
+        explanation: "Nano labels Ctrl+O as Write Out. Ctrl+X exits and may ask whether to save unsaved changes."
+      },
+      {
+        category: "Editors & Execution",
+        q: "Which pair makes <code>hello.sh</code> executable and then runs it from the current directory?",
+        options: [
+          "chmod +x hello.sh, then ./hello.sh",
+          "mkdir hello.sh, then cd hello.sh",
+          "echo hello.sh, then pwd hello.sh",
+          "nano +x hello.sh, then ls hello.sh"
+        ],
+        answer: "chmod +x hello.sh, then ./hello.sh",
+        explanation: "chmod +x adds execute permission, and ./ tells the shell to run the file located in the current directory."
+      }
+    ];
+
+    const lessonQuizData = [
+      {
+        category: "Output & Exit Status",
+        q: "Which stream normally carries the regular output produced by a command?",
+        options: [
+          "Standard output (stdout)",
+          "Standard error (stderr)",
+          "Standard input (stdin)",
+          "The kernel log only"
+        ],
+        answer: "Standard output (stdout)",
+        explanation: "Commands normally send successful or regular output to stdout, which uses file descriptor 1."
+      },
+      {
+        category: "Output & Exit Status",
+        q: "Which file descriptor represents standard error?",
+        options: [
+          "2",
+          "0",
+          "1",
+          "9"
+        ],
+        answer: "2",
+        explanation: "Standard input is 0, standard output is 1, and standard error is 2."
+      },
+      {
+        category: "Output & Exit Status",
+        q: "When <code>cd /missing</code> displays “No such file or directory,” where is that diagnostic normally written?",
+        options: [
+          "stderr",
+          "stdout",
+          "stdin",
+          "The PATH variable"
+        ],
+        answer: "stderr",
+        explanation: "Failure diagnostics normally go to stderr so they can be handled separately from regular output."
+      },
+      {
+        category: "Output & Exit Status",
+        q: "What does <code>echo $?</code> display?",
+        options: [
+          "The exit status of the most recently completed command",
+          "The current user's password",
+          "The Bash process ID",
+          "The contents of stderr"
+        ],
+        answer: "The exit status of the most recently completed command",
+        explanation: "$? is replaced by the previous command's numeric exit status and should be checked immediately."
+      },
+      {
+        category: "Output & Exit Status",
+        q: "What does exit status <code>0</code> normally mean?",
+        options: [
+          "The command succeeded",
+          "The command was not found",
+          "Permission was denied",
+          "The command timed out"
+        ],
+        answer: "The command succeeded",
+        explanation: "Unix and Linux commands conventionally use 0 for success and nonzero values for failures or special conditions."
+      },
+      {
+        category: "Output & Exit Status",
+        q: "Why must <code>$?</code> be inspected immediately after the command being tested?",
+        options: [
+          "Every following command replaces the stored exit status",
+          "$? permanently deletes itself",
+          "$? works only once per login",
+          "Bash restarts after every command"
+        ],
+        answer: "Every following command replaces the stored exit status",
+        explanation: "Even echo or printf is a command, so another command changes the value that $? will report."
+      },
+      {
+        category: "Scripts & Comments",
+        q: "What is the main purpose of <code>#!/bin/bash</code> on the first line of a script?",
+        options: [
+          "Tell direct execution to use the Bash interpreter",
+          "Grant the script root access",
+          "Create an executable permission bit",
+          "Declare a multiline comment"
+        ],
+        answer: "Tell direct execution to use the Bash interpreter",
+        explanation: "The shebang identifies the interpreter when the executable file is launched directly."
+      },
+      {
+        category: "Scripts & Comments",
+        q: "A script has no shebang but contains valid Bash commands. Which invocation can still run it explicitly with Bash?",
+        options: [
+          "bash hello.sh",
+          "mkdir hello.sh",
+          "cd hello.sh",
+          "echo +x hello.sh"
+        ],
+        answer: "bash hello.sh",
+        explanation: "With bash hello.sh, Bash is already selected explicitly and reads the script as its input file."
+      },
+      {
+        category: "Scripts & Comments",
+        q: "Which pair prepares <code>hello.sh</code> for direct execution and then runs it?",
+        options: [
+          "chmod +x hello.sh followed by ./hello.sh",
+          "chmod -x hello.sh followed by cd hello.sh",
+          "mkdir hello.sh followed by bash -n",
+          "echo hello.sh followed by pwd"
+        ],
+        answer: "chmod +x hello.sh followed by ./hello.sh",
+        explanation: "Direct execution needs the execute permission, and ./ selects the file from the current directory."
+      },
+      {
+        category: "Scripts & Comments",
+        q: "Which pattern is commonly used to hold a multiline descriptive block that Bash will not execute?",
+        options: [
+          ": <<'COMMENT' followed by text and a closing COMMENT",
+          "# only on the first line followed by active commands",
+          "echo << followed by executable commands",
+          "chmod <<COMMENT followed by a filename"
+        ],
+        answer: ": <<'COMMENT' followed by text and a closing COMMENT",
+        explanation: "This sends a quoted here-document to the no-op command :. It is a common Bash technique, although separate # comments are often clearer."
+      },
+      {
+        category: "Variables & Input",
+        q: "Which is a valid Bash variable assignment?",
+        options: [
+          "name=ali",
+          "name = ali",
+          "$name=ali",
+          "name: ali"
+        ],
+        answer: "name=ali",
+        explanation: "A Bash assignment has no spaces around = and does not use $ on the variable name."
+      },
+      {
+        category: "Variables & Input",
+        q: "Given <code>name=ali</code>, which command prints “Name is ali”?",
+        options: [
+          "echo \"Name is $name\"",
+          "echo \"Name is name\"",
+          "echo 'Name is $name'",
+          "echo name=\"$ali\""
+        ],
+        answer: "echo \"Name is $name\"",
+        explanation: "The $ expands the variable, and double quotes allow expansion while keeping the result together."
+      },
+      {
+        category: "Variables & Input",
+        q: "Why does <code>echo \"name is name\"</code> print the word “name” instead of the stored value?",
+        options: [
+          "It does not use $name for variable expansion",
+          "The echo command cannot print variables",
+          "Bash variables require sudo",
+          "The variable must be stored in /etc/passwd"
+        ],
+        answer: "It does not use $name for variable expansion",
+        explanation: "Without $, Bash treats name as ordinary literal text rather than a variable reference."
+      },
+      {
+        category: "Variables & Input",
+        q: "Which command safely prompts for a username and stores it in <code>username</code>?",
+        options: [
+          "read -r -p \"Enter username: \" username",
+          "echo -p username",
+          "username read Enter username",
+          "useradd read username"
+        ],
+        answer: "read -r -p \"Enter username: \" username",
+        explanation: "read stores input in the named variable; -p displays a prompt and -r prevents backslash interpretation."
+      },
+      {
+        category: "Variables & Input",
+        q: "Why should the expansion be quoted in <code>echo \"You entered $username\"</code>?",
+        options: [
+          "To prevent unintended word splitting and pathname expansion",
+          "To create the user automatically",
+          "To make the variable permanent",
+          "To convert the username to a UID"
+        ],
+        answer: "To prevent unintended word splitting and pathname expansion",
+        explanation: "Double quotes make expansions predictable and are a safe default for user-supplied values."
+      },
+      {
+        category: "Command Logic",
+        q: "What does <code>mkdir d1 &amp;&amp; cd d1</code> mean?",
+        options: [
+          "Change into d1 only if mkdir succeeds",
+          "Always run cd d1 even if mkdir fails",
+          "Run both commands in the background",
+          "Delete d1 after creating it"
+        ],
+        answer: "Change into d1 only if mkdir succeeds",
+        explanation: "The right side of && runs only when the command on the left returns a successful status."
+      },
+      {
+        category: "Command Logic",
+        q: "What does <code>cd /missing || cd d1</code> do when <code>/missing</code> does not exist?",
+        options: [
+          "It attempts cd d1 as a fallback",
+          "It stops before cd d1",
+          "It creates /missing automatically",
+          "It changes the user's login shell"
+        ],
+        answer: "It attempts cd d1 as a fallback",
+        explanation: "The right side of || runs when the command on the left returns a nonzero status."
+      },
+      {
+        category: "Command Logic",
+        q: "A script reports <code>user: command not found</code> after a line intended as an assignment. What is the likely mistake?",
+        options: [
+          "Spaces were placed around =, such as user = name",
+          "The variable name was lowercase",
+          "The script used echo",
+          "The script contained a shebang"
+        ],
+        answer: "Spaces were placed around =, such as user = name",
+        explanation: "With spaces, Bash treats user as a command name. The valid assignment form is user=name."
+      },
+      {
+        category: "User Management & Safety",
+        q: "What does the <code>-m</code option request in <code>useradd -m</code>?",
+        options: [
+          "Create the user's home directory",
+          "Make the user a system administrator",
+          "Modify every existing user",
+          "Move /etc/passwd"
+        ],
+        answer: "Create the user's home directory",
+        explanation: "useradd -m creates the account's home directory when it does not already exist."
+      },
+      {
+        category: "User Management & Safety",
+        q: "Which command is the clearest exact check for whether user <code>ali</code> exists?",
+        options: [
+          "getent passwd ali",
+          "grep ali /etc/passwd without anchors",
+          "ls ali",
+          "echo ali"
+        ],
+        answer: "getent passwd ali",
+        explanation: "getent queries the configured account database for the exact username and also works with supported directory services."
+      },
+      {
+        category: "User Management & Safety",
+        q: "Why can <code>grep ali /etc/passwd</code> produce a misleading result?",
+        options: [
+          "It can also match usernames containing ali, such as khalid",
+          "grep always creates a new user",
+          "/etc/passwd contains only passwords",
+          "grep silently changes the user's UID"
+        ],
+        answer: "It can also match usernames containing ali, such as khalid",
+        explanation: "An unanchored substring search can match other account records. getent passwd ali is more precise."
+      },
+      {
+        category: "User Management & Safety",
+        q: "The command reports <code>user 'ali' already exists</code>, but the script then prints <code>New user added ali</code>. What is wrong?",
+        options: [
+          "The success message is unconditional",
+          "The id command changed the username",
+          "The shebang deleted the user",
+          "The username must be uppercase"
+        ],
+        answer: "The success message is unconditional",
+        explanation: "The echo command runs regardless of useradd's status, so it can report success after a failure."
+      },
+      {
+        category: "User Management & Safety",
+        q: "Which command prints success only when account creation succeeds?",
+        options: [
+          "sudo useradd -m \"$username\" &amp;&amp; echo \"New user added $username\"",
+          "sudo useradd -m \"$username\" ; echo success",
+          "echo success || sudo useradd \"$username\"",
+          "echo \"$username\" &amp;&amp; getent passwd root"
+        ],
+        answer: "sudo useradd -m \"$username\" &amp;&amp; echo \"New user added $username\"",
+        explanation: "With &&, the success message runs only after useradd returns status 0."
+      },
+      {
+        category: "User Management & Safety",
+        q: "Which check should occur before attempting to create a requested username?",
+        options: [
+          "Determine whether the account already exists",
+          "Delete /etc/passwd",
+          "Disable all existing users",
+          "Change the current user's UID"
+        ],
+        answer: "Determine whether the account already exists",
+        explanation: "An existence check prevents a predictable useradd failure and lets the script display an accurate message."
+      },
+      {
+        category: "User Management & Safety",
+        q: "Which is the safest complete workflow for a beginner user-creation script?",
+        options: [
+          "Read and validate input, check existence, run quoted useradd with privilege, verify, then report the result",
+          "Run useradd with an unquoted empty variable and always print success",
+          "Edit /etc/passwd manually without validation",
+          "Use grep on every system file and ignore exit statuses"
+        ],
+        answer: "Read and validate input, check existence, run quoted useradd with privilege, verify, then report the result",
+        explanation: "Reliable automation validates data, checks current state, performs the change safely, verifies it, and reports the true outcome."
+      }
+    ];
+
+    const QUIZ_SECONDS = 20 * 60;
+    const STORAGE_KEY = "bash-output-to-user-creation-best-score";
+    const letters = ["A", "B", "C", "D"];
+
+    const state = {
+      questions: [],
+      secondsRemaining: QUIZ_SECONDS,
+      timerId: null,
+      submitted: false
+    };
+
+    const quizForm = document.getElementById("quizForm");
+    const progressTrack = document.getElementById("progressTrack");
+    const progressBar = document.getElementById("progressBar");
+    const progressLabel = document.getElementById("progressLabel");
+    const timerElement = document.getElementById("timer");
+    const statusLabel = document.getElementById("statusLabel");
+    const submitButton = document.getElementById("submitButton");
+    const reattemptButton = document.getElementById("reattemptButton");
+    const resultCard = document.getElementById("resultCard");
+    const reviewCard = document.getElementById("reviewCard");
+    const scoreText = document.getElementById("scoreText");
+    const scoreDetail = document.getElementById("scoreDetail");
+    const resultMessage = document.getElementById("resultMessage");
+    const correctResult = document.getElementById("correctResult");
+    const incorrectResult = document.getElementById("incorrectResult");
+    const unansweredResult = document.getElementById("unansweredResult");
+    const timeUsedResult = document.getElementById("timeUsedResult");
+    const categoryResults = document.getElementById("categoryResults");
+    const bestScore = document.getElementById("bestScore");
+
+    function shuffle(items) {
+      const result = [...items];
+      for (let index = result.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+      }
+      return result;
+    }
+
+    function formatTime(totalSeconds) {
+      const safeSeconds = Math.max(0, totalSeconds);
+      const minutes = Math.floor(safeSeconds / 60);
+      const seconds = safeSeconds % 60;
+      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
+
+    function loadBestScore() {
+      try {
+        const saved = window.localStorage.getItem(STORAGE_KEY);
+        bestScore.textContent = saved === null ? "Not attempted" : `${saved}%`;
+      } catch (error) {
+        bestScore.textContent = "This session only";
+      }
+    }
+
+    function saveBestScore(percentage) {
+      try {
+        const previous = Number(window.localStorage.getItem(STORAGE_KEY) || 0);
+        if (percentage > previous) window.localStorage.setItem(STORAGE_KEY, String(percentage));
+        loadBestScore();
+      } catch (error) {
+        bestScore.textContent = `${percentage}%`;
+      }
+    }
+
+    function createAttempt(shouldScroll = true) {
+      clearInterval(state.timerId);
+      state.questions = shuffle(lessonQuizData).map((question) => ({
+        ...question,
+        options: shuffle(question.options)
+      }));
+      state.secondsRemaining = QUIZ_SECONDS;
+      state.submitted = false;
+      resultCard.classList.remove("show");
+      reviewCard.classList.remove("show");
+      submitButton.disabled = false;
+      statusLabel.textContent = "In progress";
+      renderQuestions();
+      updateProgress();
+      updateTimer();
+      state.timerId = window.setInterval(tick, 1000);
+      if (shouldScroll) window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderQuestions() {
+      quizForm.innerHTML = "";
+
+      state.questions.forEach((question, questionIndex) => {
+        const card = document.createElement("section");
+        card.className = "question-card";
+        card.dataset.questionIndex = questionIndex;
+
+        const meta = document.createElement("div");
+        meta.className = "question-meta";
+
+        const number = document.createElement("span");
+        number.className = "question-number";
+        number.textContent = `Question ${questionIndex + 1} of ${state.questions.length}`;
+
+        const category = document.createElement("span");
+        category.className = "category";
+        category.textContent = question.category;
+        meta.append(number, category);
+
+        const heading = document.createElement("h2");
+        heading.innerHTML = question.q;
+
+        const options = document.createElement("div");
+        options.className = "options";
+
+        question.options.forEach((optionText, optionIndex) => {
+          const label = document.createElement("label");
+          label.className = "option";
+          label.dataset.option = optionText;
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = `question-${questionIndex}`;
+          input.value = optionText;
+          input.id = `question-${questionIndex}-option-${optionIndex}`;
+          input.addEventListener("change", () => {
+            card.classList.remove("unanswered");
+            updateProgress();
+          });
+
+          const letter = document.createElement("span");
+          letter.className = "option-letter";
+          letter.textContent = `${letters[optionIndex]}.`;
+
+          const text = document.createElement("span");
+          text.textContent = optionText;
+          label.append(input, letter, text);
+          options.append(label);
+        });
+
+        const explanation = document.createElement("div");
+        explanation.className = "explanation";
+        explanation.innerHTML = `<strong>Explanation:</strong> ${question.explanation}`;
+
+        card.append(meta, heading, options, explanation);
+        quizForm.append(card);
+      });
+    }
+
+    function updateProgress() {
+      const answered = quizForm.querySelectorAll('input[type="radio"]:checked').length;
+      const percentage = (answered / state.questions.length) * 100;
+      progressBar.style.width = `${percentage}%`;
+      progressTrack.setAttribute("aria-valuenow", String(answered));
+      progressLabel.textContent = `${answered} of ${state.questions.length} answered`;
+    }
+
+    function updateTimer() {
+      timerElement.textContent = formatTime(state.secondsRemaining);
+      timerElement.classList.toggle("warning", state.secondsRemaining <= 300);
+    }
+
+    function tick() {
+      state.secondsRemaining -= 1;
+      updateTimer();
+      if (state.secondsRemaining <= 0) {
+        clearInterval(state.timerId);
+        submitQuiz(true);
+      }
+    }
+
+    function highlightUnanswered() {
+      const unansweredCards = [];
+      state.questions.forEach((question, index) => {
+        const card = quizForm.querySelector(`[data-question-index="${index}"]`);
+        if (!card.querySelector('input[type="radio"]:checked')) {
+          card.classList.add("unanswered");
+          unansweredCards.push(card);
+        }
+      });
+      return unansweredCards;
+    }
+
+    function buildCategoryReport(categoryStats) {
+      categoryResults.innerHTML = "";
+      Object.entries(categoryStats)
+        .sort(([first], [second]) => first.localeCompare(second))
+        .forEach(([name, stats]) => {
+          const percentage = Math.round((stats.correct / stats.total) * 100);
+          const row = document.createElement("div");
+          row.className = "category-row";
+          row.innerHTML = `
+            <strong>${name}</strong>
+            <div class="mini-track" aria-label="${name}: ${percentage}%">
+              <div class="mini-bar" style="width: ${percentage}%"></div>
+            </div>
+            <span>${stats.correct}/${stats.total}</span>
+          `;
+          categoryResults.append(row);
+        });
+    }
+
+    function submitQuiz(autoSubmitted = false) {
+      if (state.submitted) return;
+
+      const unansweredCards = highlightUnanswered();
+      if (!autoSubmitted && unansweredCards.length > 0) {
+        const proceed = window.confirm(`${unansweredCards.length} question(s) are unanswered. Submit anyway?`);
+        if (!proceed) {
+          unansweredCards[0].scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
+      }
+
+      state.submitted = true;
+      clearInterval(state.timerId);
+
+      let correct = 0;
+      let unanswered = 0;
+      const categoryStats = {};
+
+      state.questions.forEach((question, questionIndex) => {
+        const card = quizForm.querySelector(`[data-question-index="${questionIndex}"]`);
+        const selected = card.querySelector('input[type="radio"]:checked');
+        const labels = card.querySelectorAll(".option");
+
+        if (!categoryStats[question.category]) {
+          categoryStats[question.category] = { correct: 0, total: 0 };
+        }
+        categoryStats[question.category].total += 1;
+
+        labels.forEach((label) => {
+          const option = label.dataset.option;
+          if (option === question.answer) label.classList.add("correct");
+          if (selected && option === selected.value && selected.value !== question.answer) {
+            label.classList.add("incorrect");
+          }
+        });
+
+        if (!selected) {
+          unanswered += 1;
+        } else if (selected.value === question.answer) {
+          correct += 1;
+          categoryStats[question.category].correct += 1;
+        }
+
+        card.querySelectorAll("input").forEach((input) => { input.disabled = true; });
+        card.querySelector(".explanation").classList.add("show");
+      });
+
+      const incorrect = state.questions.length - correct - unanswered;
+      const percentage = Math.round((correct / state.questions.length) * 100);
+      const elapsed = QUIZ_SECONDS - state.secondsRemaining;
+
+      scoreText.textContent = `${percentage}%`;
+      scoreDetail.textContent = `${correct} of ${state.questions.length} correct`;
+      correctResult.textContent = String(correct);
+      incorrectResult.textContent = String(incorrect);
+      unansweredResult.textContent = String(unanswered);
+      timeUsedResult.textContent = formatTime(elapsed);
+
+      if (percentage >= 90) {
+        resultMessage.textContent = "Excellent work — you understand the full lesson from Bash output through safe Linux user creation.";
+      } else if (percentage >= 80) {
+        resultMessage.textContent = "Passed — review the missed explanations and repeat those commands in your terminal for confidence.";
+      } else if (percentage >= 60) {
+        resultMessage.textContent = "Good progress — revisit exit status, variable expansion, command logic, and user checks before reattempting.";
+      } else {
+        resultMessage.textContent = "More practice is needed — repeat today’s terminal exercises, correct the scripts, and reattempt the shuffled quiz.";
+      }
+
+      buildCategoryReport(categoryStats);
+      saveBestScore(percentage);
+      submitButton.disabled = true;
+      statusLabel.textContent = autoSubmitted ? "Time expired" : percentage >= 80 ? "Passed" : "Review required";
+      resultCard.classList.add("show");
+      reviewCard.classList.add("show");
+      resultCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    submitButton.addEventListener("click", () => submitQuiz(false));
+    reattemptButton.addEventListener("click", () => createAttempt(true));
+
+    loadBestScore();
+    createAttempt(false);
+  </script>
+</body>
+</html>
