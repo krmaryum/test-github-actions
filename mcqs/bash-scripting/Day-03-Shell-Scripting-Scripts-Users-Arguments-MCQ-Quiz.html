@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive 25-question Day 3 Shell Scripting quiz covering Bash scripts, user creation, permissions, exit status, and arguments.">
+  <title>Day 3 Shell Scripting — MCQ Quiz</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #060b18;
+      --panel: #10192b;
+      --panel-2: #16233a;
+      --option: #0a1425;
+      --text: #eef6ff;
+      --muted: #a5b7cf;
+      --cyan: #22d3ee;
+      --green: #4ade80;
+      --purple: #a78bfa;
+      --success: #34d399;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --border: #2b4162;
+      --shadow: 0 18px 52px rgb(0 0 0 / 32%);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      line-height: 1.55;
+      background:
+        radial-gradient(circle at 90% 0%, rgb(34 211 238 / 17%), transparent 31rem),
+        radial-gradient(circle at 0% 18%, rgb(167 139 250 / 15%), transparent 30rem),
+        var(--bg);
+    }
+
+    button, input { font: inherit; }
+
+    code {
+      color: #b9f6ff;
+      background: #071222;
+      border: 1px solid #203653;
+      border-radius: 5px;
+      padding: .08rem .34rem;
+    }
+
+    .container {
+      width: min(1000px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 64px;
+    }
+
+    .hero, .toolbar, .question-card, .result-card, .notice {
+      background: rgb(16 25 43 / 95%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "$ _";
+      position: absolute;
+      right: 28px;
+      top: 20px;
+      color: rgb(74 222 128 / 16%);
+      font: 900 5.5rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--green);
+      font-weight: 850;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+      font-size: .78rem;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(1.9rem, 5vw, 3.1rem);
+      line-height: 1.12;
+    }
+
+    .hero > p:not(.eyebrow) { max-width: 790px; color: var(--muted); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .stat {
+      padding: 14px;
+      border-radius: 13px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+    }
+
+    .stat span { display: block; color: var(--muted); font-size: .78rem; }
+    .stat strong { font-size: 1.12rem; }
+
+    .notice {
+      margin-top: 16px;
+      padding: 14px 18px;
+      color: var(--muted);
+    }
+
+    .notice strong { color: var(--cyan); }
+
+    .toolbar {
+      position: sticky;
+      top: 10px;
+      z-index: 10;
+      margin: 18px 0;
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .progress-track {
+      height: 10px;
+      background: #050d19;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--cyan), var(--purple));
+      transition: width .25s ease;
+    }
+
+    .toolbar-label { color: var(--muted); font-size: .82rem; margin-top: 5px; }
+    .timer { font-weight: 900; font-variant-numeric: tabular-nums; }
+    .timer.warning, .warning { color: var(--warning); }
+
+    .question-card {
+      padding: 22px;
+      margin-bottom: 16px;
+      transition: border-color .2s ease, transform .2s ease;
+    }
+
+    .question-card.unanswered {
+      border-color: var(--warning);
+      box-shadow: 0 0 0 2px rgb(251 191 36 / 16%);
+    }
+
+    .question-card h2 { margin: 0 0 16px; font-size: 1.06rem; }
+    .question-number { color: var(--cyan); margin-right: 6px; }
+
+    .options { display: grid; gap: 10px; }
+
+    .option {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: start;
+      gap: 11px;
+      padding: 13px 14px;
+      border-radius: 12px;
+      background: var(--option);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+
+    .option:hover { transform: translateY(-1px); border-color: var(--cyan); }
+    .option:has(input:checked) { background: #113149; border-color: var(--cyan); }
+    .option.correct { background: rgb(16 90 68 / 48%); border-color: var(--success); }
+    .option.incorrect { background: rgb(120 28 52 / 43%); border-color: var(--danger); }
+    .option input { margin-top: 4px; accent-color: var(--cyan); }
+
+    .explanation {
+      display: none;
+      margin-top: 14px;
+      padding: 13px 15px;
+      border-left: 4px solid var(--purple);
+      border-radius: 8px;
+      background: #081322;
+      color: var(--muted);
+    }
+
+    .explanation.show { display: block; }
+    .explanation strong { color: var(--text); }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin: 28px 0;
+    }
+
+    .button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 21px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .primary { color: #03151b; background: linear-gradient(135deg, var(--green), var(--cyan)); }
+    .secondary { color: var(--text); background: var(--panel-2); border: 1px solid var(--border); }
+    .button:disabled { opacity: .5; cursor: not-allowed; }
+
+    .result-card { display: none; padding: 27px; margin: 20px 0; text-align: center; }
+    .result-card.show { display: block; }
+    .score { font-size: clamp(2.5rem, 8vw, 4.8rem); font-weight: 950; color: var(--cyan); }
+    .result-message { color: var(--muted); }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 560px;
+      margin: 18px auto 0;
+    }
+
+    .result-grid div {
+      padding: 10px;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      border-radius: 10px;
+    }
+
+    .result-grid span { display: block; color: var(--muted); font-size: .76rem; }
+
+    footer { text-align: center; color: var(--muted); padding-top: 24px; }
+
+    @media (max-width: 700px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .toolbar { grid-template-columns: 1fr auto; }
+      .toolbar > div:first-child { grid-column: 1 / -1; }
+      .result-grid { grid-template-columns: 1fr; }
+      .hero::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <p class="eyebrow">NIT · Day 3 · Shell Scripting</p>
+      <h1>Bash Scripts, User Creation &amp; Arguments Quiz</h1>
+      <p>Test the exact Day 3 lesson: shebang, syntax checking, execution permissions, safe user creation, password handling, user verification, exit status, and positional arguments.</p>
+      <div class="stats">
+        <div class="stat"><span>Questions</span><strong>25</strong></div>
+        <div class="stat"><span>Time limit</span><strong>25 min</strong></div>
+        <div class="stat"><span>Passing score</span><strong>80%</strong></div>
+        <div class="stat"><span>Explanations</span><strong>After submit</strong></div>
+      </div>
+    </section>
+
+    <aside class="notice">
+      <strong>Quiz behavior:</strong> Questions and answer choices are shuffled on every attempt. Unanswered questions are highlighted before submission. When time expires, the quiz submits automatically.
+    </aside>
+
+    <section class="toolbar" aria-label="Quiz status">
+      <div>
+        <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="toolbar-label" id="progressLabel">0 of 25 answered</div>
+      </div>
+      <div>Time: <span class="timer" id="timer">25:00</span></div>
+      <div id="statusLabel">In progress</div>
+    </section>
+
+    <form id="quizForm"></form>
+
+    <div class="actions">
+      <button class="button primary" id="submitButton" type="button">Submit Quiz</button>
+      <button class="button secondary" id="reattemptButton" type="button">Reattempt &amp; Shuffle</button>
+    </div>
+
+    <section class="result-card" id="resultCard" aria-live="polite">
+      <p class="eyebrow">Your Result</p>
+      <div class="score" id="scoreText">0%</div>
+      <h2 id="scoreDetail"></h2>
+      <p class="result-message" id="resultMessage"></p>
+      <div class="result-grid">
+        <div><span>Correct</span><strong id="correctCount">0</strong></div>
+        <div><span>Incorrect</span><strong id="incorrectCount">0</strong></div>
+        <div><span>Unanswered</span><strong id="unansweredCount">0</strong></div>
+      </div>
+    </section>
+
+    <footer>
+      <p>NIT Shell Scripting · Day 3 · Learn Bash by Doing</p>
+    </footer>
+  </main>
+
+  <script>
+    const quizData = [
+      {
+        q: "What is the main purpose of the first line #!/bin/bash?",
+        options: ["Tell Linux to use Bash", "Create a new Bash user", "Give the script root permission", "Check the script syntax"],
+        answer: "Tell Linux to use Bash",
+        explanation: "The shebang tells Linux which interpreter should read the script when it is executed directly."
+      },
+      {
+        q: "Which command checks a Bash script for syntax errors without running it?",
+        options: ["bash -n create_user.sh", "bash -x create_user.sh", "chmod u+x create_user.sh", "cat create_user.sh"],
+        answer: "bash -n create_user.sh",
+        explanation: "bash -n parses the script without executing its commands. No output normally means no syntax error was found."
+      },
+      {
+        q: "What does chmod u+x arg.sh do?",
+        options: ["Adds execute permission for the owner", "Runs arg.sh as root", "Checks arguments in arg.sh", "Removes write permission from everyone"],
+        answer: "Adds execute permission for the owner",
+        explanation: "u means the file owner, + means add, and x means execute permission."
+      },
+      {
+        q: "Why is ./arg.sh normally used instead of only arg.sh?",
+        options: ["./ identifies the script in the current directory", "./ automatically runs the script with sudo", "./ creates missing arguments", "./ disables the shebang"],
+        answer: "./ identifies the script in the current directory",
+        explanation: "The current directory is normally not searched through PATH, so ./ gives Bash an explicit relative path."
+      },
+      {
+        q: "What does $0 contain inside arg.sh?",
+        options: ["The script name or path", "The first argument", "The number of arguments", "The previous exit status"],
+        answer: "The script name or path",
+        explanation: "$0 shows how the script was invoked, such as ./arg.sh."
+      },
+      {
+        q: "In ./arg.sh apple banana, what is the value of $1?",
+        options: ["apple", "banana", "./arg.sh", "2"],
+        answer: "apple",
+        explanation: "$1 is the first value supplied after the script name."
+      },
+      {
+        q: "In ./arg.sh apple banana, what is the value of $2?",
+        options: ["banana", "apple", "./arg.sh", "0"],
+        answer: "banana",
+        explanation: "$2 contains the second positional argument."
+      },
+      {
+        q: "What does $# display?",
+        options: ["The number of arguments", "All arguments separately", "The script process ID", "The last argument only"],
+        answer: "The number of arguments",
+        explanation: "$# counts the arguments supplied after the script name; $0 is not included in the count."
+      },
+      {
+        q: "Which expansion is recommended for passing all arguments while preserving them separately?",
+        options: ["\"$@\"", "\"$*\"", "$#", "$0"],
+        answer: "\"$@\"",
+        explanation: "Quoted $@ preserves every argument as a separate value, including arguments containing spaces."
+      },
+      {
+        q: "When quoted, what does \"$*\" represent?",
+        options: ["All arguments combined as one string", "Only the first argument", "The argument count", "The script filename"],
+        answer: "All arguments combined as one string",
+        explanation: "Quoted $* joins all positional arguments into one combined string."
+      },
+      {
+        q: "How should a single argument containing a space be passed?",
+        options: ["./arg.sh \"Muhammad Ali\"", "./arg.sh Muhammad Ali", "./arg.sh $Muhammad $Ali", "./arg.sh {Muhammad Ali}"],
+        answer: "./arg.sh \"Muhammad Ali\"",
+        explanation: "Quotation marks keep Muhammad Ali together as one argument instead of two."
+      },
+      {
+        q: "What happens to $1 when ./arg.sh is run with no arguments?",
+        options: ["It is empty", "It automatically becomes 0", "It contains ./arg.sh", "It contains the username"],
+        answer: "It is empty",
+        explanation: "If no first argument is supplied, $1 expands to an empty value."
+      },
+      {
+        q: "What does read -r -p \"Enter username: \" username do?",
+        options: ["Prompts for input and stores it in username", "Creates the user immediately", "Reads the first script argument", "Prints the password database"],
+        answer: "Prompts for input and stores it in username",
+        explanation: "-p displays the prompt, -r prevents backslash interpretation, and the answer is stored in username."
+      },
+      {
+        q: "Why should the script use \"$username\" instead of $username?",
+        options: ["To preserve the value as one argument", "To make the user an administrator", "To encrypt the username", "To export it to every process"],
+        answer: "To preserve the value as one argument",
+        explanation: "Double quotes prevent unintended word splitting and wildcard expansion."
+      },
+      {
+        q: "What does useradd -m -s /bin/bash nit request?",
+        options: ["Create nit with a home directory and Bash login shell", "Delete nit and its home directory", "Create only a group named nit", "Change the current user to nit"],
+        answer: "Create nit with a home directory and Bash login shell",
+        explanation: "-m creates the home directory and -s /bin/bash assigns Bash as the login shell."
+      },
+      {
+        q: "Why is sudo normally required with useradd?",
+        options: ["Creating system accounts requires administrative privileges", "useradd is a Bash argument", "sudo checks script syntax", "sudo gives every user the same password"],
+        answer: "Creating system accounts requires administrative privileges",
+        explanation: "System account databases such as /etc/passwd cannot normally be changed by an unprivileged user."
+      },
+      {
+        q: "Which command safely starts an interactive password change for user nit on Ubuntu?",
+        options: ["sudo passwd nit", "passwd --stdin nit", "echo nit", "getent passwd nit"],
+        answer: "sudo passwd nit",
+        explanation: "Ubuntu supports sudo passwd username for an interactive password change; passwd --stdin is not supported there."
+      },
+      {
+        q: "What does echo \"$username:$username@123\" | sudo chpasswd do in the classroom lab?",
+        options: ["Sets a temporary password from standard input", "Displays the user's UID", "Deletes the password", "Changes the user's login shell"],
+        answer: "Sets a temporary password from standard input",
+        explanation: "chpasswd reads username:password pairs from standard input. Predictable passwords are suitable only for a controlled lab."
+      },
+      {
+        q: "What is the purpose of sudo chage -d 0 \"$username\"?",
+        options: ["Force a password change at the next login", "Delete the user's home directory", "Set the UID to zero", "Disable the login shell"],
+        answer: "Force a password change at the next login",
+        explanation: "Setting the last password-change date to 0 makes the password expired, so the user must change it at login."
+      },
+      {
+        q: "Which command displays a user's UID, GID, and group memberships?",
+        options: ["id nit", "pwd nit", "chmod nit", "bash -n nit"],
+        answer: "id nit",
+        explanation: "id reports identity information, including UID, primary GID, and supplementary groups."
+      },
+      {
+        q: "What does getent passwd nit verify?",
+        options: ["The account database entry for nit", "The plaintext password for nit", "The script's execute permission", "The number of script arguments"],
+        answer: "The account database entry for nit",
+        explanation: "getent queries the configured account database and shows fields such as UID, home directory, and login shell."
+      },
+      {
+        q: "Why did useradd report user 'zak' already exists?",
+        options: ["An account named zak was already present", "The script had no shebang", "zak was passed as $0", "The home directory was empty"],
+        answer: "An account named zak was already present",
+        explanation: "Linux usernames must be unique. The existing account must be handled or removed before recreating it."
+      },
+      {
+        q: "Why did userdel -r zak fail without sudo?",
+        options: ["Deleting an account requires administrative privileges", "-r is not a valid option", "zak was the first argument", "The script was not executable"],
+        answer: "Deleting an account requires administrative privileges",
+        explanation: "Updating system account files and removing another user's home directory require root privileges."
+      },
+      {
+        q: "What does an exit status of 0 normally mean?",
+        options: ["The command succeeded", "The command failed", "The script has zero arguments", "The current user is root"],
+        answer: "The command succeeded",
+        explanation: "Linux commands normally return 0 for success and a non-zero status for failure or another defined condition."
+      },
+      {
+        q: "In command1 && command2, when does command2 run?",
+        options: ["Only when command1 succeeds", "Only when command1 fails", "Before command1", "Only when command1 prints output"],
+        answer: "Only when command1 succeeds",
+        explanation: "&& continues to the next command only when the previous command returns exit status 0."
+      }
+    ];
+
+    const state = {
+      questions: [],
+      secondsRemaining: 25 * 60,
+      timerId: null,
+      submitted: false,
+      startedAt: null
+    };
+
+    const quizForm = document.getElementById("quizForm");
+    const progressBar = document.getElementById("progressBar");
+    const progressLabel = document.getElementById("progressLabel");
+    const timerElement = document.getElementById("timer");
+    const statusLabel = document.getElementById("statusLabel");
+    const submitButton = document.getElementById("submitButton");
+    const reattemptButton = document.getElementById("reattemptButton");
+    const resultCard = document.getElementById("resultCard");
+    const scoreText = document.getElementById("scoreText");
+    const scoreDetail = document.getElementById("scoreDetail");
+    const resultMessage = document.getElementById("resultMessage");
+    const correctCount = document.getElementById("correctCount");
+    const incorrectCount = document.getElementById("incorrectCount");
+    const unansweredCount = document.getElementById("unansweredCount");
+
+    function shuffle(items) {
+      const result = [...items];
+      for (let index = result.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+      }
+      return result;
+    }
+
+    function createAttempt() {
+      clearInterval(state.timerId);
+      state.questions = shuffle(quizData).map((question) => ({
+        ...question,
+        options: shuffle(question.options)
+      }));
+      state.secondsRemaining = 25 * 60;
+      state.submitted = false;
+      state.startedAt = Date.now();
+      resultCard.classList.remove("show");
+      submitButton.disabled = false;
+      statusLabel.textContent = "In progress";
+      renderQuestions();
+      updateProgress();
+      updateTimer();
+      state.timerId = setInterval(tick, 1000);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderQuestions() {
+      quizForm.innerHTML = "";
+      state.questions.forEach((question, questionIndex) => {
+        const card = document.createElement("section");
+        card.className = "question-card";
+        card.dataset.questionIndex = questionIndex;
+
+        const heading = document.createElement("h2");
+        const number = document.createElement("span");
+        number.className = "question-number";
+        number.textContent = `${questionIndex + 1}.`;
+        heading.append(number, document.createTextNode(` ${question.q}`));
+
+        const options = document.createElement("div");
+        options.className = "options";
+
+        question.options.forEach((optionText, optionIndex) => {
+          const label = document.createElement("label");
+          label.className = "option";
+          label.dataset.option = optionText;
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = `question-${questionIndex}`;
+          input.value = optionText;
+          input.id = `question-${questionIndex}-option-${optionIndex}`;
+          input.addEventListener("change", () => {
+            card.classList.remove("unanswered");
+            updateProgress();
+          });
+
+          const text = document.createElement("span");
+          text.textContent = optionText;
+          label.append(input, text);
+          options.append(label);
+        });
+
+        const explanation = document.createElement("div");
+        explanation.className = "explanation";
+        explanation.innerHTML = `<strong>Explanation:</strong> ${question.explanation}`;
+
+        card.append(heading, options, explanation);
+        quizForm.append(card);
+      });
+    }
+
+    function updateProgress() {
+      const answered = quizForm.querySelectorAll('input[type="radio"]:checked').length;
+      const percentage = (answered / state.questions.length) * 100;
+      progressBar.style.width = `${percentage}%`;
+      progressLabel.textContent = `${answered} of ${state.questions.length} answered`;
+    }
+
+    function updateTimer() {
+      const minutes = Math.floor(state.secondsRemaining / 60);
+      const seconds = state.secondsRemaining % 60;
+      timerElement.textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+      timerElement.classList.toggle("warning", state.secondsRemaining <= 300);
+    }
+
+    function tick() {
+      state.secondsRemaining -= 1;
+      updateTimer();
+      if (state.secondsRemaining <= 0) {
+        clearInterval(state.timerId);
+        submitQuiz(true, true);
+      }
+    }
+
+    function highlightUnanswered() {
+      let firstUnanswered = null;
+      state.questions.forEach((question, questionIndex) => {
+        const card = quizForm.querySelector(`[data-question-index="${questionIndex}"]`);
+        const selected = card.querySelector('input[type="radio"]:checked');
+        card.classList.toggle("unanswered", !selected);
+        if (!selected && !firstUnanswered) firstUnanswered = card;
+      });
+      return firstUnanswered;
+    }
+
+    function requestSubmission() {
+      const answered = quizForm.querySelectorAll('input[type="radio"]:checked').length;
+      const remaining = state.questions.length - answered;
+      if (remaining > 0) {
+        const firstUnanswered = highlightUnanswered();
+        const proceed = window.confirm(`${remaining} question(s) are unanswered. Submit anyway?`);
+        if (!proceed) {
+          firstUnanswered?.scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
+      }
+      submitQuiz(false, true);
+    }
+
+    function submitQuiz(autoSubmitted = false, confirmed = false) {
+      if (state.submitted || !confirmed) return;
+      state.submitted = true;
+      clearInterval(state.timerId);
+
+      let correct = 0;
+      let unanswered = 0;
+
+      state.questions.forEach((question, questionIndex) => {
+        const card = quizForm.querySelector(`[data-question-index="${questionIndex}"]`);
+        const selected = card.querySelector('input[type="radio"]:checked');
+        const labels = card.querySelectorAll(".option");
+
+        if (!selected) unanswered += 1;
+        card.classList.remove("unanswered");
+
+        labels.forEach((label) => {
+          const option = label.dataset.option;
+          if (option === question.answer) label.classList.add("correct");
+          if (selected && option === selected.value && selected.value !== question.answer) {
+            label.classList.add("incorrect");
+          }
+        });
+
+        if (selected && selected.value === question.answer) correct += 1;
+        card.querySelectorAll("input").forEach((input) => { input.disabled = true; });
+        card.querySelector(".explanation").classList.add("show");
+      });
+
+      const incorrect = state.questions.length - correct - unanswered;
+      const percentage = Math.round((correct / state.questions.length) * 100);
+      scoreText.textContent = `${percentage}%`;
+      scoreDetail.textContent = `${correct} of ${state.questions.length} correct`;
+      correctCount.textContent = correct;
+      incorrectCount.textContent = incorrect;
+      unansweredCount.textContent = unanswered;
+
+      if (percentage >= 90) {
+        resultMessage.textContent = "Excellent — you have a strong command of the Day 3 Bash lesson.";
+      } else if (percentage >= 80) {
+        resultMessage.textContent = "Passed — review the missed explanations and repeat the related commands.";
+      } else if (percentage >= 60) {
+        resultMessage.textContent = "Developing — revisit arguments, user verification, permissions, and exit status.";
+      } else {
+        resultMessage.textContent = "Foundation review required — practise the scripts, read the explanations, and reattempt.";
+      }
+
+      submitButton.disabled = true;
+      statusLabel.textContent = autoSubmitted ? "Time expired" : "Submitted";
+      resultCard.classList.add("show");
+      resultCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    submitButton.addEventListener("click", requestSubmission);
+    reattemptButton.addEventListener("click", createAttempt);
+    createAttempt();
+  </script>
+</body>
+</html>
