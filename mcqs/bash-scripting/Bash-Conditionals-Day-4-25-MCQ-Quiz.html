@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive 25-question Bash Day 4 conditionals quiz covering if, elif, else, fi, double brackets, user input, syntax checks, permissions, and terminal recording.">
+  <title>Bash Conditionals Day 4 — 25 MCQ Quiz</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: #101e31;
+      --panel-2: #162740;
+      --text: #ecf4ff;
+      --muted: #9eb0c8;
+      --accent: #4fd1c5;
+      --accent-2: #60a5fa;
+      --success: #34d399;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --border: #29405f;
+      --shadow: 0 18px 50px rgb(0 0 0 / 28%);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top right, rgb(37 99 235 / 18%), transparent 32rem),
+        radial-gradient(circle at top left, rgb(20 184 166 / 13%), transparent 28rem),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    button, input { font: inherit; }
+
+    .container {
+      width: min(980px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 60px;
+    }
+
+    .hero, .toolbar, .question-card, .result-card, .notice {
+      background: rgb(16 30 49 / 94%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero { padding: 30px; }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      font-size: .76rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      line-height: 1.12;
+    }
+
+    .hero p { max-width: 780px; color: var(--muted); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .stat {
+      padding: 14px;
+      border-radius: 13px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+    }
+
+    .stat span { display: block; color: var(--muted); font-size: .78rem; }
+    .stat strong { font-size: 1.15rem; }
+
+    .toolbar {
+      position: sticky;
+      top: 10px;
+      z-index: 5;
+      margin: 18px 0;
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .progress-track {
+      height: 10px;
+      background: #081322;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width .25s ease;
+    }
+
+    .toolbar-label { color: var(--muted); font-size: .82rem; margin-top: 5px; }
+    .timer { font-weight: 900; font-variant-numeric: tabular-nums; }
+
+    .notice {
+      display: none;
+      margin: 0 0 18px;
+      padding: 13px 17px;
+      color: var(--warning);
+      border-color: rgb(251 191 36 / 55%);
+      background: rgb(89 61 8 / 45%);
+      font-weight: 750;
+    }
+
+    .notice.show { display: block; }
+
+    .question-card {
+      padding: 22px;
+      margin-bottom: 16px;
+      scroll-margin-top: 108px;
+    }
+
+    .question-card.unanswered {
+      border-color: var(--warning);
+      box-shadow: 0 0 0 2px rgb(251 191 36 / 20%);
+    }
+
+    .question-card h2 { margin: 0 0 16px; font-size: 1.05rem; }
+    .question-number { color: var(--accent); margin-right: 6px; }
+
+    code {
+      padding: .12rem .36rem;
+      border-radius: 5px;
+      background: #081322;
+      color: #c8e7ff;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    .options { display: grid; gap: 10px; }
+
+    .option {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: start;
+      gap: 11px;
+      padding: 13px 14px;
+      border-radius: 12px;
+      background: #0b1829;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+
+    .option:hover { transform: translateY(-1px); border-color: var(--accent-2); }
+    .option:has(input:checked) { background: #12334b; border-color: var(--accent); }
+    .option.correct { background: rgb(16 90 68 / 45%); border-color: var(--success); }
+    .option.incorrect { background: rgb(120 28 52 / 40%); border-color: var(--danger); }
+    .option input { margin-top: 4px; accent-color: var(--accent); }
+
+    .explanation {
+      display: none;
+      margin-top: 14px;
+      padding: 13px 15px;
+      border-left: 4px solid var(--accent-2);
+      border-radius: 8px;
+      background: #0a1728;
+      color: var(--muted);
+    }
+
+    .explanation.show { display: block; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin: 28px 0;
+    }
+
+    .button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .primary { color: #03131d; background: linear-gradient(135deg, var(--accent), #7dd3fc); }
+    .secondary { color: var(--text); background: var(--panel-2); border: 1px solid var(--border); }
+    .button:disabled { opacity: .5; cursor: not-allowed; }
+
+    .result-card {
+      display: none;
+      padding: 26px;
+      margin: 20px 0;
+      text-align: center;
+      scroll-margin-top: 105px;
+    }
+
+    .result-card.show { display: block; }
+    .score { font-size: clamp(2.4rem, 8vw, 4.8rem); font-weight: 950; color: var(--accent); }
+    .result-message, .result-meta { color: var(--muted); }
+    .result-meta { font-size: .93rem; }
+    .warning { color: var(--warning); font-weight: 750; }
+
+    footer { text-align: center; color: var(--muted); padding-top: 24px; }
+    footer a { color: var(--accent); }
+
+    @media (max-width: 700px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .toolbar { grid-template-columns: 1fr auto; }
+      .toolbar > div:first-child { grid-column: 1 / -1; }
+      .hero, .question-card { padding: 19px; }
+    }
+
+    @media print {
+      body { background: white; color: black; }
+      .toolbar, .actions, .notice { display: none !important; }
+      .hero, .question-card, .result-card { box-shadow: none; border: 1px solid #bbb; background: white; }
+      .question-card { break-inside: avoid; }
+      .option, .explanation { background: white; color: black; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <p class="eyebrow">NIT Shell Scripting · Day 4 Conditionals</p>
+      <h1>25-Question MCQ Quiz</h1>
+      <p>Test if, elif, else, fi, [[ condition ]], string decisions, read input, weather and traffic-light scripts, syntax checking, permissions, and terminal-session recording. Questions and answer choices are shuffled on every attempt.</p>
+      <div class="stats">
+        <div class="stat"><span>Questions</span><strong>25</strong></div>
+        <div class="stat"><span>Time limit</span><strong>25 min</strong></div>
+        <div class="stat"><span>Passing score</span><strong>80%</strong></div>
+        <div class="stat"><span>Attempt</span><strong id="attemptNumber">1</strong></div>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="Quiz status">
+      <div>
+        <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="toolbar-label" id="progressLabel">0 of 25 answered</div>
+      </div>
+      <div>Time: <span class="timer" id="timer">25:00</span></div>
+      <div id="statusLabel">In progress</div>
+    </section>
+
+    <div class="notice" id="unansweredNotice" role="alert"></div>
+    <form id="quizForm"></form>
+
+    <div class="actions">
+      <button class="button primary" id="submitButton" type="button">Submit Quiz</button>
+      <button class="button secondary" id="reattemptButton" type="button">Reattempt and Shuffle</button>
+    </div>
+
+    <section class="result-card" id="resultCard" aria-live="polite">
+      <p class="eyebrow">Your Result</p>
+      <div class="score" id="scoreText">0%</div>
+      <h2 id="scoreDetail"></h2>
+      <p class="result-message" id="resultMessage"></p>
+      <p class="result-meta" id="resultMeta"></p>
+    </section>
+
+    <footer>
+      <p>Prepared for Muhammad Khalid Khan · <a href="https://github.com/krmaryum">GitHub: krmaryum</a></p>
+    </footer>
+  </main>
+
+  <script>
+    const quizData = [
+          {
+                "q": "What is the main purpose of a conditional in Bash?",
+                "options": [
+                      "Make a decision and run commands based on a test",
+                      "Repeat commands forever",
+                      "Create executable permission",
+                      "Record the terminal screen"
+                ],
+                "answer": "Make a decision and run commands based on a test",
+                "explanation": "A conditional tests a situation and chooses which commands should run."
+          },
+          {
+                "q": "Which keyword starts a basic Bash conditional?",
+                "options": [
+                      "if",
+                      "then",
+                      "else",
+                      "fi"
+                ],
+                "answer": "if",
+                "explanation": "The if keyword begins the conditional and introduces the first test."
+          },
+          {
+                "q": "What does [[ condition ]] represent in Bash?",
+                "options": [
+                      "A test that becomes true or false",
+                      "A comment block",
+                      "A filename extension",
+                      "A terminal recording"
+                ],
+                "answer": "A test that becomes true or false",
+                "explanation": "Double brackets contain a Bash conditional expression that is evaluated as true or false."
+          },
+          {
+                "q": "Which keyword begins the commands that run when an if condition is true?",
+                "options": [
+                      "then",
+                      "fi",
+                      "done",
+                      "read"
+                ],
+                "answer": "then",
+                "explanation": "then marks the beginning of the command block for a successful condition."
+          },
+          {
+                "q": "What is the purpose of else?",
+                "options": [
+                      "Run a fallback block when earlier conditions are false",
+                      "Close the whole script",
+                      "Ask the user for input",
+                      "Check Bash syntax"
+                ],
+                "answer": "Run a fallback block when earlier conditions are false",
+                "explanation": "else provides a default path when no earlier if or elif condition is true."
+          },
+          {
+                "q": "When should elif be used?",
+                "options": [
+                      "When another condition must be tested",
+                      "When the script must be deleted",
+                      "When every branch should run",
+                      "When input must be recorded"
+                ],
+                "answer": "When another condition must be tested",
+                "explanation": "elif means else-if and adds another test before the final else."
+          },
+          {
+                "q": "Which keyword closes an if conditional?",
+                "options": [
+                      "fi",
+                      "done",
+                      "end",
+                      "stop"
+                ],
+                "answer": "fi",
+                "explanation": "fi is if written backward and marks the end of a Bash if statement."
+          },
+          {
+                "q": "Which is the correct one-line opening for the weather condition?",
+                "options": [
+                      "if [[ \"$weather\" = \"yes\" ]]; then",
+                      "if [[ \"$weather\" = \"yes\" ]] then",
+                      "if \"$weather\" = \"yes\"; do",
+                      "if [[$weather=yes]]; fi"
+                ],
+                "answer": "if [[ \"$weather\" = \"yes\" ]]; then",
+                "explanation": "When then is on the same line, a semicolon separates it from the completed condition."
+          },
+          {
+                "q": "Why are spaces required inside [[ and ]]?",
+                "options": [
+                      "Bash must recognize the brackets and expression as separate tokens",
+                      "Spaces make the script executable",
+                      "Spaces automatically quote variables",
+                      "Spaces record the command"
+                ],
+                "answer": "Bash must recognize the brackets and expression as separate tokens",
+                "explanation": "The brackets are Bash syntax and must be separated from the condition by spaces."
+          },
+          {
+                "q": "What does = mean in [[ \"$light\" = \"red\" ]]?",
+                "options": [
+                      "Compare two strings for equality",
+                      "Assign red to the variable",
+                      "Compare two numbers",
+                      "Redirect standard output"
+                ],
+                "answer": "Compare two strings for equality",
+                "explanation": "Inside this conditional, = checks whether the two string values are equal."
+          },
+          {
+                "q": "Why is \"$weather\" written inside double quotes?",
+                "options": [
+                      "It safely preserves the variable value as one string",
+                      "It turns the value into a number",
+                      "It sends the value to stderr",
+                      "It creates a new variable"
+                ],
+                "answer": "It safely preserves the variable value as one string",
+                "explanation": "Quoting variable expansions is a safe habit and prevents unwanted splitting or pattern expansion."
+          },
+          {
+                "q": "What is stored in weather after read -r -p \"Is it raining? \" weather?",
+                "options": [
+                      "The text entered by the user",
+                      "The prompt itself",
+                      "The script filename",
+                      "The current exit status"
+                ],
+                "answer": "The text entered by the user",
+                "explanation": "read saves the user's response in the variable named weather."
+          },
+          {
+                "q": "What does the -p option of read do?",
+                "options": [
+                      "Display a prompt before accepting input",
+                      "Make the script private",
+                      "Check file permission",
+                      "Print the Bash version"
+                ],
+                "answer": "Display a prompt before accepting input",
+                "explanation": "read -p shows a question or prompt and then waits for the user's answer."
+          },
+          {
+                "q": "What does the -r option of read prevent?",
+                "options": [
+                      "Backslashes from being treated as escape characters",
+                      "The user from entering spaces",
+                      "The script from running twice",
+                      "Conditions from becoming true"
+                ],
+                "answer": "Backslashes from being treated as escape characters",
+                "explanation": "read -r accepts backslashes literally, making input handling safer and more predictable."
+          },
+          {
+                "q": "In the weather script, what happens when the user enters \"yes\"?",
+                "options": [
+                      "The script displays \"Take an umbrella\"",
+                      "The else block runs",
+                      "The script records abc.txt",
+                      "The traffic light becomes green"
+                ],
+                "answer": "The script displays \"Take an umbrella\"",
+                "explanation": "The condition matches \"yes\", so the commands under then are executed."
+          },
+          {
+                "q": "In the weather script, what happens when the user enters \"no\"?",
+                "options": [
+                      "The else block displays that an umbrella is not needed",
+                      "The script displays \"Take an umbrella\"",
+                      "The elif block runs",
+                      "Bash reports a syntax error"
+                ],
+                "answer": "The else block displays that an umbrella is not needed",
+                "explanation": "The value does not equal \"yes\", so the script follows the else branch."
+          },
+          {
+                "q": "In the traffic-light script, which output should \"red\" produce?",
+                "options": [
+                      "Stop",
+                      "Get ready",
+                      "Go",
+                      "Invalid color"
+                ],
+                "answer": "Stop",
+                "explanation": "The first condition checks for red and runs the Stop message when it matches."
+          },
+          {
+                "q": "In the traffic-light script, which output should \"yellow\" produce?",
+                "options": [
+                      "Get ready",
+                      "Stop",
+                      "Go",
+                      "Take an umbrella"
+                ],
+                "answer": "Get ready",
+                "explanation": "The first condition is false, but the yellow elif condition is true."
+          },
+          {
+                "q": "In the traffic-light script, which output should \"green\" produce?",
+                "options": [
+                      "Go",
+                      "Stop",
+                      "Get ready",
+                      "No umbrella needed"
+                ],
+                "answer": "Go",
+                "explanation": "The green elif branch runs when the entered color is green."
+          },
+          {
+                "q": "What is the best else behavior for an unknown or empty traffic-light color?",
+                "options": [
+                      "Display a clear invalid-color message",
+                      "Always tell the user to go",
+                      "Silently create a new user",
+                      "Delete the script"
+                ],
+                "answer": "Display a clear invalid-color message",
+                "explanation": "A clear fallback message is safer than giving traffic advice for invalid input."
+          },
+          {
+                "q": "How are if and elif conditions evaluated?",
+                "options": [
+                      "From top to bottom until the first true branch",
+                      "From bottom to top",
+                      "All true and false branches run",
+                      "In a random order"
+                ],
+                "answer": "From top to bottom until the first true branch",
+                "explanation": "Bash checks each condition in order and skips the remaining branches after the first match."
+          },
+          {
+                "q": "What does bash -n 02_traffic_light.sh check?",
+                "options": [
+                      "Bash syntax without executing the script",
+                      "Whether the traffic light is green",
+                      "Executable permission only",
+                      "The terminal-session log"
+                ],
+                "answer": "Bash syntax without executing the script",
+                "explanation": "bash -n parses the script for syntax errors but does not run its normal commands."
+          },
+          {
+                "q": "What does no output from bash -n script.sh normally mean?",
+                "options": [
+                      "No syntax error was detected",
+                      "The script is definitely logically perfect",
+                      "The file has been deleted",
+                      "The script ran every branch"
+                ],
+                "answer": "No syntax error was detected",
+                "explanation": "A silent bash -n result means the parser found no syntax error; logic still needs normal testing."
+          },
+          {
+                "q": "What does chmod u+x 01_weather.sh do?",
+                "options": [
+                      "Adds execute permission for the file owner",
+                      "Runs the weather script",
+                      "Checks the condition",
+                      "Records the terminal session"
+                ],
+                "answer": "Adds execute permission for the file owner",
+                "explanation": "u+x grants execute permission to the user who owns the script."
+          },
+          {
+                "q": "What is the purpose of script abc.txt followed later by exit?",
+                "options": [
+                      "Record the terminal session in abc.txt and then stop recording",
+                      "Create a Bash conditional automatically",
+                      "Test only the weather variable",
+                      "Redirect every future login permanently"
+                ],
+                "answer": "Record the terminal session in abc.txt and then stop recording",
+                "explanation": "script starts a terminal-session recording, and exit ends the recording so it is saved in abc.txt."
+          }
+    ];
+
+    const TOTAL_SECONDS = 25 * 60;
+    const state = {
+      questions: [],
+      secondsRemaining: TOTAL_SECONDS,
+      timerId: null,
+      submitted: false,
+      attempt: 0
+    };
+
+    const quizForm = document.getElementById("quizForm");
+    const progressBar = document.getElementById("progressBar");
+    const progressLabel = document.getElementById("progressLabel");
+    const timerElement = document.getElementById("timer");
+    const statusLabel = document.getElementById("statusLabel");
+    const attemptNumber = document.getElementById("attemptNumber");
+    const submitButton = document.getElementById("submitButton");
+    const reattemptButton = document.getElementById("reattemptButton");
+    const unansweredNotice = document.getElementById("unansweredNotice");
+    const resultCard = document.getElementById("resultCard");
+    const scoreText = document.getElementById("scoreText");
+    const scoreDetail = document.getElementById("scoreDetail");
+    const resultMessage = document.getElementById("resultMessage");
+    const resultMeta = document.getElementById("resultMeta");
+
+    function shuffle(items) {
+      const result = [...items];
+      for (let index = result.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+      }
+      return result;
+    }
+
+    function getBestScore() {
+      try {
+        return Number(localStorage.getItem("bashConditionalsDay4BestScore") || 0);
+      } catch (error) {
+        return 0;
+      }
+    }
+
+    function saveBestScore(score) {
+      try {
+        const best = Math.max(getBestScore(), score);
+        localStorage.setItem("bashConditionalsDay4BestScore", String(best));
+        return best;
+      } catch (error) {
+        return score;
+      }
+    }
+
+    function createAttempt() {
+      clearInterval(state.timerId);
+      state.attempt += 1;
+      state.questions = shuffle(quizData).map((question) => ({
+        ...question,
+        options: shuffle(question.options)
+      }));
+      state.secondsRemaining = TOTAL_SECONDS;
+      state.submitted = false;
+      attemptNumber.textContent = String(state.attempt);
+      resultCard.classList.remove("show");
+      unansweredNotice.classList.remove("show");
+      submitButton.disabled = false;
+      statusLabel.textContent = "In progress";
+      renderQuestions();
+      updateProgress();
+      updateTimer();
+      state.timerId = setInterval(tick, 1000);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderQuestions() {
+      quizForm.innerHTML = "";
+      state.questions.forEach((question, questionIndex) => {
+        const card = document.createElement("section");
+        card.className = "question-card";
+        card.dataset.questionIndex = String(questionIndex);
+
+        const heading = document.createElement("h2");
+        const number = document.createElement("span");
+        number.className = "question-number";
+        number.textContent = `${questionIndex + 1}.`;
+        heading.append(number, document.createTextNode(` ${question.q}`));
+
+        const options = document.createElement("div");
+        options.className = "options";
+
+        question.options.forEach((optionText, optionIndex) => {
+          const label = document.createElement("label");
+          label.className = "option";
+          label.dataset.option = optionText;
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = `question-${questionIndex}`;
+          input.value = optionText;
+          input.id = `question-${questionIndex}-option-${optionIndex}`;
+          input.addEventListener("change", () => {
+            card.classList.remove("unanswered");
+            updateProgress();
+          });
+
+          const text = document.createElement("span");
+          text.textContent = optionText;
+          label.append(input, text);
+          options.append(label);
+        });
+
+        const explanation = document.createElement("div");
+        explanation.className = "explanation";
+        explanation.textContent = question.explanation;
+
+        card.append(heading, options, explanation);
+        quizForm.append(card);
+      });
+    }
+
+    function updateProgress() {
+      const answered = quizForm.querySelectorAll('input[type="radio"]:checked').length;
+      const percentage = (answered / state.questions.length) * 100;
+      progressBar.style.width = `${percentage}%`;
+      progressLabel.textContent = `${answered} of ${state.questions.length} answered`;
+
+      if (answered === state.questions.length) {
+        unansweredNotice.classList.remove("show");
+        statusLabel.textContent = "Ready to submit";
+      } else if (!state.submitted) {
+        statusLabel.textContent = "In progress";
+      }
+    }
+
+    function updateTimer() {
+      const minutes = Math.floor(state.secondsRemaining / 60);
+      const seconds = state.secondsRemaining % 60;
+      timerElement.textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+      timerElement.classList.toggle("warning", state.secondsRemaining <= 300);
+    }
+
+    function tick() {
+      if (state.secondsRemaining > 0) {
+        state.secondsRemaining -= 1;
+        updateTimer();
+      }
+      if (state.secondsRemaining === 0) {
+        clearInterval(state.timerId);
+        submitQuiz(true);
+      }
+    }
+
+    function findUnansweredCards() {
+      return [...quizForm.querySelectorAll(".question-card")].filter(
+        (card) => !card.querySelector('input[type="radio"]:checked')
+      );
+    }
+
+    function submitQuiz(autoSubmitted = false) {
+      if (state.submitted) return;
+
+      const unansweredCards = findUnansweredCards();
+      if (!autoSubmitted && unansweredCards.length > 0) {
+        quizForm.querySelectorAll(".question-card").forEach((card) => card.classList.remove("unanswered"));
+        unansweredCards.forEach((card) => card.classList.add("unanswered"));
+        unansweredNotice.textContent = `Please answer all questions. ${unansweredCards.length} question${unansweredCards.length === 1 ? " is" : "s are"} still unanswered.`;
+        unansweredNotice.classList.add("show");
+        statusLabel.textContent = `${unansweredCards.length} unanswered`;
+        unansweredCards[0].scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+
+      state.submitted = true;
+      clearInterval(state.timerId);
+      unansweredNotice.classList.remove("show");
+
+      let correct = 0;
+      state.questions.forEach((question, questionIndex) => {
+        const card = quizForm.querySelector(`[data-question-index="${questionIndex}"]`);
+        const selected = card.querySelector('input[type="radio"]:checked');
+        const labels = card.querySelectorAll(".option");
+
+        labels.forEach((label) => {
+          const option = label.dataset.option;
+          if (option === question.answer) label.classList.add("correct");
+          if (selected && option === selected.value && selected.value !== question.answer) {
+            label.classList.add("incorrect");
+          }
+        });
+
+        if (selected && selected.value === question.answer) correct += 1;
+        card.querySelectorAll("input").forEach((input) => { input.disabled = true; });
+        card.querySelector(".explanation").classList.add("show");
+      });
+
+      const percentage = Math.round((correct / state.questions.length) * 100);
+      const bestScore = saveBestScore(percentage);
+      const secondsUsed = TOTAL_SECONDS - state.secondsRemaining;
+      const usedMinutes = Math.floor(secondsUsed / 60);
+      const usedSeconds = secondsUsed % 60;
+
+      scoreText.textContent = `${percentage}%`;
+      scoreDetail.textContent = `${correct} of ${state.questions.length} correct`;
+
+      if (percentage >= 90) {
+        resultMessage.textContent = "Excellent. You have a strong understanding of beginner Bash conditionals and decision flow.";
+      } else if (percentage >= 80) {
+        resultMessage.textContent = "Passed. Review the missed explanations and practise those scripts again.";
+      } else if (percentage >= 60) {
+        resultMessage.textContent = "Good effort. Practise the related weather and traffic-light conditions before reattempting.";
+      } else {
+        resultMessage.textContent = "Review if, elif, else, fi, and one real-life decision at a time, then try again.";
+      }
+
+      resultMeta.textContent = `Attempt ${state.attempt} · Time used ${String(usedMinutes).padStart(2, "0")}:${String(usedSeconds).padStart(2, "0")} · Best score ${bestScore}%`;
+      submitButton.disabled = true;
+      statusLabel.textContent = autoSubmitted ? "Time expired" : "Submitted";
+      resultCard.classList.add("show");
+      resultCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    submitButton.addEventListener("click", () => submitQuiz(false));
+    reattemptButton.addEventListener("click", createAttempt);
+    createAttempt();
+  </script>
+</body>
+</html>
