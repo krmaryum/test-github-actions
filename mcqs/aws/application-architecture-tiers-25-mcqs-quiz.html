@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive 25-question application architecture tiers quiz with timer, scoring, shuffled choices, and explanations.">
+  <title>Application Architecture Tiers — MCQ Quiz</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: #101e31;
+      --panel-2: #162740;
+      --text: #ecf4ff;
+      --muted: #9eb0c8;
+      --accent: #4fd1c5;
+      --accent-2: #60a5fa;
+      --success: #34d399;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --border: #29405f;
+      --shadow: 0 18px 50px rgb(0 0 0 / 28%);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top right, rgb(37 99 235 / 18%), transparent 32rem),
+        radial-gradient(circle at top left, rgb(20 184 166 / 13%), transparent 28rem),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    button, input { font: inherit; }
+    .container {
+      width: min(980px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 60px;
+    }
+    .hero, .toolbar, .question-card, .result-card {
+      background: rgb(16 30 49 / 94%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+    .hero { padding: 30px; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      font-size: .76rem;
+    }
+    h1 { margin: 0; font-size: clamp(1.8rem, 5vw, 3rem); line-height: 1.12; }
+    .hero p { max-width: 790px; color: var(--muted); }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+    .stat {
+      padding: 14px;
+      border-radius: 13px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+    }
+    .stat span { display: block; color: var(--muted); font-size: .78rem; }
+    .stat strong { font-size: 1.15rem; }
+    .toolbar {
+      position: sticky;
+      top: 10px;
+      z-index: 5;
+      margin: 18px 0;
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 16px;
+    }
+    .progress-track {
+      height: 10px;
+      background: #081322;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width .25s ease;
+    }
+    .toolbar-label { color: var(--muted); font-size: .82rem; margin-top: 5px; }
+    .timer { font-weight: 900; font-variant-numeric: tabular-nums; }
+    .question-card { padding: 22px; margin-bottom: 16px; }
+    .question-card h2 { margin: 0 0 16px; font-size: 1.05rem; }
+    .question-number { color: var(--accent); margin-right: 6px; }
+    .options { display: grid; gap: 10px; }
+    .option {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: start;
+      gap: 11px;
+      padding: 13px 14px;
+      border-radius: 12px;
+      background: #0b1829;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+    .option:hover { transform: translateY(-1px); border-color: var(--accent-2); }
+    .option:has(input:checked) { background: #12334b; border-color: var(--accent); }
+    .option.correct { background: rgb(16 90 68 / 45%); border-color: var(--success); }
+    .option.incorrect { background: rgb(120 28 52 / 40%); border-color: var(--danger); }
+    .option input { margin-top: 4px; accent-color: var(--accent); }
+    .explanation {
+      display: none;
+      margin-top: 14px;
+      padding: 13px 15px;
+      border-left: 4px solid var(--accent-2);
+      border-radius: 8px;
+      background: #0a1728;
+      color: var(--muted);
+    }
+    .explanation.show { display: block; }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin: 28px 0;
+    }
+    .button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+    .primary { color: #03131d; background: linear-gradient(135deg, var(--accent), #7dd3fc); }
+    .secondary { color: var(--text); background: var(--panel-2); border: 1px solid var(--border); }
+    .button:disabled { opacity: .5; cursor: not-allowed; }
+    .result-card { display: none; padding: 26px; margin: 20px 0; text-align: center; }
+    .result-card.show { display: block; }
+    .score { font-size: clamp(2.4rem, 8vw, 4.8rem); font-weight: 950; color: var(--accent); }
+    .result-message { color: var(--muted); }
+    .warning { color: var(--warning); font-weight: 750; }
+    footer { text-align: center; color: var(--muted); padding-top: 24px; }
+    footer a { color: var(--accent); }
+    @media (max-width: 700px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .toolbar { grid-template-columns: 1fr auto; }
+      .toolbar > div:first-child { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <p class="eyebrow">Application Architecture · Study Quiz</p>
+      <h1>1-Tier, 2-Tier, 3-Tier & N-Tier MCQ Quiz</h1>
+      <p>Test your understanding of application tiers, client/database design, frontend-backend-database separation, AWS 2-tier and 3-tier examples, and cloud architecture best practices. Questions and answer choices are shuffled on every attempt.</p>
+      <div class="stats">
+        <div class="stat"><span>Questions</span><strong>25</strong></div>
+        <div class="stat"><span>Time limit</span><strong>25 min</strong></div>
+        <div class="stat"><span>Passing score</span><strong>80%</strong></div>
+        <div class="stat"><span>Explanations</span><strong>Included</strong></div>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="Quiz status">
+      <div>
+        <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="toolbar-label" id="progressLabel">0 of 25 answered</div>
+      </div>
+      <div>Time: <span class="timer" id="timer">25:00</span></div>
+      <div id="statusLabel">In progress</div>
+    </section>
+
+    <form id="quizForm"></form>
+
+    <div class="actions">
+      <button class="button primary" id="submitButton" type="button">Submit Quiz</button>
+      <button class="button secondary" id="reattemptButton" type="button">Reattempt & Shuffle</button>
+      <button class="button secondary" id="clearButton" type="button">Clear Answers</button>
+    </div>
+
+    <section class="result-card" id="resultCard" aria-live="polite">
+      <p class="eyebrow">Your Result</p>
+      <div class="score" id="scoreText">0%</div>
+      <h2 id="scoreDetail"></h2>
+      <p class="result-message" id="resultMessage"></p>
+    </section>
+
+    <footer>
+      <p>Prepared for Muhammad Khalid Khan · <a href="https://github.com/krmaryum">GitHub: krmaryum</a></p>
+    </footer>
+  </main>
+
+  <script>
+    const quizData = [
+      {
+            "q": "In application architecture, what does a tier mean?",
+            "options": [
+                  "A logical layer of an application",
+                  "Only a physical server rack",
+                  "Only a database backup",
+                  "Only an AWS billing account"
+            ],
+            "answer": "A logical layer of an application",
+            "explanation": "A tier is a logical layer that performs a specific job, such as UI, application logic, or data storage."
+      },
+      {
+            "q": "Which statement best describes a 1-tier application?",
+            "options": [
+                  "UI, application logic, and database run in one place",
+                  "Client and database are always on separate servers",
+                  "It must use a load balancer",
+                  "It requires microservices"
+            ],
+            "answer": "UI, application logic, and database run in one place",
+            "explanation": "In a 1-tier application, all major parts are bundled together in one system or application."
+      },
+      {
+            "q": "Which is a good example of a 1-tier application?",
+            "options": [
+                  "A small desktop app with a local database",
+                  "A global microservices application",
+                  "A public load balancer with private RDS",
+                  "A Kubernetes cluster with many services"
+            ],
+            "answer": "A small desktop app with a local database",
+            "explanation": "A small desktop application with local storage is a common example of an all-in-one, 1-tier design."
+      },
+      {
+            "q": "What is a major disadvantage of a 1-tier application?",
+            "options": [
+                  "It is hard to scale for many users",
+                  "It always requires a NAT Gateway",
+                  "It cannot run without IAM Identity Center",
+                  "It always needs three databases"
+            ],
+            "answer": "It is hard to scale for many users",
+            "explanation": "Because everything is tightly joined together, 1-tier applications are usually not ideal for many users or large systems."
+      },
+      {
+            "q": "Which two layers are commonly found in a 2-tier application?",
+            "options": [
+                  "Client and database server",
+                  "Load balancer and message queue only",
+                  "DNS and CloudWatch only",
+                  "Authentication and storage only"
+            ],
+            "answer": "Client and database server",
+            "explanation": "A 2-tier application commonly has a client layer that talks directly to a database server."
+      },
+      {
+            "q": "In a 2-tier application, what usually talks directly to the database?",
+            "options": [
+                  "The client application",
+                  "Only the CDN",
+                  "Only CloudWatch",
+                  "Only the NAT Gateway"
+            ],
+            "answer": "The client application",
+            "explanation": "The key idea of 2-tier design is that the client application communicates directly with the database."
+      },
+      {
+            "q": "Which is a common security concern in 2-tier architecture?",
+            "options": [
+                  "The database may be exposed directly to clients",
+                  "There is no database at all",
+                  "It cannot use a client interface",
+                  "It always stores data in the browser only"
+            ],
+            "answer": "The database may be exposed directly to clients",
+            "explanation": "Because clients communicate directly with the database, database exposure and credential handling become important risks."
+      },
+      {
+            "q": "Which architecture is most common for modern web applications?",
+            "options": [
+                  "3-tier architecture",
+                  "Only 1-tier architecture",
+                  "Only single-file architecture",
+                  "No-tier architecture"
+            ],
+            "answer": "3-tier architecture",
+            "explanation": "3-tier architecture is common because it separates frontend, backend/application logic, and database layers."
+      },
+      {
+            "q": "What are the three main layers of a 3-tier application?",
+            "options": [
+                  "Presentation tier, application tier, database tier",
+                  "User tier, billing tier, screenshot tier",
+                  "Subnet tier, route tier, account tier",
+                  "Cache tier, DNS tier, email tier only"
+            ],
+            "answer": "Presentation tier, application tier, database tier",
+            "explanation": "A standard 3-tier design separates the user interface, business logic, and data storage."
+      },
+      {
+            "q": "What is the main job of the presentation tier?",
+            "options": [
+                  "Take user input and display output",
+                  "Store all database records permanently",
+                  "Replace all backend logic",
+                  "Create VPC route tables"
+            ],
+            "answer": "Take user input and display output",
+            "explanation": "The presentation tier is user-facing. It shows information to the user and sends user requests to the backend."
+      },
+      {
+            "q": "Which is an example of a presentation tier?",
+            "options": [
+                  "Website frontend or mobile app",
+                  "Only an RDS database",
+                  "Only a NAT Gateway",
+                  "Only a Flow Log"
+            ],
+            "answer": "Website frontend or mobile app",
+            "explanation": "The presentation tier includes user-facing interfaces like websites, browsers, and mobile apps."
+      },
+      {
+            "q": "What is the main job of the application tier?",
+            "options": [
+                  "Process requests and apply business logic",
+                  "Only store raw data",
+                  "Only provide electricity to servers",
+                  "Only assign public IPv4 addresses"
+            ],
+            "answer": "Process requests and apply business logic",
+            "explanation": "The application tier handles backend logic, rules, authentication decisions, and communication with the database."
+      },
+      {
+            "q": "Which is an example of an application tier component?",
+            "options": [
+                  "Backend API or application server",
+                  "Only the user's keyboard",
+                  "Only a spreadsheet file",
+                  "Only a monitor screen"
+            ],
+            "answer": "Backend API or application server",
+            "explanation": "Backend APIs, web servers, and application servers commonly live in the application tier."
+      },
+      {
+            "q": "What is the main job of the database tier?",
+            "options": [
+                  "Store, read, update, and delete application data",
+                  "Display buttons to the user",
+                  "Replace all business logic",
+                  "Serve as a public load balancer"
+            ],
+            "answer": "Store, read, update, and delete application data",
+            "explanation": "The database tier is responsible for persistent data storage and data operations."
+      },
+      {
+            "q": "Which is an example of a database tier service?",
+            "options": [
+                  "MySQL, PostgreSQL, Amazon RDS, or DynamoDB",
+                  "Only HTML and CSS",
+                  "Only a browser tab",
+                  "Only an SSH key"
+            ],
+            "answer": "MySQL, PostgreSQL, Amazon RDS, or DynamoDB",
+            "explanation": "Relational and NoSQL databases are common examples of database-tier technologies."
+      },
+      {
+            "q": "What is a major advantage of 3-tier architecture?",
+            "options": [
+                  "Better separation, security, scalability, and maintainability",
+                  "All parts must run on one laptop",
+                  "The database must be public",
+                  "No monitoring is ever needed"
+            ],
+            "answer": "Better separation, security, scalability, and maintainability",
+            "explanation": "Separating UI, logic, and database makes the system easier to secure, scale, update, and maintain."
+      },
+      {
+            "q": "What does N-tier architecture mean?",
+            "options": [
+                  "An application with more than three logical layers",
+                  "An application with no database",
+                  "An application with only one desktop file",
+                  "An application that never uses networking"
+            ],
+            "answer": "An application with more than three logical layers",
+            "explanation": "N-tier means there can be many specialized layers such as frontend, API gateway, services, cache, queue, and database."
+      },
+      {
+            "q": "Which component may be found in an N-tier application?",
+            "options": [
+                  "API Gateway, cache, message queue, or storage",
+                  "Only a single local database file",
+                  "Only a keyboard and mouse",
+                  "Only one executable with no layers"
+            ],
+            "answer": "API Gateway, cache, message queue, or storage",
+            "explanation": "N-tier systems often include extra layers for routing, caching, messaging, storage, authentication, and monitoring."
+      },
+      {
+            "q": "Which application type is best for large enterprise or cloud-native systems?",
+            "options": [
+                  "N-tier application",
+                  "Only 1-tier application",
+                  "Only local desktop application",
+                  "No-tier application"
+            ],
+            "answer": "N-tier application",
+            "explanation": "N-tier architecture is commonly used for larger, distributed, scalable, cloud-native systems."
+      },
+      {
+            "q": "In an AWS 2-tier example, which services may be used?",
+            "options": [
+                  "EC2 for the application and RDS for the database",
+                  "Only Route 53 and IAM password policy",
+                  "Only CloudWatch alarms",
+                  "Only S3 static files with no compute or database"
+            ],
+            "answer": "EC2 for the application and RDS for the database",
+            "explanation": "A basic AWS 2-tier example can use EC2 as the application server and Amazon RDS as the database."
+      },
+      {
+            "q": "In a better AWS 3-tier design, where should the database usually be placed?",
+            "options": [
+                  "Private DB subnet",
+                  "Public subnet directly open to all users",
+                  "User's browser",
+                  "Internet Gateway"
+            ],
+            "answer": "Private DB subnet",
+            "explanation": "A safer AWS 3-tier design keeps the database private so users do not access it directly."
+      },
+      {
+            "q": "In a better AWS 3-tier design, what usually belongs in the public subnet?",
+            "options": [
+                  "Load Balancer",
+                  "Private database only",
+                  "Secret access keys",
+                  "Local-only route table only"
+            ],
+            "answer": "Load Balancer",
+            "explanation": "The public subnet commonly contains the load balancer, while app servers and databases stay private."
+      },
+      {
+            "q": "Which flow best represents a secure AWS 3-tier application?",
+            "options": [
+                  "Internet user -> Public Load Balancer -> Private App Server -> Private Database",
+                  "Internet user -> Private Database directly",
+                  "Private Database -> Internet user -> App server",
+                  "User -> NAT Gateway -> Database with no app layer"
+            ],
+            "answer": "Internet user -> Public Load Balancer -> Private App Server -> Private Database",
+            "explanation": "The safer pattern exposes the load balancer publicly while keeping application servers and databases private."
+      },
+      {
+            "q": "Which statement is best for interviews?",
+            "options": [
+                  "A 3-tier application separates presentation, application logic, and database",
+                  "A 3-tier application means everything must be in one file",
+                  "A 2-tier application has no database",
+                  "N-tier means no logical layers"
+            ],
+            "answer": "A 3-tier application separates presentation, application logic, and database",
+            "explanation": "This is a strong interview definition because it clearly explains the purpose of each layer."
+      },
+      {
+            "q": "What is the final takeaway from application architecture tiers?",
+            "options": [
+                  "Good architecture improves security, scalability, maintainability, and availability",
+                  "More tiers always remove all cost",
+                  "The database should always be public",
+                  "All applications must be 1-tier"
+            ],
+            "answer": "Good architecture improves security, scalability, maintainability, and availability",
+            "explanation": "Choosing the right tiered architecture helps build applications that are easier to secure, scale, maintain, and operate."
+      }
+];
+
+    const state = {
+      questions: [],
+      secondsRemaining: 25 * 60,
+      timerId: null,
+      submitted: false
+    };
+
+    const quizForm = document.getElementById("quizForm");
+    const progressBar = document.getElementById("progressBar");
+    const progressLabel = document.getElementById("progressLabel");
+    const timerElement = document.getElementById("timer");
+    const statusLabel = document.getElementById("statusLabel");
+    const submitButton = document.getElementById("submitButton");
+    const reattemptButton = document.getElementById("reattemptButton");
+    const clearButton = document.getElementById("clearButton");
+    const resultCard = document.getElementById("resultCard");
+    const scoreText = document.getElementById("scoreText");
+    const scoreDetail = document.getElementById("scoreDetail");
+    const resultMessage = document.getElementById("resultMessage");
+
+    function shuffle(items) {
+      const result = [...items];
+      for (let index = result.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+      }
+      return result;
+    }
+
+    function createAttempt() {
+      clearInterval(state.timerId);
+      state.questions = shuffle(quizData).map((question) => ({
+        ...question,
+        options: shuffle(question.options)
+      }));
+      state.secondsRemaining = 25 * 60;
+      state.submitted = false;
+      resultCard.classList.remove("show");
+      submitButton.disabled = false;
+      statusLabel.textContent = "In progress";
+      renderQuestions();
+      updateProgress();
+      updateTimer();
+      state.timerId = setInterval(tick, 1000);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderQuestions() {
+      quizForm.innerHTML = "";
+      state.questions.forEach((question, questionIndex) => {
+        const card = document.createElement("section");
+        card.className = "question-card";
+        card.dataset.questionIndex = questionIndex;
+
+        const heading = document.createElement("h2");
+        const number = document.createElement("span");
+        number.className = "question-number";
+        number.textContent = `${questionIndex + 1}.`;
+        heading.append(number, document.createTextNode(` ${question.q}`));
+
+        const options = document.createElement("div");
+        options.className = "options";
+
+        question.options.forEach((optionText, optionIndex) => {
+          const label = document.createElement("label");
+          label.className = "option";
+          label.dataset.option = optionText;
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = `question-${questionIndex}`;
+          input.value = optionText;
+          input.id = `question-${questionIndex}-option-${optionIndex}`;
+          input.addEventListener("change", updateProgress);
+
+          const text = document.createElement("span");
+          text.textContent = optionText;
+          label.append(input, text);
+          options.append(label);
+        });
+
+        const explanation = document.createElement("div");
+        explanation.className = "explanation";
+        explanation.textContent = question.explanation;
+
+        card.append(heading, options, explanation);
+        quizForm.append(card);
+      });
+    }
+
+    function updateProgress() {
+      const answered = quizForm.querySelectorAll('input[type="radio"]:checked').length;
+      const percentage = (answered / state.questions.length) * 100;
+      progressBar.style.width = `${percentage}%`;
+      progressLabel.textContent = `${answered} of ${state.questions.length} answered`;
+    }
+
+    function updateTimer() {
+      const minutes = Math.floor(state.secondsRemaining / 60);
+      const seconds = state.secondsRemaining % 60;
+      timerElement.textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+      timerElement.classList.toggle("warning", state.secondsRemaining <= 300);
+    }
+
+    function tick() {
+      state.secondsRemaining -= 1;
+      updateTimer();
+      if (state.secondsRemaining <= 0) {
+        clearInterval(state.timerId);
+        submitQuiz(true);
+      }
+    }
+
+    function clearAnswers() {
+      if (state.submitted) return;
+      quizForm.querySelectorAll('input[type="radio"]').forEach((input) => { input.checked = false; });
+      updateProgress();
+    }
+
+    function submitQuiz(autoSubmitted = false) {
+      if (state.submitted) return;
+      state.submitted = true;
+      clearInterval(state.timerId);
+
+      let correct = 0;
+      state.questions.forEach((question, questionIndex) => {
+        const card = quizForm.querySelector(`[data-question-index="${questionIndex}"]`);
+        const selected = card.querySelector('input[type="radio"]:checked');
+        const labels = card.querySelectorAll(".option");
+
+        labels.forEach((label) => {
+          const option = label.dataset.option;
+          if (option === question.answer) label.classList.add("correct");
+          if (selected && option === selected.value && selected.value !== question.answer) {
+            label.classList.add("incorrect");
+          }
+        });
+
+        if (selected && selected.value === question.answer) correct += 1;
+        card.querySelectorAll("input").forEach((input) => { input.disabled = true; });
+        card.querySelector(".explanation").classList.add("show");
+      });
+
+      const percentage = Math.round((correct / state.questions.length) * 100);
+      scoreText.textContent = `${percentage}%`;
+      scoreDetail.textContent = `${correct} of ${state.questions.length} correct`;
+
+      if (percentage >= 90) {
+        resultMessage.textContent = "Excellent — you understand application architecture tiers very well.";
+      } else if (percentage >= 80) {
+        resultMessage.textContent = "Passed — review the missed explanations and practice explaining 2-tier, 3-tier, and N-tier designs.";
+      } else if (percentage >= 70) {
+        resultMessage.textContent = "Developing — revisit presentation, application, database, and AWS subnet separation concepts.";
+      } else {
+        resultMessage.textContent = "Foundation review required — study the notes and poster, then reattempt the quiz.";
+      }
+
+      submitButton.disabled = true;
+      statusLabel.textContent = autoSubmitted ? "Time expired" : "Submitted";
+      resultCard.classList.add("show");
+      resultCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    submitButton.addEventListener("click", () => submitQuiz(false));
+    reattemptButton.addEventListener("click", createAttempt);
+    clearButton.addEventListener("click", clearAnswers);
+    createAttempt();
+  </script>
+</body>
+</html>
