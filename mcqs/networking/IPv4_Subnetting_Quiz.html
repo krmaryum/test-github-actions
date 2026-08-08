@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive 25-question IPv4 Subnetting & IP Addressing quiz with timer, scoring, shuffled choices, and short explanations in Roman Urdu.">
+  <title>IPv4 Subnetting & IP Addressing Quiz — Study Notes</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: #101e31;
+      --panel-2: #162740;
+      --text: #ecf4ff;
+      --muted: #9eb0c8;
+      --accent: #4fd1c5;
+      --accent-2: #60a5fa;
+      --success: #34d399;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --border: #29405f;
+      --shadow: 0 18px 50px rgb(0 0 0 / 28%);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top right, rgb(37 99 235 / 18%), transparent 32rem),
+        radial-gradient(circle at top left, rgb(20 184 166 / 13%), transparent 28rem),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    button, input { font: inherit; }
+
+    .container {
+      width: min(980px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 60px;
+    }
+
+    .hero, .toolbar, .question-card, .result-card {
+      background: rgb(16 30 49 / 94%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero { padding: 30px; }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      font-size: .76rem;
+    }
+
+    h1 { margin: 0; font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.15; }
+    .hero p { max-width: 760px; color: var(--muted); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .stat {
+      padding: 14px;
+      border-radius: 13px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+    }
+
+    .stat span { display: block; color: var(--muted); font-size: .78rem; }
+    .stat strong { font-size: 1.15rem; }
+
+    .toolbar {
+      position: sticky;
+      top: 10px;
+      z-index: 5;
+      margin: 18px 0;
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .progress-track {
+      height: 10px;
+      background: #081322;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width .25s ease;
+    }
+
+    .toolbar-label { color: var(--muted); font-size: .82rem; margin-top: 5px; }
+    .timer { font-weight: 900; font-variant-numeric: tabular-nums; }
+
+    .question-card { padding: 22px; margin-bottom: 16px; }
+    .question-card h2 { margin: 0 0 16px; font-size: 1.05rem; }
+    .question-number { color: var(--accent); margin-right: 6px; }
+
+    .options { display: grid; gap: 10px; }
+
+    .option {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: start;
+      gap: 11px;
+      padding: 13px 14px;
+      border-radius: 12px;
+      background: #0b1829;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+
+    .option:hover { transform: translateY(-1px); border-color: var(--accent-2); }
+    .option:has(input:checked) { background: #12334b; border-color: var(--accent); }
+    .option.correct { background: rgb(16 90 68 / 45%); border-color: var(--success); }
+    .option.incorrect { background: rgb(120 28 52 / 40%); border-color: var(--danger); }
+    .option input { margin-top: 4px; accent-color: var(--accent); }
+
+    .explanation {
+      display: none;
+      margin-top: 14px;
+      padding: 13px 15px;
+      border-left: 4px solid var(--accent-2);
+      border-radius: 8px;
+      background: #0a1728;
+      color: var(--muted);
+    }
+
+    .explanation.show { display: block; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin: 28px 0;
+    }
+
+    .button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .primary { color: #03131d; background: linear-gradient(135deg, var(--accent), #7dd3fc); }
+    .secondary { color: var(--text); background: var(--panel-2); border: 1px solid var(--border); }
+    .button:disabled { opacity: .5; cursor: not-allowed; }
+
+    .result-card { display: none; padding: 26px; margin: 20px 0; text-align: center; }
+    .result-card.show { display: block; }
+    .score { font-size: clamp(2.4rem, 8vw, 4.8rem); font-weight: 950; color: var(--accent); }
+    .result-message { color: var(--muted); }
+    .warning { color: var(--warning); font-weight: 750; }
+
+    footer { text-align: center; color: var(--muted); padding-top: 24px; }
+    footer a { color: var(--accent); }
+
+    @media (max-width: 700px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .toolbar { grid-template-columns: 1fr auto; }
+      .toolbar > div:first-child { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <p class="eyebrow">Networking Practice · IPv4 Subnetting</p>
+      <h1>IPv4 Subnetting & Addressing Practice Quiz</h1>
+      <p>Test your subnetting concepts including Network IDs, Broadcast Addresses, Subnet Masks, CIDR Notation, Host Calculations, and Subnet Splitting (/24 to /25, /26, /27, /30). Shuffled questions and choices on every reattempt with explanations in Roman Urdu.</p>
+      <div class="stats">
+        <div class="stat"><span>Questions</span><strong>25</strong></div>
+        <div class="stat"><span>Time limit</span><strong>25 min</strong></div>
+        <div class="stat"><span>Passing score</span><strong>80%</strong></div>
+        <div class="stat"><span>Explanations</span><strong>Roman Urdu</strong></div>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="Quiz status">
+      <div>
+        <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="toolbar-label" id="progressLabel">0 of 25 answered</div>
+      </div>
+      <div>Time: <span class="timer" id="timer">25:00</span></div>
+      <div id="statusLabel">In progress</div>
+    </section>
+
+    <form id="quizForm"></form>
+
+    <div class="actions">
+      <button class="button primary" id="submitButton" type="button">Submit Quiz</button>
+      <button class="button secondary" id="reattemptButton" type="button">Reattempt</button>
+    </div>
+
+    <section class="result-card" id="resultCard" aria-live="polite">
+      <p class="eyebrow">Your Result</p>
+      <div class="score" id="scoreText">0%</div>
+      <h2 id="scoreDetail"></h2>
+      <p class="result-message" id="resultMessage"></p>
+    </section>
+
+    <footer>
+      <p>Prepared for Subnetting Practice · <a href="#">IPv4 Networking Notes</a></p>
+    </footer>
+  </main>
+
+  <script>
+    const quizData = [
+      {
+        "q": "Subnet Mask 255.255.255.0 ka CIDR prefix notation kya hoga?",
+        "options": [
+          "/24",
+          "/25",
+          "/16",
+          "/32"
+        ],
+        "answer": "/24",
+        "explanation": "255.255.255.0 mein pehli 3 octets ki tamam 24 bits '1' hoti hain (8+8+8=24), is liye yeh /24 prefix banta hai."
+      },
+      {
+        "q": "Network ID 10.0.1.0/24 ka pehla usable (assignable) IP address kya hota hai?",
+        "options": [
+          "10.0.1.1",
+          "10.0.1.0",
+          "10.0.1.2",
+          "10.0.1.255"
+        ],
+        "answer": "10.0.1.1",
+        "explanation": "Pehla usable host IP hamesha Network ID se aik agla number hota hai (Network ID + 1)."
+      },
+      {
+        "q": "Network 10.0.0.0/24 ka Broadcast Address kya hai?",
+        "options": [
+          "10.0.0.255",
+          "10.0.0.254",
+          "10.0.0.0",
+          "10.0.0.1"
+        ],
+        "answer": "10.0.0.255",
+        "explanation": "/24 subnet ka aakhri IP address (255) broadcast communication ke liye reserved hota hai."
+      },
+      {
+        "q": "Aik standard /24 subnet mein kitne TOTAL IP addresses aur kitne USABLE host addresses hote hain?",
+        "options": [
+          "256 Total, 254 Usable",
+          "255 Total, 255 Usable",
+          "128 Total, 126 Usable",
+          "512 Total, 510 Usable"
+        ],
+        "answer": "256 Total, 254 Usable",
+        "explanation": "Total IPs = 2^8 = 256. Usable IPs = 256 - 2 = 254 (Network ID aur Broadcast ID minus karne ke baad)."
+      },
+      {
+        "q": "Kyun 10.0.1.0/24 aur 10.0.0.0/24 ke bich direct Layer-2 communication nahi ho sakti?",
+        "options": [
+          "Kyun ke 3rd octet alag hai aur /24 mask ki wajah se woh alag Network IDs hain",
+          "Kyun ke 10.x.x.x private IP range nahi hai",
+          "Kyun ke subnet mask dono ka alag hai",
+          "Kyun ke /24 sirf 10 devices support karta hai"
+        ],
+        "answer": "Kyun ke 3rd octet alag hai aur /24 mask ki wajah se woh alag Network IDs hain",
+        "explanation": "/24 prefix ka matlab hai ke pehli 3 octets network address hain. Subnet 1 mein '1' hai aur Subnet 2 mein '0', is liye yeh alag networks hain."
+      },
+      {
+        "q": "Jab aap /24 network ko /25 subnets mein toorte hain, toh aap host portion se kitni bits borrow karte hain?",
+        "options": [
+          "1 bit",
+          "2 bits",
+          "4 bits",
+          "8 bits"
+        ],
+        "answer": "1 bit",
+        "explanation": "24 + 1 = 25. Is liye hum host portion ki 8 bits mein se 1 bit borrow karte hain."
+      },
+      {
+        "q": "Prefix /25 ka Subnet Mask decimal form mein kya hota hai?",
+        "options": [
+          "255.255.255.128",
+          "255.255.255.192",
+          "255.255.255.224",
+          "255.255.255.240"
+        ],
+        "answer": "255.255.255.128",
+        "explanation": "Aakhri octet ki pehli bit '1' hoti hai (binary 10000000), jis ki decimal value 128 hoti hai."
+      },
+      {
+        "q": "10.0.0.0/24 ko /25 mein split karne par kitne subnets bante hain aur har subnet ka block size kya hota hai?",
+        "options": [
+          "2 subnets, Block Size 128 IPs",
+          "4 subnets, Block Size 64 IPs",
+          "8 subnets, Block Size 32 IPs",
+          "16 subnets, Block Size 16 IPs"
+        ],
+        "answer": "2 subnets, Block Size 128 IPs",
+        "explanation": "1 bit borrow karne se 2^1 = 2 subnets bante hain, aur block size 256 / 2 = 128 IPs hota hai."
+      },
+      {
+        "q": "Subnet 10.0.0.0/25 ki USABLE host range kya hai?",
+        "options": [
+          "10.0.0.1 se 10.0.0.126",
+          "10.0.0.0 se 10.0.0.127",
+          "10.0.0.1 se 10.0.0.128",
+          "10.0.0.0 se 10.0.0.125"
+        ],
+        "answer": "10.0.0.1 se 10.0.0.126",
+        "explanation": "Network ID 10.0.0.0 hai aur Broadcast ID 10.0.0.127 hai. Is liye usable range .1 se .126 tak banti hai."
+      },
+      {
+        "q": "Subnet 10.0.0.128/25 ka Broadcast Address kya hota hai?",
+        "options": [
+          "10.0.0.255",
+          "10.0.0.128",
+          "10.0.0.127",
+          "10.0.0.254"
+        ],
+        "answer": "10.0.0.255",
+        "explanation": "Doosray /25 subnet ki range 10.0.0.128 se 10.0.0.255 hoti hai, is liye aakhri address .255 broadcast hai."
+      },
+      {
+        "q": "Jab hum /24 network ko /26 subnets mein divide karte hain, toh kitne subnets bante hain?",
+        "options": [
+          "4 subnets",
+          "2 subnets",
+          "8 subnets",
+          "16 subnets"
+        ],
+        "answer": "4 subnets",
+        "explanation": "24 se 26 tak jaane ke liye 2 bits borrow hoti hain. Formula 2^2 = 4 subnets."
+      },
+      {
+        "q": "Prefix /26 ka Subnet Mask kya hota hai?",
+        "options": [
+          "255.255.255.192",
+          "255.255.255.128",
+          "255.255.255.224",
+          "255.255.255.248"
+        ],
+        "answer": "255.255.255.192",
+        "explanation": "Aakhri octet ki pehli do bits '1' hoti hain (binary 11000000 = 128 + 64 = 192)."
+      },
+      {
+        "q": "Aik /26 subnet mein har subnet ke paas kitne USABLE host IP addresses hote hain?",
+        "options": [
+          "62",
+          "64",
+          "126",
+          "30"
+        ],
+        "answer": "62",
+        "explanation": "Block size 64 IPs hota hai. Usable IPs = 64 - 2 = 62 hosts."
+      },
+      {
+        "q": "10.0.0.0/24 ke pehlay /26 subnet (10.0.0.0/26) ka Broadcast Address kya hoga?",
+        "options": [
+          "10.0.0.63",
+          "10.0.0.64",
+          "10.0.0.127",
+          "10.0.0.31"
+        ],
+        "answer": "10.0.0.63",
+        "explanation": "Block size 64 hone ki wajah se pehla subnet 0 se 63 tak jata hai. Is liye .63 broadcast address hai."
+      },
+      {
+        "q": "10.0.0.0/24 ke teesray /26 subnet ki Network ID kya hogi?",
+        "options": [
+          "10.0.0.128",
+          "10.0.0.64",
+          "10.0.0.192",
+          "10.0.0.96"
+        ],
+        "answer": "10.0.0.128",
+        "explanation": "Subnets ke start IP: 1st=0, 2nd=64, 3rd=128, 4th=192. Is liye 3rd subnet ki Network ID 10.0.0.128 hai."
+      },
+      {
+        "q": "Formula (2^H - 2) mein 'H' kis cheez ko represent karta hai?",
+        "options": [
+          "Number of Host bits remaining",
+          "Number of Network bits borrowed",
+          "Number of Subnets created",
+          "Total Octets in IPv4"
+        ],
+        "answer": "Number of Host bits remaining",
+        "explanation": "'H' remaining host bits ko darshata hai. Total 32 bits mein se network bits minus karne ke baad jo host bits bachti hain."
+      },
+      {
+        "q": "Point-to-Point WAN link (do routers ke darmiyan) ke liye konsa prefix sab se efficient aur standard mana jata hai?",
+        "options": [
+          "/30",
+          "/24",
+          "/28",
+          "/16"
+        ],
+        "answer": "/30",
+        "explanation": "/30 subnet mein total 4 IPs (Block size 4) hote hain jismein 2 usable IPs bachtay hain, jo do router interfaces ke liye exact fit hain."
+      },
+      {
+        "q": "Prefix /27 subnet mask mein aakhri octet ki decimal value kya hoti hai?",
+        "options": [
+          "224",
+          "192",
+          "240",
+          "248"
+        ],
+        "answer": "224",
+        "explanation": "27 bits = 8+8+8+3. Aakhri octet mein 3 bits '1' hain (binary 11100000 = 128 + 64 + 32 = 224)."
+      },
+      {
+        "q": "Subnet Mask 255.255.255.240 ka Prefix notation (/XX) kya hoga?",
+        "options": [
+          "/28",
+          "/27",
+          "/29",
+          "/30"
+        ],
+        "answer": "/28",
+        "explanation": "240 decimal = binary 11110000 (4 bits '1'). 24 + 4 = 28 bits, is liye prefix /28 hai."
+      },
+      {
+        "q": "Agar kisi subnet mask ka last octet 224 hai, toh uska Block Size calculate karne ka aasan formula kya hai?",
+        "options": [
+          "256 - 224 = 32",
+          "224 / 2 = 112",
+          "256 - 128 = 128",
+          "32 * 8 = 256"
+        ],
+        "answer": "256 - 224 = 32",
+        "explanation": "Block size calculate karne ka quick formula hota hai: 256 minus Subnet Mask ka Last Octet."
+      },
+      {
+        "q": "IP address 10.0.0.65/26 kis subnet ka hissa hai?",
+        "options": [
+          "10.0.0.64/26",
+          "10.0.0.0/26",
+          "10.0.0.128/26",
+          "10.0.0.32/26"
+        ],
+        "answer": "10.0.0.64/26",
+        "explanation": "/26 subnets: 0-63, 64-127, 128-191, 192-255. Address .65 doosray subnet (10.0.0.64/26) ki usable host range (.65 se .126) mein aata hai."
+      },
+      {
+        "q": "Har Subnet mein pehla aur aakhri IP address assign kyun nahi ho sakta?",
+        "options": [
+          "Pehla IP Network ID aur Aakhri IP Broadcast Address hota hai",
+          "Pehla IP Gateway aur Aakhri IP DNS server ke liye fixed hota hai",
+          "IPv4 mein odd numbers assign nahi ho sakte",
+          "Yeh dono IPs firewall dwara block hote hain"
+        ],
+        "answer": "Pehla IP Network ID aur Aakhri IP Broadcast Address hota hai",
+        "explanation": "Networking standards ke mutabiq pehla IP poore subnet ki identity (Network ID) hota hai aur aakhri IP broadcast messaging ke liye use hota hai."
+      },
+      {
+        "q": "IP address 10.0.0.127/25 ka role kya hai?",
+        "options": [
+          "Subnet 10.0.0.0/25 ka Broadcast Address",
+          "Subnet 10.0.0.128/25 ki Network ID",
+          "Subnet A ka Pehla Usable Host IP",
+          "Subnet B ka Usable Host IP"
+        ],
+        "answer": "Subnet 10.0.0.0/25 ka Broadcast Address",
+        "explanation": "10.0.0.0/25 subnet ki range 10.0.0.0 se 10.0.0.127 tak hoti hai, is liye .127 pehlay subnet ka broadcast address hai."
+      },
+      {
+        "q": "Variable Length Subnet Masking (VLSM) ka kya fayda hota hai?",
+        "options": [
+          "IP addresses ki wastage kam hoti hai aur mukhtalif sizes ke subnets banaye ja sakte hain",
+          "Yeh bilkul bhi routers ka istemal nahi hone deta",
+          "Is se IP addresses ki speed fast ho jaati hai",
+          "Yeh sirf IPv6 ke saath kaam karta hai"
+        ],
+        "answer": "IP addresses ki wastage kam hoti hai aur mukhtalif sizes ke subnets banaye ja sakte hain",
+        "explanation": "VLSM aap ko har department ya link ki zaroorat ke mutabiq alag alag size ke subnets (/25, /26, /30) banane ki ijaazat deta hai."
+      },
+      {
+        "q": "Aik /29 subnet mein kitne USABLE hosts ho sakte hain?",
+        "options": [
+          "6",
+          "8",
+          "14",
+          "2"
+        ],
+        "answer": "6",
+        "explanation": "32 - 29 = 3 host bits. Total IPs = 2^3 = 8. Usable hosts = 8 - 2 = 6 hosts."
+      }
+    ];
+
+    const state = {
+      questions: [],
+      secondsRemaining: 25 * 60,
+      timerId: null,
+      submitted: false
+    };
+
+    const quizForm = document.getElementById("quizForm");
+    const progressBar = document.getElementById("progressBar");
+    const progressLabel = document.getElementById("progressLabel");
+    const timerElement = document.getElementById("timer");
+    const statusLabel = document.getElementById("statusLabel");
+    const submitButton = document.getElementById("submitButton");
+    const reattemptButton = document.getElementById("reattemptButton");
+    const resultCard = document.getElementById("resultCard");
+    const scoreText = document.getElementById("scoreText");
+    const scoreDetail = document.getElementById("scoreDetail");
+    const resultMessage = document.getElementById("resultMessage");
+
+    function shuffle(items) {
+      const result = [...items];
+      for (let index = result.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+      }
+      return result;
+    }
+
+    function createAttempt() {
+      clearInterval(state.timerId);
+      state.questions = shuffle(quizData).map((question) => ({
+        ...question,
+        options: shuffle(question.options)
+      }));
+      state.secondsRemaining = 25 * 60;
+      state.submitted = false;
+      resultCard.classList.remove("show");
+      submitButton.disabled = false;
+      statusLabel.textContent = "In progress";
+      renderQuestions();
+      updateProgress();
+      updateTimer();
+      state.timerId = setInterval(tick, 1000);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderQuestions() {
+      quizForm.innerHTML = "";
+      state.questions.forEach((question, questionIndex) => {
+        const card = document.createElement("section");
+        card.className = "question-card";
+        card.dataset.questionIndex = questionIndex;
+
+        const heading = document.createElement("h2");
+        const number = document.createElement("span");
+        number.className = "question-number";
+        number.textContent = `${questionIndex + 1}.`;
+        heading.append(number, document.createTextNode(` ${question.q}`));
+
+        const options = document.createElement("div");
+        options.className = "options";
+
+        question.options.forEach((optionText, optionIndex) => {
+          const label = document.createElement("label");
+          label.className = "option";
+          label.dataset.option = optionText;
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = `question-${questionIndex}`;
+          input.value = optionText;
+          input.id = `question-${questionIndex}-option-${optionIndex}`;
+          input.addEventListener("change", updateProgress);
+
+          const text = document.createElement("span");
+          text.textContent = optionText;
+          label.append(input, text);
+          options.append(label);
+        });
+
+        const explanation = document.createElement("div");
+        explanation.className = "explanation";
+        explanation.textContent = question.explanation;
+
+        card.append(heading, options, explanation);
+        quizForm.append(card);
+      });
+    }
+
+    function updateProgress() {
+      const answered = quizForm.querySelectorAll('input[type="radio"]:checked').length;
+      const percentage = (answered / state.questions.length) * 100;
+      progressBar.style.width = `${percentage}%`;
+      progressLabel.textContent = `${answered} of ${state.questions.length} answered`;
+    }
+
+    function updateTimer() {
+      const minutes = Math.floor(state.secondsRemaining / 60);
+      const seconds = state.secondsRemaining % 60;
+      timerElement.textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+      timerElement.classList.toggle("warning", state.secondsRemaining <= 300);
+    }
+
+    function tick() {
+      state.secondsRemaining -= 1;
+      updateTimer();
+      if (state.secondsRemaining <= 0) {
+        clearInterval(state.timerId);
+        submitQuiz(true);
+      }
+    }
+
+    function submitQuiz(autoSubmitted = false) {
+      if (state.submitted) return;
+      state.submitted = true;
+      clearInterval(state.timerId);
+
+      let correct = 0;
+      state.questions.forEach((question, questionIndex) => {
+        const card = quizForm.querySelector(`[data-question-index="${questionIndex}"]`);
+        const selected = card.querySelector('input[type="radio"]:checked');
+        const labels = card.querySelectorAll(".option");
+
+        labels.forEach((label) => {
+          const option = label.dataset.option;
+          if (option === question.answer) label.classList.add("correct");
+          if (selected && option === selected.value && selected.value !== question.answer) {
+            label.classList.add("incorrect");
+          }
+        });
+
+        if (selected && selected.value === question.answer) correct += 1;
+        card.querySelectorAll("input").forEach((input) => { input.disabled = true; });
+        card.querySelector(".explanation").classList.add("show");
+      });
+
+      const percentage = Math.round((correct / state.questions.length) * 100);
+      scoreText.textContent = `${percentage}%`;
+      scoreDetail.textContent = `${correct} of ${state.questions.length} correct`;
+
+      if (percentage >= 90) {
+        resultMessage.textContent = "Zabardast! Aap ke subnetting concepts bilkul clear aur strong hain.";
+      } else if (percentage >= 80) {
+        resultMessage.textContent = "Pass ho gaye! Jo sawalat ghalat hue un ki explanations dobara parhein.";
+      } else if (percentage >= 70) {
+        resultMessage.textContent = "Behtar performance, lekin practical formulas aur range calculation ki dobara practice karein.";
+      } else {
+        resultMessage.textContent = "Subnetting notes ko dobara ache se parhein aur reattempt karke dubara practice karein.";
+      }
+
+      submitButton.disabled = true;
+      statusLabel.textContent = autoSubmitted ? "Time expired" : "Submitted";
+      resultCard.classList.add("show");
+      resultCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    submitButton.addEventListener("click", () => submitQuiz(false));
+    reattemptButton.addEventListener("click", createAttempt);
+    createAttempt();
+  </script>
+</body>
+</html>
