@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interactive 25-question Linux slow-server troubleshooting interview quiz with timer, scoring, shuffled questions and choices, explanations, category breakdown, and incorrect-answer review.">
+<title>Linux Server Slow — Interview Scenario MCQ Quiz</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg:#07111f; --panel:#101e31; --panel2:#162740; --text:#ecf4ff; --muted:#9eb0c8;
+  --accent:#4fd1c5; --accent2:#60a5fa; --success:#34d399; --danger:#fb7185;
+  --warning:#fbbf24; --border:#29405f; --shadow:0 18px 50px rgb(0 0 0 / 28%);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; min-height:100vh; font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:radial-gradient(circle at top right,rgb(37 99 235 / 18%),transparent 32rem),
+             radial-gradient(circle at top left,rgb(20 184 166 / 13%),transparent 28rem),var(--bg);
+  color:var(--text); line-height:1.55;
+}
+button,input{font:inherit}
+.container{width:min(1050px,calc(100% - 28px));margin:0 auto;padding:28px 0 60px}
+.hero,.toolbar,.question-card,.result-card,.breakdown-card{
+  background:rgb(16 30 49 / 94%); border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow);
+}
+.hero{padding:30px}
+.eyebrow{margin:0 0 8px;color:var(--accent);font-weight:800;letter-spacing:.1em;text-transform:uppercase;font-size:.76rem}
+h1{margin:0;font-size:clamp(1.8rem,5vw,3rem);line-height:1.12}
+.hero p{max-width:800px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:22px}
+.stat{padding:14px;border-radius:13px;background:var(--panel2);border:1px solid var(--border)}
+.stat span{display:block;color:var(--muted);font-size:.78rem}
+.stat strong{font-size:1.15rem}
+.toolbar{
+  position:sticky;top:10px;z-index:5;margin:18px 0;padding:14px 18px;
+  display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:16px;backdrop-filter:blur(10px)
+}
+.progress-track{height:10px;background:#081322;border-radius:999px;overflow:hidden;border:1px solid var(--border)}
+.progress-bar{width:0;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .25s ease}
+.toolbar-label{color:var(--muted);font-size:.82rem;margin-top:5px}
+.timer{font-weight:900;font-variant-numeric:tabular-nums}
+.warning{color:var(--warning)!important;font-weight:800}
+.question-card{padding:22px;margin-bottom:16px}
+.question-card h2{margin:5px 0 16px;font-size:1.05rem}
+.question-number{color:var(--accent);margin-right:6px}
+.category{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:#0b2535;border:1px solid #24506a;color:#8be9df;font-size:.73rem;font-weight:800}
+.options{display:grid;gap:10px}
+.option{
+  display:grid;grid-template-columns:auto 1fr;align-items:start;gap:11px;padding:13px 14px;border-radius:12px;
+  background:#0b1829;border:1px solid var(--border);cursor:pointer;transition:transform .12s ease,border-color .12s ease,background .12s ease
+}
+.option:hover{transform:translateY(-1px);border-color:var(--accent2)}
+.option:has(input:checked){background:#12334b;border-color:var(--accent)}
+.option.correct{background:rgb(16 90 68 / 45%);border-color:var(--success)}
+.option.incorrect{background:rgb(120 28 52 / 40%);border-color:var(--danger)}
+.option input{margin-top:4px;accent-color:var(--accent)}
+.explanation{display:none;margin-top:14px;padding:13px 15px;border-left:4px solid var(--accent2);border-radius:8px;background:#0a1728;color:var(--muted)}
+.explanation.show{display:block}
+.explanation strong{color:var(--text)}
+.actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:28px 0}
+.button{border:0;border-radius:12px;padding:12px 20px;font-weight:850;cursor:pointer}
+.primary{color:#03131d;background:linear-gradient(135deg,var(--accent),#7dd3fc)}
+.secondary{color:var(--text);background:var(--panel2);border:1px solid var(--border)}
+.button:disabled{opacity:.5;cursor:not-allowed}
+.result-card,.breakdown-card{display:none;padding:26px;margin:20px 0}
+.result-card.show,.breakdown-card.show{display:block}
+.result-card{text-align:center}
+.score{font-size:clamp(2.4rem,8vw,4.8rem);font-weight:950;color:var(--accent)}
+.result-message{color:var(--muted)}
+.result-meta{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:16px}
+.pill{padding:7px 11px;border:1px solid var(--border);background:#0b1829;border-radius:999px;color:var(--muted);font-size:.86rem}
+.breakdown-card h2{margin-top:0}
+.breakdown-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.breakdown-item{padding:12px;border:1px solid var(--border);border-radius:12px;background:#0b1829}
+.breakdown-item span{display:block;color:var(--muted);font-size:.8rem}
+.breakdown-item strong{font-size:1.05rem}
+.hidden-review{display:none!important}
+footer{text-align:center;color:var(--muted);padding-top:24px}
+footer a{color:var(--accent)}
+@media(max-width:760px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .toolbar{grid-template-columns:1fr auto}
+  .toolbar>div:first-child{grid-column:1/-1}
+  .breakdown-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+</style>
+</head>
+<body>
+<main class="container">
+  <section class="hero">
+    <p class="eyebrow">Linux Production Support · Scenario Practice</p>
+    <h1>Linux Server Slow — Interview MCQ Quiz</h1>
+    <p>Practice the same troubleshooting flow used in the study notes: scope, recent changes, CPU, memory, disk, I/O, network, application, logs, dependencies, safe remediation, validation, communication, and prevention. Questions and answer choices are reshuffled on every attempt.</p>
+    <div class="stats">
+      <div class="stat"><span>Questions</span><strong>25</strong></div>
+      <div class="stat"><span>Time limit</span><strong>25 min</strong></div>
+      <div class="stat"><span>Passing score</span><strong>80%</strong></div>
+      <div class="stat"><span>Explanations</span><strong>Included</strong></div>
+    </div>
+  </section>
+
+  <section class="toolbar" aria-label="Quiz status">
+    <div>
+      <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="toolbar-label" id="progressLabel">0 of 25 answered</div>
+    </div>
+    <div>Time: <span class="timer" id="timer">25:00</span></div>
+    <div id="statusLabel">In progress</div>
+  </section>
+
+  <form id="quizForm"></form>
+
+  <div class="actions">
+    <button class="button primary" id="submitButton" type="button">Submit Quiz</button>
+    <button class="button secondary" id="reattemptButton" type="button">Reattempt & Shuffle</button>
+    <button class="button secondary" id="reviewButton" type="button" hidden>Show Incorrect Only</button>
+  </div>
+
+  <section class="result-card" id="resultCard" aria-live="polite">
+    <p class="eyebrow">Your Result</p>
+    <div class="score" id="scoreText">0%</div>
+    <h2 id="scoreDetail"></h2>
+    <p class="result-message" id="resultMessage"></p>
+    <div class="result-meta">
+      <span class="pill" id="answeredMeta"></span>
+      <span class="pill" id="timeMeta"></span>
+      <span class="pill">Pass mark: 80%</span>
+    </div>
+  </section>
+
+  <section class="breakdown-card" id="breakdownCard">
+    <p class="eyebrow">Topic Review</p>
+    <h2>Category Breakdown</h2>
+    <div class="breakdown-grid" id="breakdownGrid"></div>
+  </section>
+
+  <footer>
+    <p>Linux Production Support Interview Practice · Self-contained HTML quiz</p>
+  </footer>
+</main>
+
+<script>
+const quizData = [
+  {
+    "category": "Approach",
+    "q": "Users report that a production Linux server is very slow. What should you do FIRST?",
+    "options": [
+      "Understand the scope, impact, and when the issue started",
+      "Immediately reboot the server",
+      "Run kill -9 on the highest CPU process",
+      "Delete old files from /var/log"
+    ],
+    "answer": "Understand the scope, impact, and when the issue started",
+    "explanation": "Start by understanding who is affected, what is slow, when it began, and whether recent changes occurred. Troubleshooting should begin with evidence, not risky actions."
+  },
+  {
+    "category": "General Health",
+    "q": "Which command is a good first check for server uptime and load average?",
+    "options": [
+      "uptime",
+      "df -h",
+      "free -h",
+      "ip route"
+    ],
+    "answer": "uptime",
+    "explanation": "`uptime` quickly shows how long the server has been running and the 1-, 5-, and 15-minute load averages."
+  },
+  {
+    "category": "CPU",
+    "q": "Which command quickly shows how many logical CPUs Linux can use?",
+    "options": [
+      "nproc",
+      "whoami",
+      "hostname",
+      "lsblk"
+    ],
+    "answer": "nproc",
+    "explanation": "`nproc` prints the number of processing units available to the operating system."
+  },
+  {
+    "category": "CPU",
+    "q": "A server has 2 CPUs and a sustained load average around 8. What is the best interpretation?",
+    "options": [
+      "The system likely has much more runnable or waiting work than CPU capacity",
+      "The server is definitely healthy because load is below 10",
+      "The server has 8 CPUs",
+      "The disk is automatically 80% full"
+    ],
+    "answer": "The system likely has much more runnable or waiting work than CPU capacity",
+    "explanation": "Load is not CPU percentage. A sustained load much higher than the available CPU count can indicate significant contention or tasks waiting for CPU/I/O."
+  },
+  {
+    "category": "CPU",
+    "q": "In `top`, what does a very low `id` value indicate?",
+    "options": [
+      "Very little CPU is idle",
+      "The disk has no free inodes",
+      "The network interface is down",
+      "The server has no logged-in users"
+    ],
+    "answer": "Very little CPU is idle",
+    "explanation": "`id` means idle CPU time. A very low value means the CPUs are spending most of their time doing work or waiting."
+  },
+  {
+    "category": "Disk I/O",
+    "q": "In `top`, what does a high `wa` value usually make you investigate?",
+    "options": [
+      "Disk/storage I/O wait",
+      "DNS aliases",
+      "User passwords",
+      "File ownership only"
+    ],
+    "answer": "Disk/storage I/O wait",
+    "explanation": "`wa` is I/O wait. A high value suggests CPUs are spending significant time waiting for I/O, often storage."
+  },
+  {
+    "category": "CPU",
+    "q": "Which command shows the processes using the most CPU first?",
+    "options": [
+      "ps aux --sort=-%cpu | head",
+      "ps aux --sort=-%mem | head",
+      "df -i",
+      "ip addr"
+    ],
+    "answer": "ps aux --sort=-%cpu | head",
+    "explanation": "`--sort=-%cpu` sorts processes from highest to lowest CPU usage; `head` keeps the output short."
+  },
+  {
+    "category": "Memory",
+    "q": "Which command gives a human-readable view of RAM and swap usage?",
+    "options": [
+      "free -h",
+      "du -sh",
+      "ss -lntp",
+      "journalctl -u myapp"
+    ],
+    "answer": "free -h",
+    "explanation": "`free -h` shows total, used, free, cache, available memory, and swap in an easy-to-read format."
+  },
+  {
+    "category": "Memory",
+    "q": "When reading `free -h`, which value is generally more useful than looking only at the `free` column?",
+    "options": [
+      "available",
+      "PID",
+      "await",
+      "IUse%"
+    ],
+    "answer": "available",
+    "explanation": "Linux uses otherwise free RAM for cache. `available` better estimates memory that can be used without heavy swapping."
+  },
+  {
+    "category": "Memory",
+    "q": "Which command helps identify processes consuming the most memory?",
+    "options": [
+      "ps aux --sort=-%mem | head",
+      "ps aux --sort=-%cpu | head",
+      "ip route",
+      "crontab -l"
+    ],
+    "answer": "ps aux --sort=-%mem | head",
+    "explanation": "`--sort=-%mem` sorts processes by memory usage from highest to lowest."
+  },
+  {
+    "category": "Memory",
+    "q": "Which command can help check kernel messages for Out Of Memory events?",
+    "options": [
+      "dmesg | grep -i oom",
+      "df -h | grep -i oom",
+      "ss -lntp | grep -i oom",
+      "uptime | grep -i oom"
+    ],
+    "answer": "dmesg | grep -i oom",
+    "explanation": "OOM kills are kernel events, so searching kernel messages with `dmesg` is a common check."
+  },
+  {
+    "category": "Disk Space",
+    "q": "Which command checks filesystem space usage in human-readable form?",
+    "options": [
+      "df -h",
+      "df -i",
+      "free -h",
+      "iostat -xz 1 5"
+    ],
+    "answer": "df -h",
+    "explanation": "`df -h` shows filesystem size, used space, available space, and usage percentage."
+  },
+  {
+    "category": "Disk Space",
+    "q": "Why would you run `df -i` even when `df -h` shows free disk space?",
+    "options": [
+      "The filesystem may have run out of inodes",
+      "It checks CPU interrupts",
+      "It shows open TCP ports",
+      "It measures application response time"
+    ],
+    "answer": "The filesystem may have run out of inodes",
+    "explanation": "A filesystem can still have free GBs but be unable to create new files if all inodes are used."
+  },
+  {
+    "category": "Disk Space",
+    "q": "You discover `/var` is very large. What is a reasonable next command to narrow down which subdirectory is using space?",
+    "options": [
+      "du -xsh /var/* 2>/dev/null",
+      "kill -9 1",
+      "ip route flush cache",
+      "systemctl reboot"
+    ],
+    "answer": "du -xsh /var/* 2>/dev/null",
+    "explanation": "`du` lets you drill down directory by directory. You should identify the space consumer before deleting anything."
+  },
+  {
+    "category": "Disk I/O",
+    "q": "Which command provides extended disk I/O statistics such as `await` and `%util`?",
+    "options": [
+      "iostat -xz 1 5",
+      "free -h",
+      "nproc",
+      "getent hosts"
+    ],
+    "answer": "iostat -xz 1 5",
+    "explanation": "`iostat -x` provides extended device statistics. Repeating the sample helps distinguish a spike from sustained storage pressure."
+  },
+  {
+    "category": "Disk I/O",
+    "q": "If `iostat` shows very high `await` and a disk near 100% `%util`, what should you suspect?",
+    "options": [
+      "The storage device may be saturated or responding slowly",
+      "The SSH password has expired",
+      "DNS must be broken",
+      "The server has too many user accounts"
+    ],
+    "answer": "The storage device may be saturated or responding slowly",
+    "explanation": "High latency (`await`) combined with very high utilization is a strong clue that storage is a bottleneck."
+  },
+  {
+    "category": "Disk I/O",
+    "q": "Which tool is useful for finding which process is generating heavy disk I/O?",
+    "options": [
+      "iotop",
+      "who",
+      "hostnamectl",
+      "date"
+    ],
+    "answer": "iotop",
+    "explanation": "`iotop` is similar to `top`, but focuses on per-process disk I/O activity."
+  },
+  {
+    "category": "Performance",
+    "q": "In `vmstat`, which field represents I/O wait?",
+    "options": [
+      "wa",
+      "r",
+      "si",
+      "us"
+    ],
+    "answer": "wa",
+    "explanation": "`wa` represents CPU time spent waiting for I/O. `r` is runnable work and `si` is swap-in activity."
+  },
+  {
+    "category": "Network",
+    "q": "Users cannot reach the application, but `ping` to the server succeeds. What does ping success prove?",
+    "options": [
+      "Basic IP reachability only; the application may still be unhealthy",
+      "The application is definitely working",
+      "The database is definitely available",
+      "Every TCP port is open"
+    ],
+    "answer": "Basic IP reachability only; the application may still be unhealthy",
+    "explanation": "ICMP reachability does not prove an application process, TCP port, load balancer, database, or dependency is healthy."
+  },
+  {
+    "category": "Network",
+    "q": "Which command shows listening TCP sockets and the processes that own them?",
+    "options": [
+      "ss -lntp",
+      "df -h",
+      "free -h",
+      "nproc"
+    ],
+    "answer": "ss -lntp",
+    "explanation": "`ss -lntp` shows listening TCP ports numerically and, with sufficient permissions, the owning process."
+  },
+  {
+    "category": "Application",
+    "q": "Which command is a simple way to test an HTTP application locally on port 8080?",
+    "options": [
+      "curl http://localhost:8080",
+      "ping localhost:8080",
+      "df localhost:8080",
+      "nproc localhost:8080"
+    ],
+    "answer": "curl http://localhost:8080",
+    "explanation": "`curl` sends an HTTP request. Testing locally helps separate application health from external network/load-balancer issues."
+  },
+  {
+    "category": "Services & Logs",
+    "q": "A systemd service is failed. What is the BEST next step before restarting it?",
+    "options": [
+      "Inspect its status and logs to understand why it failed",
+      "Reboot the whole server immediately",
+      "Delete all logs",
+      "Run kill -9 on every process"
+    ],
+    "answer": "Inspect its status and logs to understand why it failed",
+    "explanation": "A restart can hide evidence or simply fail again. Check `systemctl status` and `journalctl -u` first."
+  },
+  {
+    "category": "Dependencies",
+    "q": "The application log says it cannot connect to PostgreSQL on `db01:5432`. Which command can test that TCP port?",
+    "options": [
+      "nc -vz db01 5432",
+      "df -h db01 5432",
+      "nproc db01 5432",
+      "uptime db01 5432"
+    ],
+    "answer": "nc -vz db01 5432",
+    "explanation": "`nc -vz host port` is a quick TCP connectivity test. It can help distinguish application issues from network/listener problems."
+  },
+  {
+    "category": "Safe Fix",
+    "q": "You find a backup process causing extreme disk I/O during business hours. What is the safest approach?",
+    "options": [
+      "Confirm the process and business impact, coordinate if needed, then stop it gracefully if approved",
+      "Immediately use kill -9 without checking the process",
+      "Delete the backup directory while the job is running",
+      "Reboot the server without collecting evidence"
+    ],
+    "answer": "Confirm the process and business impact, coordinate if needed, then stop it gracefully if approved",
+    "explanation": "Production changes should be deliberate. Verify what the process is, whether stopping it is safe, and prefer graceful termination before force."
+  },
+  {
+    "category": "Validation",
+    "q": "After stopping the offending backup job, what should you do before declaring the incident resolved?",
+    "options": [
+      "Re-check system metrics, test the application, and obtain user/application-team validation",
+      "Assume it is fixed because the process disappeared",
+      "Clear shell history",
+      "Power off the server"
+    ],
+    "answer": "Re-check system metrics, test the application, and obtain user/application-team validation",
+    "explanation": "A fix must be validated. Compare before/after metrics, test the service, and confirm the user-facing symptom is gone."
+  }
+];
+
+const state = {
+  questions: [],
+  secondsRemaining: 25 * 60,
+  timerId: null,
+  submitted: false,
+  incorrectOnly: false
+};
+
+const quizForm = document.getElementById("quizForm");
+const progressBar = document.getElementById("progressBar");
+const progressLabel = document.getElementById("progressLabel");
+const timerElement = document.getElementById("timer");
+const statusLabel = document.getElementById("statusLabel");
+const submitButton = document.getElementById("submitButton");
+const reattemptButton = document.getElementById("reattemptButton");
+const reviewButton = document.getElementById("reviewButton");
+const resultCard = document.getElementById("resultCard");
+const breakdownCard = document.getElementById("breakdownCard");
+const breakdownGrid = document.getElementById("breakdownGrid");
+const scoreText = document.getElementById("scoreText");
+const scoreDetail = document.getElementById("scoreDetail");
+const resultMessage = document.getElementById("resultMessage");
+const answeredMeta = document.getElementById("answeredMeta");
+const timeMeta = document.getElementById("timeMeta");
+
+function shuffle(items) {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+function createAttempt() {
+  clearInterval(state.timerId);
+  state.questions = shuffle(quizData).map(q => ({...q, options: shuffle(q.options)}));
+  state.secondsRemaining = 25 * 60;
+  state.submitted = false;
+  state.incorrectOnly = false;
+
+  resultCard.classList.remove("show");
+  breakdownCard.classList.remove("show");
+  reviewButton.hidden = true;
+  reviewButton.textContent = "Show Incorrect Only";
+  submitButton.disabled = false;
+  statusLabel.textContent = "In progress";
+
+  renderQuestions();
+  updateProgress();
+  updateTimer();
+  state.timerId = setInterval(tick, 1000);
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function renderQuestions() {
+  quizForm.innerHTML = "";
+  state.questions.forEach((question, questionIndex) => {
+    const card = document.createElement("section");
+    card.className = "question-card";
+    card.dataset.questionIndex = questionIndex;
+
+    const category = document.createElement("span");
+    category.className = "category";
+    category.textContent = question.category;
+
+    const heading = document.createElement("h2");
+    const number = document.createElement("span");
+    number.className = "question-number";
+    number.textContent = `${questionIndex + 1}.`;
+    heading.append(number, document.createTextNode(` ${question.q}`));
+
+    const options = document.createElement("div");
+    options.className = "options";
+
+    question.options.forEach((optionText, optionIndex) => {
+      const label = document.createElement("label");
+      label.className = "option";
+      label.dataset.option = optionText;
+
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = `question-${questionIndex}`;
+      input.value = optionText;
+      input.id = `question-${questionIndex}-option-${optionIndex}`;
+      input.addEventListener("change", updateProgress);
+
+      const text = document.createElement("span");
+      text.textContent = optionText;
+      label.append(input, text);
+      options.append(label);
+    });
+
+    const explanation = document.createElement("div");
+    explanation.className = "explanation";
+    explanation.innerHTML = `<strong>Explanation:</strong> ${question.explanation}`;
+
+    card.append(category, heading, options, explanation);
+    quizForm.append(card);
+  });
+}
+
+function updateProgress() {
+  const answered = quizForm.querySelectorAll('input[type="radio"]:checked').length;
+  const percentage = (answered / state.questions.length) * 100;
+  progressBar.style.width = `${percentage}%`;
+  progressLabel.textContent = `${answered} of ${state.questions.length} answered`;
+}
+
+function updateTimer() {
+  const minutes = Math.floor(state.secondsRemaining / 60);
+  const seconds = state.secondsRemaining % 60;
+  timerElement.textContent = `${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
+  timerElement.classList.toggle("warning", state.secondsRemaining <= 300);
+}
+
+function tick() {
+  state.secondsRemaining -= 1;
+  updateTimer();
+  if (state.secondsRemaining <= 0) {
+    clearInterval(state.timerId);
+    submitQuiz(true);
+  }
+}
+
+function buildBreakdown() {
+  const stats = {};
+  state.questions.forEach((q, idx) => {
+    if (!stats[q.category]) stats[q.category] = {correct:0, total:0};
+    stats[q.category].total += 1;
+    const card = quizForm.querySelector(`[data-question-index="${idx}"]`);
+    const selected = card.querySelector('input[type="radio"]:checked');
+    if (selected && selected.value === q.answer) stats[q.category].correct += 1;
+  });
+
+  breakdownGrid.innerHTML = "";
+  Object.entries(stats).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([category, result]) => {
+    const item = document.createElement("div");
+    item.className = "breakdown-item";
+    const pct = Math.round((result.correct / result.total) * 100);
+    item.innerHTML = `<span>${category}</span><strong>${result.correct}/${result.total} · ${pct}%</strong>`;
+    breakdownGrid.append(item);
+  });
+  breakdownCard.classList.add("show");
+}
+
+function submitQuiz(autoSubmitted=false) {
+  if (state.submitted) return;
+
+  const answered = quizForm.querySelectorAll('input[type="radio"]:checked').length;
+  if (!autoSubmitted && answered < state.questions.length) {
+    const remaining = state.questions.length - answered;
+    const proceed = window.confirm(`You still have ${remaining} unanswered question${remaining === 1 ? "" : "s"}. Submit anyway?`);
+    if (!proceed) return;
+  }
+
+  state.submitted = true;
+  clearInterval(state.timerId);
+  let correct = 0;
+
+  state.questions.forEach((question, questionIndex) => {
+    const card = quizForm.querySelector(`[data-question-index="${questionIndex}"]`);
+    const selected = card.querySelector('input[type="radio"]:checked');
+    const labels = card.querySelectorAll(".option");
+
+    labels.forEach(label => {
+      const option = label.dataset.option;
+      if (option === question.answer) label.classList.add("correct");
+      if (selected && option === selected.value && selected.value !== question.answer) {
+        label.classList.add("incorrect");
+      }
+    });
+
+    const isCorrect = selected && selected.value === question.answer;
+    card.dataset.correct = isCorrect ? "true" : "false";
+    if (isCorrect) correct += 1;
+
+    card.querySelectorAll("input").forEach(input => input.disabled = true);
+    card.querySelector(".explanation").classList.add("show");
+  });
+
+  const percentage = Math.round((correct / state.questions.length) * 100);
+  scoreText.textContent = `${percentage}%`;
+  scoreDetail.textContent = `${correct} of ${state.questions.length} correct`;
+
+  if (percentage >= 90) {
+    resultMessage.textContent = "Excellent — strong production-support troubleshooting flow. Practice explaining the commands aloud as if speaking to an interviewer.";
+  } else if (percentage >= 80) {
+    resultMessage.textContent = "Passed — good job. Review the missed explanations and reattempt until the troubleshooting flow feels automatic.";
+  } else if (percentage >= 70) {
+    resultMessage.textContent = "Developing — you understand many concepts, but revisit the weak categories before your next attempt.";
+  } else {
+    resultMessage.textContent = "Foundation review recommended — study the slow-server notes, practice the commands, then reattempt.";
+  }
+
+  const usedSeconds = (25 * 60) - Math.max(0, state.secondsRemaining);
+  const usedMin = Math.floor(usedSeconds / 60);
+  const usedSec = usedSeconds % 60;
+  answeredMeta.textContent = `Answered: ${answered}/${state.questions.length}`;
+  timeMeta.textContent = `Time used: ${usedMin}:${String(usedSec).padStart(2,"0")}`;
+
+  submitButton.disabled = true;
+  reviewButton.hidden = false;
+  statusLabel.textContent = autoSubmitted ? "Time expired" : "Submitted";
+  resultCard.classList.add("show");
+  buildBreakdown();
+  resultCard.scrollIntoView({behavior:"smooth", block:"center"});
+}
+
+function toggleIncorrectOnly() {
+  if (!state.submitted) return;
+  state.incorrectOnly = !state.incorrectOnly;
+  quizForm.querySelectorAll(".question-card").forEach(card => {
+    const isCorrect = card.dataset.correct === "true";
+    card.classList.toggle("hidden-review", state.incorrectOnly && isCorrect);
+  });
+  reviewButton.textContent = state.incorrectOnly ? "Show All Questions" : "Show Incorrect Only";
+  if (state.incorrectOnly) {
+    const firstVisible = quizForm.querySelector(".question-card:not(.hidden-review)");
+    if (firstVisible) firstVisible.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+}
+
+submitButton.addEventListener("click", () => submitQuiz(false));
+reattemptButton.addEventListener("click", createAttempt);
+reviewButton.addEventListener("click", toggleIncorrectOnly);
+
+createAttempt();
+</script>
+</body>
+</html>
