@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ur-Latn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YAML aur Ansible Playbook Basics — 25 MCQs (Roman Urdu)</title>
+  <style>
+    :root{--navy:#071526;--blue:#61a8ff;--cyan:#4fd6df;--green:#47c78a;--red:#ff7d8a;--gold:#f2c766;--ink:#e6edf7;--muted:#aebbd0;--bg:#111a28;--card:#1a2637;--card2:#202e42;--line:#35455d}
+    *{box-sizing:border-box} html{scroll-behavior:smooth;color-scheme:dark} body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+    header{background:linear-gradient(130deg,#071526,#12345a 60%,#105b68);color:white;padding:42px 20px 34px}
+    header .wrap,.wrap{max-width:1050px;margin:auto} h1{margin:0 0 8px;font-size:clamp(1.8rem,4vw,3rem)} header p{margin:0;max-width:780px;color:#d8edff}
+    nav{position:sticky;top:0;z-index:5;background:#101b2a;border-bottom:1px solid var(--line);box-shadow:0 3px 12px #0008}
+    nav .wrap{display:flex;gap:18px;align-items:center;justify-content:space-between;padding:10px 18px;flex-wrap:wrap}
+    nav a{color:var(--blue);text-decoration:none;font-weight:700}.status{display:flex;gap:12px;align-items:center;font-weight:700}.timer{background:#1b3048;padding:6px 12px;border-radius:999px}.timer.warning{background:#54292f;color:#ffd7dc}
+    main{padding:26px 18px 60px}.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;margin:0 0 24px;box-shadow:0 8px 24px #0005}
+    h2{color:#d8e9ff;margin-top:0}.terms{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:13px}.term{border-left:4px solid var(--cyan);background:var(--card2);padding:13px;border-radius:8px}.term strong{display:block;color:#d8e9ff}
+    pre{background:#091321;color:#e9f2ff;padding:17px;border-radius:10px;overflow:auto;border:1px solid #2c3d54}code{font-family:Consolas,monospace}.legend{display:flex;gap:10px;flex-wrap:wrap}.chip{padding:5px 10px;background:#24364e;border-radius:99px;font-size:.9rem}
+    .progress-shell{height:12px;background:#2b3a4f;border-radius:10px;overflow:hidden;margin:12px 0}.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:.3s}
+    .question{border:1px solid var(--line);border-radius:14px;padding:20px;margin:17px 0;background:#182536}.question h3{margin:0 0 14px;font-size:1.05rem}.qnum{color:var(--blue);margin-right:6px}.option{display:block;border:1px solid var(--line);background:#202e42;padding:11px 12px;border-radius:9px;margin:8px 0;cursor:pointer;transition:.15s}.option:hover{border-color:var(--blue);background:#263a55}.option.correct{border-color:var(--green);background:#153f32;color:#d8ffeb}.option.wrong{border-color:var(--red);background:#4b252d;color:#ffe1e5}.option input{margin-right:9px}.feedback{display:none;margin-top:12px;padding:11px;border-radius:8px}.feedback.show{display:block}.feedback.good{background:#153f32;color:#d8ffeb}.feedback.bad{background:#4b252d;color:#ffe1e5}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:28px 0}button{border:0;border-radius:9px;padding:12px 20px;font-weight:800;cursor:pointer}button.primary{background:var(--blue);color:white}button.secondary{background:var(--navy);color:white}button:disabled{opacity:.5;cursor:not-allowed}
+    #results{display:none}.score-ring{width:140px;height:140px;border-radius:50%;display:grid;place-items:center;margin:15px auto;background:conic-gradient(var(--green) var(--score),#34445a 0);position:relative}.score-ring:after{content:"";position:absolute;inset:12px;background:var(--card);border-radius:50%}.score-ring span{z-index:1;font-size:1.7rem;font-weight:900;color:#e6edf7}.review-item{padding:12px;border-bottom:1px solid var(--line)}.review-item strong{display:block}.correct-text{color:var(--green)}.wrong-text{color:var(--red)}
+    footer{text-align:center;color:var(--muted);padding:24px}@media(max-width:600px){.panel{padding:17px}.status{width:100%;justify-content:space-between}}
+  </style>
+</head>
+<body>
+<header><div class="wrap"><h1>YAML aur Ansible Playbook Basics</h1><p>Indentation, parent, child, mapping, sequence, playbook, task, module, argument aur value samajhne ke liye Roman Urdu study guide aur 25 sawalon ka interactive quiz.</p></div></header>
+<nav><div class="wrap"><div><a href="#guide">Terms ki Guide</a> &nbsp; <a href="#quiz">Quiz Shuru Karein</a></div><div class="status"><span id="answered">Jawab diye: 0/25</span><span class="timer" id="timer">20:00</span></div></div></nav>
+<main class="wrap">
+  <section class="panel" id="guide">
+    <h2>Zaroori Terms aur Unki Definitions</h2>
+    <div class="terms">
+      <div class="term"><strong>Indentation</strong>Line ke shuru mein spaces jo nesting aur relation dikhati hain. YAML mein aam tor par har level par do spaces use hoti hain; tabs se parhez karein.</div>
+      <div class="term"><strong>Parent key</strong>Aisi key jiske neeche indented data ho. <code>dnf:</code> apne arguments ka parent hai.</div>
+      <div class="term"><strong>Child key</strong>Parent ke neeche nested key. <code>name</code> aur <code>state</code>, <code>dnf</code> ke children hain.</div>
+      <div class="term"><strong>Mapping (dictionary)</strong>Key-value pairs ka collection, jaise <code>name: git</code>. Yeh batata hai ke kaunsi value kis key se belong karti hai.</div>
+      <div class="term"><strong>Sequence (list)</strong>Items ka ordered collection. Har list item aam tor par hyphen aur space se shuru hota hai: <code>- git</code>.</div>
+      <div class="term"><strong>List item</strong>Sequence ka ek element. Package list mein <code>git</code>, <code>curl</code> aur <code>tree</code> alag list items hain.</div>
+      <div class="term"><strong>Key</strong>Colon se pehle wala label, jaise <code>hosts</code>, <code>tasks</code>, <code>name</code> ya <code>state</code>.</div>
+      <div class="term"><strong>Value</strong>Key ko di gayi information, jaise <code>state: present</code> mein <code>present</code>.</div>
+      <div class="term"><strong>Scalar</strong>Ek single value: string, number, Boolean ya null. Misalein: <code>Ansible</code>, <code>false</code> aur <code>200</code>.</div>
+      <div class="term"><strong>Nested structure</strong>Ek mapping ya list ke andar doosri mapping ya list, jo zyada indentation se dikhayi jati hai.</div>
+      <div class="term"><strong>Playbook</strong>YAML file jismein ek ya zyada plays hotay hain. Top level aam tor par plays ki list hoti hai.</div>
+      <div class="term"><strong>Play</strong>Aisi mapping jo target hosts ko ordered tasks ke saath connect karti hai.</div>
+      <div class="term"><strong>Task</strong><code>tasks</code> list mein kaam ka ek named unit. Ek task aam tor par ek module call karta hai.</div>
+      <div class="term"><strong>Module</strong>Ansible ka kaam karne wala unit, jaise <code>file</code>, <code>copy</code>, <code>dnf</code> ya <code>ping</code>.</div>
+      <div class="term"><strong>Module argument</strong>Module ko diya gaya input. <code>file</code> module ke arguments mein <code>path</code>, <code>state</code> aur <code>mode</code> shamil hain.</div>
+      <div class="term"><strong>Keyword</strong>Ansible ka defined playbook term, jaise <code>hosts</code>, <code>tasks</code>, <code>become</code> ya <code>gather_facts</code>.</div>
+      <div class="term"><strong>Block scalar |</strong>Multiline text shuru karta aur line breaks preserve karta hai. Yeh <code>copy: content:</code> ke saath useful hai.</div>
+      <div class="term"><strong>Variable expression</strong>Double braces ke andar text, jaise <code>{{ inventory_hostname }}</code>, jise Ansible runtime par evaluate karta hai.</div>
+    </div>
+    <h2 style="margin-top:25px">Explanation ke Saath Example</h2>
+    <pre><code>dnf:                 # parent key aur module
+  name:              # dnf ka child; iski value ek list hai
+    - git             # list item
+    - curl            # list item
+    - tree            # list item
+  state: present     # child key: scalar value</code></pre>
+    <div class="legend"><span class="chip">Parent: dnf</span><span class="chip">Children: name, state</span><span class="chip">List items: git, curl, tree</span><span class="chip">Scalar: present</span></div>
+  </section>
+
+  <section class="panel" id="quiz">
+    <h2>25 Sawalon ka Knowledge Check</h2>
+    <p>Har sawal ka ek jawab select karein. Feedback foran nazar aayega. 20-minute timer zero honay par quiz automatically submit ho jayega.</p>
+    <div class="progress-shell"><div class="progress-bar" id="progress"></div></div>
+    <div id="questions"></div>
+    <div class="actions"><button class="primary" id="submit">Quiz Submit Karein</button><button class="secondary" id="reattempt" style="display:none">Dobara Koshish aur Reshuffle</button></div>
+  </section>
+
+  <section class="panel" id="results">
+    <h2>Final Result</h2>
+    <div class="score-ring" id="scoreRing"><span id="scoreText">0/25</span></div>
+    <p id="summary" style="text-align:center;font-weight:700"></p>
+    <h2>Jawabon ka Review</h2><div id="review"></div>
+  </section>
+</main>
+<footer>YAML aur Ansible Playbook Basics • Roman Urdu Interactive Study Quiz</footer>
+<script>
+const bank = [
+ {q:"YAML mein indentation kya represent karti hai?",o:["Nesting aur structure","Command ki execution speed","File ownership","Network connectivity"],a:"Nesting aur structure",e:"Indentation YAML mein parent-child relation aur nesting establish karti hai."},
+ {q:"Ansible YAML ke liye indentation ka kaunsa tareeqa recommended hai?",o:["Consistent spaces use karein","Tabs aur spaces mix karein","Sirf comments ko indent karein","Har level par tabs use karein"],a:"Consistent spaces use karein",e:"Consistent spaces—aksar har level par do—YAML structure ko valid aur readable banati hain."},
+ {q:"Agar name, student ke neeche indented ho to 'student' aur 'name' mein parent key kaunsi hai?",o:["student","name","Khalid","Koi bhi nahi"],a:"student",e:"student ke andar indented name mapping hai, is liye student parent key hai."},
+ {q:"Mapping 'state: present' mein 'present' kya hai?",o:["Ek value","Parent key","List marker","Module"],a:"Ek value",e:"state key hai aur present usko assign ki gayi scalar value hai."},
+ {q:"YAML list item aam tor par kis symbol se shuru hota hai?",o:["Hyphen (-)","Colon (:)","Pipe (|)","Braces ({})"],a:"Hyphen (-)",e:"Hyphen ke baad space block-style sequence ke har item ko shuru karti hai."},
+ {q:"dnf package list mein git, curl aur tree kya hain?",o:["List items","Parent keys","Ansible plays","Boolean values"],a:"List items",e:"Har package, name argument ko di gayi sequence ka ek element hai."},
+ {q:"YAML mapping kya hoti hai?",o:["Key-value pairs ka collection","Playbook ka timer","Values ke baghair list","Linux package manager"],a:"Key-value pairs ka collection",e:"Mapping keys ko values ke saath associate karti hai aur nested mappings ya lists bhi rakh sakti hai."},
+ {q:"YAML sequence kya hoti hai?",o:["Items ki ordered list","Single key-value pair","Syntax-check command","Inventory group"],a:"Items ki ordered list",e:"Sequence ek ordered collection hai jo block YAML mein aam tor par hyphens ke saath dikhayi jati hai."},
+ {q:"In mein se scalar value kaunsi hai?",o:["false","Do tasks wala tasks section","Packages ki list","Students ki mapping"],a:"false",e:"Scalar ek single atomic value hoti hai, jaise Boolean, string, number ya null."},
+ {q:"Ansible playbook mein pehla top-level hyphen aam tor par kya shuru karta hai?",o:["Ek play","Module argument","Inventory file","Comment"],a:"Ek play",e:"Playbook aam tor par YAML sequence hoti hai aur har top-level item ek play hota hai."},
+ {q:"tasks key ke andar kya hota hai?",o:["Tasks ki ordered list","Sirf inventory hostnames","SSH private key","YAML comments"],a:"Tasks ki ordered list",e:"tasks play-level keyword hai jiski value task mappings ki sequence hoti hai."},
+ {q:"Ansible playbook mein task kya hota hai?",o:["Kaam ka unit jo aam tor par module call karta hai","Sirf managed-node IP","YAML validator","Collection installation path"],a:"Kaam ka unit jo aam tor par module call karta hai",e:"Task ek intended operation describe karta aur aam tor par ek module invoke karta hai."},
+ {q:"file module ke task mein path, state aur mode kya hain?",o:["Module arguments","Inventory groups","Alag plays","YAML documents"],a:"Module arguments",e:"Yeh inputs file module ko batate hain ke kaunsa resource aur desired state manage karna hai."},
+ {q:"'state: directory' file module ko kya batata hai?",o:["Path directory ki shakal mein maujood hona chahiye","Har directory delete kare","Package install kare","System facts gather kare"],a:"Path directory ki shakal mein maujood hona chahiye",e:"directory state specified path ke desired resource type ko express karti hai."},
+ {q:"file: jaisi module key same line par blank kyun nazar aa sakti hai?",o:["Uski value neeche wali indented mapping hai","Module disable hai","YAML module ko ignore karta hai","Iska matlab hamesha null hai"],a:"Uski value neeche wali indented mapping hai",e:"Nested arguments module key ki value banate hain, is liye asal mein value khali nahi hoti."},
+ {q:"content: ke baad YAML pipe symbol | kya karta hai?",o:["Multiline text ke line breaks preserve karta hai","Package list shuru karta hai","Text ko comment karta hai","Shell pipeline chalata hai"],a:"Multiline text ke line breaks preserve karta hai",e:"Literal block scalar aglay indented text ki newlines ko preserve karta hai."},
+ {q:"Ansible playbook mein {{ inventory_hostname }} kya hai?",o:["Variable expression","YAML comment","List marker","File permission"],a:"Variable expression",e:"Double braces Jinja expression ko mark karti hain jise Ansible runtime par evaluate karta hai."},
+ {q:"'hosts: three_tier_app' kya specify karta hai?",o:["Inventory target pattern","Execute honay wala module","File permission","YAML version"],a:"Inventory target pattern",e:"hosts decide karta hai ke play kis inventory host ya group pattern ko target karega."},
+ {q:"'gather_facts: false' kya karta hai?",o:["Automatic fact gathering skip karta hai","SSH permanently disable karta hai","Gathered files delete karta hai","Har task rok deta hai"],a:"Automatic fact gathering skip karta hai",e:"Us play ke liye setup ya fact-gathering phase automatically skip ho jata hai."},
+ {q:"Kaunsa pair Ansible ke play-level keywords par mushtamil hai?",o:["hosts aur tasks","git aur curl","path aur mode","Khalid aur Ahmed"],a:"hosts aur tasks",e:"Ansible hosts aur tasks ko play define karne wali directives ke taur par interpret karta hai."},
+ {q:"tasks list mein doosra task kaunsi line shuru karti hai?",o:["- name: Create a study file","copy:","dest: /tmp/notes.txt","mode: 0644"],a:"- name: Create a study file",e:"Hyphen naya list item shuru karta hai; yeh item doosri task mapping hai."},
+ {q:"File modes ko mode: \"0755\" ki tarah quote kyun karna chahiye?",o:["Intended mode representation preserve karne ke liye","File ko automatically executable banane ke liye","YAML comment banane ke liye","Fact gathering enable karne ke liye"],a:"Intended mode representation preserve karne ke liye",e:"Quotes unwanted numeric interpretation se bachati aur exact permission notation preserve karti hain."},
+ {q:"Valid YAML aur Ansible playbook ke baray mein kaunsa statement sahi hai?",o:["Har valid YAML zaroori nahi ke valid Ansible playbook ho","Har YAML file Ansible playbook hai","Ansible playbook mein list nahi ho sakti","Har file parse karne ke liye YAML ko Ansible chahiye"],a:"Har valid YAML zaroori nahi ke valid Ansible playbook ho",e:"Playbook ko YAML syntax ke saath Ansible ke expected schema aur keywords bhi follow karne hotay hain."},
+ {q:"Kaunsi command tasks ko normal run kiye baghair playbook syntax check karti hai?",o:["ansible-playbook site.yml --syntax-check","ansible site.yml -m ping","yaml site.yml --run","ansible-inventory site.yml --execute"],a:"ansible-playbook site.yml --syntax-check",e:"--syntax-check option normal execution ke baghair playbook structure ko parse aur validate karta hai."},
+ {q:"file aur copy tasks walay complete example ki behtareen description kya hai?",o:["Ek play jismein do task list items hain","Do plays jin mein ek ek task hai","Ek task jismein do inventories hain","Play ke baghair package list"],a:"Ek play jismein do task list items hain",e:"Is mein ek top-level play aur uski tasks key ke neeche do hyphenated entries hain."}
+];
+let questions=[], answers={}, submitted=false, seconds=1200, timerId;
+const shuffle=a=>{const x=[...a];for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}return x};
+function start(){questions=shuffle(bank).map((x,i)=>({...x,id:i,opts:shuffle(x.o)}));answers={};submitted=false;seconds=1200;document.getElementById('results').style.display='none';document.getElementById('submit').disabled=false;document.getElementById('reattempt').style.display='none';render();updateStatus();clearInterval(timerId);timerId=setInterval(tick,1000);window.scrollTo({top:document.getElementById('quiz').offsetTop-70,behavior:'smooth'})}
+function render(){const box=document.getElementById('questions');box.innerHTML='';questions.forEach((x,i)=>{const el=document.createElement('article');el.className='question';el.innerHTML=`<h3><span class="qnum">${i+1}.</span>${x.q}</h3><div class="options">${x.opts.map((v,j)=>`<label class="option" data-value="${esc(v)}"><input type="radio" name="q${i}" value="${esc(v)}"> <b>${String.fromCharCode(65+j)}.</b> ${esc(v)}</label>`).join('')}</div><div class="feedback" id="fb${i}"></div>`;box.appendChild(el);el.querySelectorAll('input').forEach(inp=>inp.addEventListener('change',()=>choose(i,inp.value,el)))});}
+function choose(i,value,el){if(submitted)return;answers[i]=value;el.querySelectorAll('.option').forEach(l=>l.classList.remove('correct','wrong'));const selected=[...el.querySelectorAll('.option')].find(l=>l.dataset.value===value);selected.classList.add(value===questions[i].a?'correct':'wrong');const fb=el.querySelector('.feedback');fb.className='feedback show '+(value===questions[i].a?'good':'bad');fb.textContent=(value===questions[i].a?'Sahi jawab — ':'Yeh sahi nahi — ')+questions[i].e;updateStatus()}
+function updateStatus(){const n=Object.keys(answers).length;document.getElementById('answered').textContent=`Jawab diye: ${n}/25`;document.getElementById('progress').style.width=`${n/25*100}%`}
+function tick(){seconds--;const m=Math.floor(seconds/60),s=seconds%60;const t=document.getElementById('timer');t.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;t.classList.toggle('warning',seconds<=120);if(seconds<=0)submit(true)}
+function submit(auto=false){if(submitted)return;if(!auto&&Object.keys(answers).length<25&&!confirm(`Aap ne 25 mein se ${Object.keys(answers).length} sawalon ke jawab diye hain. Abhi submit karein?`))return;submitted=true;clearInterval(timerId);let score=0;questions.forEach((x,i)=>{if(answers[i]===x.a)score++});document.querySelectorAll('input').forEach(x=>x.disabled=true);document.getElementById('submit').disabled=true;document.getElementById('reattempt').style.display='inline-block';const pct=Math.round(score/25*100);const ring=document.getElementById('scoreRing');ring.style.setProperty('--score',pct+'%');document.getElementById('scoreText').textContent=`${score}/25`;document.getElementById('summary').textContent=`${pct}% — ${pct>=80?'Aap ki understanding bohat achhi hai.':pct>=60?'Achhi progress hai; miss kiye gaye concepts review karein.':'Terms ki guide review karke dobara koshish karein.'}${auto?' Waqt khatam ho gaya, is liye quiz automatically submit ho gaya.':''}`;document.getElementById('review').innerHTML=questions.map((x,i)=>`<div class="review-item"><strong>${i+1}. ${x.q}</strong><span class="${answers[i]===x.a?'correct-text':'wrong-text'}">Aap ka jawab: ${esc(answers[i]||'Jawab nahi diya')}</span><br><span class="correct-text">Sahi jawab: ${esc(x.a)}</span><br><small>${x.e}</small></div>`).join('');document.getElementById('results').style.display='block';document.getElementById('results').scrollIntoView({behavior:'smooth'})}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+document.getElementById('submit').addEventListener('click',()=>submit(false));document.getElementById('reattempt').addEventListener('click',start);start();
+</script>
+</body>
+</html>
